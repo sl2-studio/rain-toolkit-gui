@@ -7,7 +7,7 @@ function click() {
     dispatch("click")
 }
 
-export let label
+export let label = null
 export let variant = 'primary'
 export let disabled = false
 export let small = false
@@ -26,14 +26,14 @@ $: variantCalc = disabled ? 'disabled' : variant
 </button>
 {:else}
 {#if shrink}
-    <button {disabled} {id} on:click={click} class="{'transition-colors rounded-lg text-base leading-none py-6 px-5 text-white ' + variantCalc}">
+    <button {disabled} {id} on:click={click} class="{'transition-colors rounded-lg text-base leading-none py-3 px-5 text-white ' + variantCalc}">
         <slot></slot>
         {#if !$$slots.default}
             {label}
         {/if}
     </button>
 {:else}
-    <button {disabled} {id} on:click={click} class="{'w-full transition-colors rounded-lg text-base leading-none py-6 px-5 text-white ' + variantCalc}">
+    <button {disabled} {id} on:click={click} class="{'w-full transition-colors rounded-lg text-base leading-none py-3 px-5 text-white ' + variantCalc}">
         <slot></slot>
         {#if !$$slots.default}
             {label}

@@ -11,22 +11,33 @@ import { BALANCE_TIER_FACTORY_ADDRESS } from "../../constants";
 import { decodeLogs, getLogs } from "../../queries";
 import { initBalanceTier } from "./balance-tier";
 
-let balanceTiers
+let balanceTiers, initPromise
 
 onMount(async () => {
-    const logs = await getLogs(BALANCE_TIER_FACTORY_ADDRESS)
+    initPromise = init()
+})
+
+const init = async () => {
+    try {
+        const logs = await getLogs(BALANCE_TIER_FACTORY_ADDRESS)
     const decoded = await decodeLogs(logs, '0x7da70c4e5387d7038610b79ca7d304caaef815826e51e67cf247135387a79bce', ['address','address']) 
-    console.log(decoded)
     balanceTiers = await Promise.all(decoded.map(async log=>{
         let balanceTier = await initBalanceTier(log.event[1])
         balanceTier = {...balanceTier, from: log.from}
         return balanceTier
     }))
-    console.log(balanceTiers)
-})
+    }
+    catch(error) {
+        console.log(error)
+    }
+}
 
 </script>
 
+{#if initPromise}
+{#await initPromise}
+Loading...
+{:then}
 {#if balanceTiers}
 <div class="flex flex-col gap-y-3">
 {#each balanceTiers as balanceTier}
@@ -62,4 +73,8 @@ onMount(async () => {
 </FormPanel>
 {/each}
 </div>
+{:else}
+<span class="text-red-400">Something went wrong, try refreshing the page.</span>
+{/if}
+{/await}
 {/if}

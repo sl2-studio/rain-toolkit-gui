@@ -92,7 +92,7 @@ const reportMyAddress = () => {
         </span>
         {#if !params.wild}
         <span class="text-gray-400">
-            Enter a BalanceTier contract address below, or browse all deployed BalanceTier contracts.
+            Enter a BalanceTier contract address below, or <span class="underline cursor-pointer" on:click={()=>{push('/balancetier/list')}}>browse all deployed BalanceTier contracts.</span>
         </span>
         {/if}
     </div>

@@ -6,15 +6,41 @@ import SidebarLinkGroup from "../components/SidebarLinkGroup.svelte";
 <div class="flex flex-col gap-y-3 p-5  sticky top-16 self-start">
     <SidebarLinkGroup label="BalanceTier" url="/balancetier/*">
         <SidebarLink url="/balancetier/deploy">
-            Deploy a BalanceTier
+            Deploy an ERC20BalanceTier
         </SidebarLink>
 
         <SidebarLink url="/balancetier/report/">
-            Check a BalanceTier Report
+            Check an ERC20BalanceTier Report
         </SidebarLink>
 
         <SidebarLink url="/balancetier/list">
-            Browse deployed BalanceTiers
+            Browse deployed ERC20BalanceTiers
+        </SidebarLink>
+
+        <SidebarLink url="/721balancetier/deploy">
+            Deploy an ERC721BalanceTier
+        </SidebarLink>
+
+        <SidebarLink url="/721balancetier/report/">
+            Check an ERC721BalanceTier Report
+        </SidebarLink>
+
+        <SidebarLink url="/721balancetier/list">
+            Browse deployed ERC721BalanceTiers
+        </SidebarLink>
+    </SidebarLinkGroup>
+
+    <SidebarLinkGroup label="CombineTier" url="/combinetier/*">
+        <SidebarLink url="/combinetier/deploy">
+            Deploy a CombineTier
+        </SidebarLink>
+
+        <SidebarLink url="/combinetier/report/">
+            Check a CombineTier Report
+        </SidebarLink>
+
+        <SidebarLink url="/balancetier/list">
+            Browse deployed CombineTiers
         </SidebarLink>
     </SidebarLinkGroup>
 

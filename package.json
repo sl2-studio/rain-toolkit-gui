@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "rollup -c",
+    "build": "rollup -c && tsc -d --emitDeclarationOnly --declarationDir build/types",
     "dev": "rollup -c -w",
     "start": "sirv public --no-clear",
     "check": "svelte-check --tsconfig ./tsconfig.json"
@@ -11,7 +11,7 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-node-resolve": "^11.0.0",
-    "@rollup/plugin-typescript": "^8.0.0",
+    "@rollup/plugin-typescript": "^8.3.0",
     "@tsconfig/svelte": "^2.0.0",
     "rollup": "^2.3.4",
     "rollup-plugin-css-only": "^3.1.0",
@@ -22,9 +22,10 @@
     "svelte-check": "^2.0.0",
     "svelte-preprocess": "^4.0.0",
     "tslib": "^2.0.0",
-    "typescript": "^4.0.0"
+    "typescript": "^4.2.0-beta"
   },
   "dependencies": {
+    "@beehiveinnovation/rain-protocol": "0.0.16",
     "@metamask/jazzicon": "^2.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "0s": "^1.0.0",
@@ -33,6 +34,7 @@
     "postcss": "^7.0.39",
     "sirv-cli": "^1.0.0",
     "svelte-ethers-store": "^0.5.1",
+    "svelte-select": "^4.4.7",
     "svelte-spa-router": "^3.2.0",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17"
   }

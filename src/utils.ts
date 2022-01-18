@@ -1,4 +1,6 @@
-import { Contract, ethers } from "ethers";
+import { ethers } from "ethers";
+import type { BytesLike } from "ethers";
+import { concat, Hexable, hexlify, zeroPad } from "ethers/lib/utils";
 
 export const getNewChildFromReceipt = (receipt, parentContract) => {
     return ethers.utils.hexZeroPad(
@@ -38,4 +40,47 @@ export const getNewChildFromReceipt = (receipt, parentContract) => {
 export function formatAddress(address) {
   let formatted = address.slice(0, 6) + '...' + address.slice(address.length - 4, address.length)
   return formatted
+}
+
+/**
+ * Converts an opcode and operand to bytes, and returns their concatenation.
+ * @param code - the opcode
+ * @param erand - the operand, currently limited to 1 byte (defaults to 0)
+ */
+ export function op(code: number, erand = 0): Uint8Array {
+  return concat([bytify(erand), bytify(code)]);
+}
+
+/**
+ * Converts a value to raw bytes representation. Assumes `value` is less than or equal to 1 byte, unless a desired `bytesLength` is specified.
+ *
+ * @param value - value to convert to raw bytes format
+ * @param bytesLength - (defaults to 1) number of bytes to left pad if `value` doesn't completely fill the desired amount of memory. Will throw `InvalidArgument` error if value already exceeds bytes length.
+ * @returns {Uint8Array} - raw bytes representation
+ */
+ export function bytify(
+  value: number | BytesLike | Hexable,
+  bytesLength = 1
+): BytesLike {
+  return zeroPad(hexlify(value), bytesLength);
+}
+
+export function selectLte(logic: number, mode: number, length: number): number {
+  let lte = logic;
+  lte <<= 2;
+  lte += mode;
+  lte <<= 5;
+  lte += length;
+  return lte;
+}
+
+export enum selectLteLogic {
+  every,
+  any,
+}
+
+export enum selectLteMode {
+  min,
+  max,
+  first,
 }

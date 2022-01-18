@@ -6,6 +6,7 @@ import { ethers } from "ethers"
 export const getLogs = async (address, startingBlock, endingBlock) => {
     startingBlock ??= await get(provider).getBlockNumber() - 999000
     endingBlock ??= 'latest'
+    console.log(startingBlock, endingBlock)
     const response = fetch(
         `https://api.covalenthq.com/v1/${CHAIN_ID}/events/address/${address}/?format=JSON&starting-block=${startingBlock}&ending-block=${endingBlock}&key=${COVALENT_KEY}`
     )

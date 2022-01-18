@@ -2,16 +2,14 @@
 export let type = 'text'
 export let value = ''
 export let placeholder = ''
-export let validator = (value:any) => null
-let error
+export let validator = (value:any) : any => null
+let error: string
 
-const handleInput = (e) => {
+const handleInput = (e:any) => {
     value = type.match(/^(number|range)$/) ? +e.target.value : e.target.value
 }
 
 export const validate = () => {
-    console.log(validator)
-    console.log(validator(value))
     const validation = validator(value)
     if (validator(value)?.error) {
         ({

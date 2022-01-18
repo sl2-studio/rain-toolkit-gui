@@ -1,5 +1,5 @@
-<script>
-export let heading = null
+<script lang="ts">
+export let heading = null as null | string
 </script>
 
 <div class="p-8 bg-gray-800 gap-y-4 filter drop-shadow-sm rounded-xl flex flex-col items-start">

@@ -1,4 +1,5 @@
-<script lang="ts">
+<script lang="ts" type="module">
+	import ERC721BalanceTierReport from './routes/balance-tier/ERC721BalanceTierReport.svelte';
 import { connected } from 'svelte-ethers-store';
 import Connect from './components/Connect.svelte';
 import Deploy from './routes/deploy/Deploy.svelte';
@@ -12,6 +13,9 @@ import MintNft from './routes/gated-minter/MintNFT.svelte';
 import Header from './layout/Header.svelte';
 import Sidebar from './layout/Sidebar.svelte';
 import ListBalanceTier from './routes/balance-tier/ListBalanceTier.svelte';
+import DeployCombineTier from './routes/deploy/DeployCombineTier.svelte';
+import CombineTierReport from './routes/combine-tier/CombineTierReport.svelte';
+import Deploy721BalanceTier from './routes/deploy/Deploy721BalanceTier.svelte';
 
 let routes = {}
 
@@ -20,6 +24,13 @@ routes = {
 	'/balancetier/deploy': DeployBalanceTier,
     '/balancetier/report/*': BalanceTierReport,
 	'/balancetier/list': ListBalanceTier,
+
+	'/721balancetier/deploy': Deploy721BalanceTier,
+    '/721balancetier/report/*': ERC721BalanceTierReport,
+	'/721balancetier/list': ListBalanceTier,
+
+	'/combinetier/deploy': DeployCombineTier,
+	'/combinetier/report/*': CombineTierReport,
 
 	'/gatededition/deploy/*': DeployGatedMinter,
 	'/gatededition/mint/*': MintNft,

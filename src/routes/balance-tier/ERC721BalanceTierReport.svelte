@@ -15,8 +15,6 @@ import {
     onMount
 } from 'svelte'
 import FormPanel from '../../components/FormPanel.svelte'
-import BalanceTierAbi from '../../abis/ERC20BalanceTier.json'
-import ERC20Abi from '../../abis/ReserveToken.json'
 import Input from '../../components/Input.svelte'
 import Button from '../../components/Button.svelte'
 import {
@@ -25,7 +23,7 @@ import {
 import {
     push
 } from 'svelte-spa-router'
-import { initBalanceTier } from './balance-tier';
+import { init721BalanceTier, initBalanceTier } from './balance-tier';
 
 export let params
 
@@ -33,15 +31,14 @@ $: console.log('signer address', $signerAddress)
 $: console.log('params', params)
 
 let balanceTierContract,
-    erc20Contract,
-    erc20Name,
-    erc20Address,
-    erc20Symbol,
-    erc20Decimals,
+    tierValues,
     errorMsg,
+    erc721Contract,
+    erc721Name,
+    erc721Address,
+    erc721Symbol,
     addressToReport,
     parsedReport,
-    tierValues,
     addressBalance,
     balanceTierAddress
 
@@ -53,15 +50,14 @@ const initContract = async () => {
     if (ethers.utils.isAddress(params.wild)) {
         // setting up the balance tier contract
         ({
-            balanceTierContract,
-            tierValues,
-            errorMsg,
-            erc20Contract,
-            erc20Name,
-            erc20Decimals,
-            erc20Address,
-            erc20Symbol
-        } = await initBalanceTier(params.wild))
+        balanceTierContract,
+        tierValues,
+        errorMsg,
+        erc721Contract,
+        erc721Name,
+        erc721Address,
+        erc721Symbol
+        } = await init721BalanceTier(params.wild))
     } else if (params.wild) {
         errorMsg = 'Not a valid BalanceTier address'
     }
@@ -71,12 +67,13 @@ const report = async () => {
     if (ethers.utils.isAddress(addressToReport)) {
         const report = await balanceTierContract.report(addressToReport)
         parsedReport = tierReport(report)
-        addressBalance = await erc20Contract.balanceOf(addressToReport)
+        addressBalance = await erc721Contract.balanceOf(addressToReport)
     } else {
         errorMsg = 'Not a valid Ethereum address'
     }
 }
-
+$: console.log(tierValues)
+console.log(ethers.constants.MaxInt256)
 const reportMyAddress = () => {
     addressToReport = $signerAddress
     report()
@@ -88,7 +85,7 @@ const reportMyAddress = () => {
             Get a BalanceTier report.
         </span>
         <span class="text-gray-400">
-            BalanceTier checks the amount of a specific ERC20 held in a wallet.
+            BalanceTier checks the amount of a specific ERC721 held in a wallet.
         </span>
         {#if !params.wild}
         <span class="text-gray-400">
@@ -97,12 +94,12 @@ const reportMyAddress = () => {
         {/if}
     </div>
     {#if ethers.utils.isAddress(params.wild) && params.wild && !errorMsg}
-    <FormPanel heading="ERC20 used for this BalanceTier">
+    <FormPanel heading="ERC721 used for this BalanceTier">
         <div class="flex flex-col gap-y-2 mb-4">
             <div class="text-gray-400 flex flex-col">
-                <span>Name: {erc20Name}</span>
-                <span>Symbol: {erc20Symbol}</span>
-                <span>Address: {erc20Address}</span>
+                <span>Name: {erc721Name}</span>
+                <span>Symbol: {erc721Symbol}</span>
+                <span>Address: {erc721Address}</span>
             </div>
         </div>
     </FormPanel>
@@ -120,7 +117,7 @@ const reportMyAddress = () => {
             <span class="text-lg">Token values for this BalanceTier:</span>
             {#each tierValues as value, i}
             <span class="text-gray-400">
-                Tier {i+1}: {ethers.utils.formatUnits(value, erc20Decimals)}
+                Tier {i+1}: {value.eq(ethers.constants.MaxInt256) ? 'none' : value.toString()}
                 {#if parsedReport?.[i] == 0}
                 ✅
                 {:else if parsedReport?.[i] > 0}
@@ -130,7 +127,7 @@ const reportMyAddress = () => {
             {/each}
         </div>
         {#if addressBalance}
-        <span>Balance for {addressToReport}: {ethers.utils.formatUnits(addressBalance, erc20Decimals)} {erc20Symbol}</span>
+        <span>Balance for {addressToReport}: {addressBalance.toString()} {erc721Symbol}</span>
         {/if}
         {/if}
     </FormPanel>
@@ -139,7 +136,7 @@ const reportMyAddress = () => {
     {:else if !params.wild}
     <FormPanel>
         <Input bind:value={balanceTierAddress} type="string" placeholder="Contract address" />
-        <Button on:click={()=>{push(`/balancetier/report/${balanceTierAddress}`)}}>
+        <Button on:click={()=>{push(`/721balancetier/report/${balanceTierAddress}`)}}>
             Load
         </Button>
     </FormPanel>

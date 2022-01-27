@@ -9,7 +9,7 @@ import Button from "../../components/Button.svelte";
 import FormPanel from "../../components/FormPanel.svelte";
 import { BALANCE_TIER_FACTORY_ADDRESS } from "../../constants";
 import { decodeLogs, getLogs } from "../../queries";
-import { initBalanceTier } from "./balance-tier";
+import { initBalanceTier } from "./erc20-balance-tier";
 
 let balanceTiers, initPromise
 

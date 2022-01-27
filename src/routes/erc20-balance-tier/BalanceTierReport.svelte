@@ -25,7 +25,7 @@ import {
 import {
     push
 } from 'svelte-spa-router'
-import { initBalanceTier } from './balance-tier';
+import { initBalanceTier } from './erc20-balance-tier';
 
 export let params
 

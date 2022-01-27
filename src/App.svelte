@@ -1,21 +1,19 @@
 <script lang="ts" type="module">
-	import ERC721BalanceTierReport from './routes/balance-tier/ERC721BalanceTierReport.svelte';
+import ERC721BalanceTierReport from './routes/erc721-balance-tier/ERC721BalanceTierReport.svelte';
 import { connected } from 'svelte-ethers-store';
-import Connect from './components/Connect.svelte';
-import Deploy from './routes/deploy/Deploy.svelte';
 import Contracts from './init-stores/Contracts.svelte';
 import Router from 'svelte-spa-router'
-import DeployBalanceTier from './routes/deploy/DeployBalanceTier.svelte';
-import BalanceTierReport from './routes/balance-tier/BalanceTierReport.svelte';
+import DeployBalanceTier from './routes/erc20-balance-tier/DeployBalanceTier.svelte';
+import BalanceTierReport from './routes/erc20-balance-tier/BalanceTierReport.svelte';
 import Home from './routes/Home.svelte';
-import DeployGatedMinter from './routes/deploy/DeployGatedMinter.svelte';
+import DeployGatedMinter from './routes/gated-minter/DeployGatedMinter.svelte';
 import MintNft from './routes/gated-minter/MintNFT.svelte';
 import Header from './layout/Header.svelte';
 import Sidebar from './layout/Sidebar.svelte';
-import ListBalanceTier from './routes/balance-tier/ListBalanceTier.svelte';
-import DeployCombineTier from './routes/deploy/DeployCombineTier.svelte';
+import ListBalanceTier from './routes/erc20-balance-tier/ListBalanceTier.svelte';
+import DeployCombineTier from './routes/combine-tier/DeployCombineTier.svelte';
 import CombineTierReport from './routes/combine-tier/CombineTierReport.svelte';
-import Deploy721BalanceTier from './routes/deploy/Deploy721BalanceTier.svelte';
+import Deploy721BalanceTier from './routes/erc721-balance-tier/Deploy721BalanceTier.svelte';
 
 let routes = {}
 

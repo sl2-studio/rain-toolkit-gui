@@ -54,21 +54,24 @@
       $signer,
     ) as CombineTierFactory
 
+    // the tier contracts to combine
     const constants = [
       ethers.BigNumber.from(tierContractOne), // right report
       ethers.BigNumber.from(tierContractTwo), // left report
     ]
-    console.log(constants)
-    console.log(logicValue.value, modeValue.value)
 
     const source = concat([
+      // the combination logic and mode
       op(Opcode.SELECT_LTE, selectLte(logicValue.value, modeValue.value, 2)),
+      // second report
       op(Opcode.REPORT),
-      op(Opcode.VAL, 0),
+      op(Opcode.VAL, 0), // use the tier contract from constants[0]
       op(Opcode.ACCOUNT),
+      // first report
       op(Opcode.REPORT),
-      op(Opcode.VAL, 1),
+      op(Opcode.VAL, 1), // use the tier contract from constants[1]
       op(Opcode.ACCOUNT),
+      // block
       op(Opcode.BLOCK_NUMBER),
     ])
 

@@ -1,5 +1,6 @@
 import { ethers } from "ethers"
-import BalanceTierAbi from '../../abis/ERC721BalanceTier.json'
+import ERC721BalanceTierAbi from '../../abis/ERC721BalanceTier.json'
+import ERC20BalanceTierAbi from '../../abis/ERC20BalanceTier.json'
 import ERC721Abi from '../../abis/ERC721.json'
 import ERC20Abi from '../../abis/ReserveToken.json'
 import { signer } from 'svelte-ethers-store'
@@ -18,7 +19,7 @@ export const initBalanceTier = async (address: string) => {
     // setting up the balance tier contract
     const _balanceTierContract = new ethers.Contract(
         address,
-        BalanceTierAbi.abi,
+        ERC20BalanceTierAbi.abi,
     )
     balanceTierContract = _balanceTierContract.connect(get(signer))
     try {
@@ -60,7 +61,7 @@ export const init721BalanceTier = async (address : string) => {
     // setting up the balance tier contract
     const _balanceTierContract = new ethers.Contract(
         address,
-        BalanceTierAbi.abi,
+        ERC721BalanceTierAbi.abi,
     )
     balanceTierContract = _balanceTierContract.connect(get(signer))
     try {

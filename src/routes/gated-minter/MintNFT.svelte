@@ -7,10 +7,6 @@ import {
     ethers
 } from "ethers";
 
-import {
-    onMount
-} from "svelte";
-
 import GatedMinterArtifact from "../../abis/ApprovingSingleEditionMintable.json"
 import Button from '../../components/Button.svelte';
 import FormPanel from '../../components/FormPanel.svelte';

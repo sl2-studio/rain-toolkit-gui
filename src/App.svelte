@@ -14,6 +14,8 @@ import ListBalanceTier from './routes/erc20-balance-tier/ListBalanceTier.svelte'
 import DeployCombineTier from './routes/combine-tier/DeployCombineTier.svelte';
 import CombineTierReport from './routes/combine-tier/CombineTierReport.svelte';
 import Deploy721BalanceTier from './routes/erc721-balance-tier/Deploy721BalanceTier.svelte';
+import DeploySale from './routes/sale/DeploySale.svelte';
+import PurchaseSale from './routes/sale/PurchaseSale.svelte';
 
 let routes = {}
 
@@ -33,6 +35,9 @@ routes = {
 	'/gatededition/deploy/*': DeployGatedMinter,
 	'/gatededition/mint/*': MintNft,
 
+	'/sale/deploy': DeploySale,
+	'/sale/purchase/*': PurchaseSale,
+
     '/': Home,
 
     // Catch-all
@@ -50,7 +55,7 @@ routes = {
 <Header />
 <main class="text-gray-50 flex relative">	
 	<Sidebar />
-	<div class="py-5 px-8">
+	<div class="py-5 px-8 w-full">
 		{#if $connected}
 		<Router routes={routes} />
 		{:else}

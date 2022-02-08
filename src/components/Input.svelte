@@ -1,6 +1,6 @@
 <script lang="ts">
 export let type = 'text'
-export let value = ''
+export let value : string | number = ''
 export let placeholder = ''
 export let validator = (value:any) : any => null
 let error: string

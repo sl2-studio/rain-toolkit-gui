@@ -2,7 +2,7 @@
 import SidebarLink from "../components/SidebarLink.svelte";
 import SidebarLinkGroup from "../components/SidebarLinkGroup.svelte";
 </script>
-<div class="border-r border-gray-700 w-80 min-h-screen">
+<div class="border-r border-gray-700 w-96 min-h-screen">
 <div class="flex flex-col gap-y-3 p-5  sticky top-16 self-start">
     <SidebarLinkGroup label="BalanceTier" url="/balancetier/*">
         <SidebarLink url="/balancetier/deploy">
@@ -51,6 +51,16 @@ import SidebarLinkGroup from "../components/SidebarLinkGroup.svelte";
 
         <SidebarLink url="/gatededition/mint/">
             Mint an NFT for a Gated Edition
+        </SidebarLink>
+    </SidebarLinkGroup>
+
+    <SidebarLinkGroup label="Sale" url="/sale/*">
+        <SidebarLink url="/sale/deploy">
+            Deploy a Sale
+        </SidebarLink>
+
+        <SidebarLink url="/sale/purchase/">
+            Purchase rTKN from a Sale
         </SidebarLink>
     </SidebarLinkGroup>
 </div>

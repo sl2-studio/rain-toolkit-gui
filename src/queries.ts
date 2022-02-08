@@ -2,9 +2,11 @@ import { CHAIN_ID, COVALENT_KEY } from "./constants"
 import { provider } from 'svelte-ethers-store'
 import { get } from 'svelte/store'
 import { ethers } from "ethers"
+import type { Provider } from "@ethersproject/abstract-provider"
 
 export const getLogs = async (address, startingBlock, endingBlock) => {
-    startingBlock ??= await get(provider).getBlockNumber() - 999000
+    const _provider = get(provider) as Provider
+    startingBlock ??= await _provider.getBlockNumber() - 999000
     endingBlock ??= 'latest'
     console.log(startingBlock, endingBlock)
     const response = fetch(
@@ -18,10 +20,9 @@ export const decodeLogs = async (logs, topicHash, signature) => {
     logs = logs.filter(log => {
         return log.raw_log_topics[0] == topicHash
     })
+    const _provider = get(provider) as Provider
     return await Promise.all(logs.map(async log => {
-        console.log(log)
-        const tx = await get(provider).getTransaction(log.tx_hash)
-        console.log(tx)
+        const tx = await _provider.getTransaction(log.tx_hash)
         return {
             event: ethers.utils.defaultAbiCoder.decode(signature, log.raw_log_data),
             from: tx.from,

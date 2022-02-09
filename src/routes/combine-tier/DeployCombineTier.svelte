@@ -9,7 +9,7 @@
   import { concat } from 'ethers/lib/utils'
   import { op, selectLte, selectLteLogic, selectLteMode } from '../../utils'
   import { ContractReceipt, ethers } from 'ethers'
-  import { addressValidate } from './combinetier-validation'
+  import { addressValidate } from '../../validation'
   import Select from '../../components/Select.svelte'
 
   let tierContractOne: string,

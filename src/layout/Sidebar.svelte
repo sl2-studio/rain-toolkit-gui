@@ -63,5 +63,15 @@ import SidebarLinkGroup from "../components/SidebarLinkGroup.svelte";
             Purchase rTKN from a Sale
         </SidebarLink>
     </SidebarLinkGroup>
+
+    <SidebarLinkGroup label="Emissions" url="/emissions/*">
+        <SidebarLink url="/emissions/deploy">
+            Deploy an EmissionsERC20
+        </SidebarLink>
+
+        <SidebarLink url="/emissions/claim/">
+            Claim an EmissionsERC20
+        </SidebarLink>
+    </SidebarLinkGroup>
 </div>
 </div>

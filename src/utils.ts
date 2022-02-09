@@ -64,6 +64,75 @@ export function bytify(
   return zeroPad(hexlify(value), bytesLength);
 }
 
+export const paddedUInt256 = (report: BigNumber): string => {
+  if (report.gt(ethers.constants.MaxUint256)) {
+    throw new Error(`${report} exceeds max uint256`);
+  }
+  return "0x" + report.toHexString().substring(2).padStart(64, "0");
+};
+
+export const paddedUInt32 = (number: number | BytesLike | Hexable): string => {
+  if (ethers.BigNumber.from(number).gt(ethers.constants.MaxUint256)) {
+    throw new Error(`${number} exceeds max uint32`);
+  }
+  return hexlify(number).substring(2).padStart(8, "0");
+};
+
+export function arg(valIndex: number): number {
+  let arg = 1;
+  arg <<= 7;
+  arg += valIndex;
+  return arg;
+}
+
+export function tierRange(startTier: number, endTier: number): number {
+  //   op_.val & 0x0f, //     00001111
+  //   op_.val & 0xf0, //     11110000
+
+  if (startTier < 0 || startTier > 8) {
+    throw new Error(`Invalid startTier ${startTier}`);
+  } else if (endTier < 0 || endTier > 8) {
+    throw new Error(`Invalid endTier ${endTier}`);
+  }
+  let range = endTier;
+  range <<= 4;
+  range += startTier;
+  return range;
+}
+
+/**
+ * Constructs the operand for RainVM's `call` opcode by packing 3 numbers into a single byte. All parameters use zero-based counting i.e. an `fnSize` of 0 means to allocate one element (32 bytes) on the stack to define your functions, while an `fnSize` of 3 means to allocate all four elements (4 * 32 bytes) on the stack.
+ *
+ * @param sourceIndex - index of function source in `immutableSourceConfig.sources`
+ * @param loopSize - number of times to subdivide vals, reduces uint size but allows for more vals (range 0-7)
+ * @param valSize - number of vals in outer stack (range 0-7)
+ */
+ export function callSize(
+  sourceIndex: number,
+  loopSize: number,
+  valSize: number
+): number {
+  // CallSize(
+  //   op_.val & 0x07,      // 00000111
+  //   op_.val >> 3 & 0x03, // 00011000
+  //   op_.val >> 5 & 0x07  // 11100000
+  // )
+
+  if (sourceIndex < 0 || sourceIndex > 7) {
+    throw new Error("Invalid fnSize");
+  } else if (loopSize < 0 || loopSize > 3) {
+    throw new Error("Invalid loopSize");
+  } else if (valSize < 0 || valSize > 7) {
+    throw new Error("Invalid valSize");
+  }
+  let callSize = valSize;
+  callSize <<= 2;
+  callSize += loopSize;
+  callSize <<= 3;
+  callSize += sourceIndex;
+  return callSize;
+}
+
 export function selectLte(logic: number, mode: number, length: number): number {
   let lte = logic;
   lte <<= 2;

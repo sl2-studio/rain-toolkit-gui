@@ -48,7 +48,7 @@ const getERC20 = async () => {
 
 const deployBalanceTier = async () => {
     const parsedTiers = tiers.map(value => value ? ethers.utils.parseUnits(value.toString(), erc20decimals) : ethers.constants.MaxInt256)
-    let tx = await $balanceTierFactory["createChild((address,uint256[8]))"]([erc20Contract.address, parsedTiers])
+    let tx = await $balanceTierFactory.createChildTyped([erc20Contract.address, parsedTiers])
     const receipt = await tx.wait()
     receipt.events.forEach(event => {
         if (event.event == 'NewChild') {

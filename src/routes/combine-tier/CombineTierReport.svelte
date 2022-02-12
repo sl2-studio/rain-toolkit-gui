@@ -15,7 +15,7 @@ import {
 import {
     push
 } from 'svelte-spa-router'
-import { CombineTier, CombineTier__factory } from '@beehiveinnovation/rain-protocol/typechain';
+import CombineTierArtifact from "../../abis/CombineTier.json"
 
 export let params : {wild : string}, errorMsg : string, combineTierAddress : string, addressToReport : string, parsedReport : number[], combineTierContract: CombineTier
 
@@ -29,7 +29,7 @@ $: console.log('updated errors', errorMsg)
 const initContract = async () => {
     if (ethers.utils.isAddress(params.wild || '')) {
         // setting up the combine tier contract
-        combineTierContract = CombineTier__factory.connect(params.wild, $signer)
+        combineTierContract = new ethers.Contract(params.wild, CombineTierArtifact.abi, $signer)
 
     } else if (params.wild) {
         errorMsg = 'Not a valid BalanceTier address'

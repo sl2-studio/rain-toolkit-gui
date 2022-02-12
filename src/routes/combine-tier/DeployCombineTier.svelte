@@ -1,8 +1,7 @@
 <script lang="ts" type="module">
   import { signer } from 'svelte-ethers-store'
   import Button from '../../components/Button.svelte'
-  import type { CombineTierFactory } from '@beehiveinnovation/rain-protocol/typechain/CombineTierFactory'
-  import { CombineTierFactory__factory } from '@beehiveinnovation/rain-protocol/typechain/factories/CombineTierFactory__factory'
+  import CombineTierFactoryArtifact from '../../abis/CombineTierFactory.json'
   import FormPanel from '../../components/FormPanel.svelte'
   import Input from '../../components/Input.svelte'
   import { BLOCK_EXPLORER, COMBINE_TIER_FACTORY_ADDRESS } from '../../constants'
@@ -21,8 +20,10 @@
   const enum Opcode {
     END,
     VAL,
+    DUP,
     ZIPMAP,
     BLOCK_NUMBER,
+    BLOCK_TIMESTAMP,
     REPORT,
     NEVER,
     ALWAYS,
@@ -49,10 +50,7 @@
   $: console.log(tierContractOne, tierContractTwo)
 
   const deployCombineTier = async () => {
-    combineTierFactory = CombineTierFactory__factory.connect(
-      COMBINE_TIER_FACTORY_ADDRESS,
-      $signer,
-    ) as CombineTierFactory
+    combineTierFactory = new ethers.Contract(COMBINE_TIER_FACTORY_ADDRESS, CombineTierFactoryArtifact.abi, $signer)
 
     // the tier contracts to combine
     const constants = [
@@ -61,23 +59,20 @@
     ]
 
     const source = concat([
-      // the combination logic and mode
-      op(Opcode.SELECT_LTE, selectLte(logicValue.value, modeValue.value, 2)),
-      // second report
-      op(Opcode.REPORT),
-      op(Opcode.VAL, 0), // use the tier contract from constants[0]
+      op(Opcode.VAL, 1),
       op(Opcode.ACCOUNT),
-      // first report
       op(Opcode.REPORT),
-      op(Opcode.VAL, 1), // use the tier contract from constants[1]
+      op(Opcode.VAL, 0),
       op(Opcode.ACCOUNT),
-      // block
+      op(Opcode.REPORT),
       op(Opcode.BLOCK_NUMBER),
-    ])
+      op(
+        Opcode.SELECT_LTE,
+        selectLte(logicValue.value, modeValue.value, 2)
+      ),
+    ]);
 
-    const tx = await combineTierFactory[
-      'createChild((bytes[],uint256[],uint256,uint256))'
-    ]({
+    const tx = await combineTierFactory.createChildTyped({
       sources: [source],
       constants,
       stackLength: 8,
@@ -113,7 +108,7 @@
   <FormPanel heading="CombineTier settings">
     <Input
       type="text"
-      placeholder="Token address"
+      placeholder="Tier address"
       bind:value={tierContractOne}
       validator={addressValidate}>
       <span slot="label">Tier contract #1</span>
@@ -121,7 +116,7 @@
 
     <Input
       type="text"
-      placeholder="Token address"
+      placeholder="Tier address"
       bind:value={tierContractTwo}
       validator={addressValidate}>
       <span slot="label">Tier contract #2</span>

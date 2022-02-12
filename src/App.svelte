@@ -18,6 +18,13 @@ import DeploySale from './routes/sale/DeploySale.svelte';
 import PurchaseSale from './routes/sale/PurchaseSale.svelte';
 import DeployEmissions from './routes/emissions-erc20/DeployEmissions.svelte';
 import ClaimEmissions from './routes/emissions-erc20/ClaimEmissions.svelte';
+import { initClient } from '@urql/svelte';
+
+
+const client = initClient({
+  url: 'https://api.thegraph.com/subgraphs/name/beehive-innovation/rain-protocol-v2-mumbai',
+});
+
 
 let routes = {}
 

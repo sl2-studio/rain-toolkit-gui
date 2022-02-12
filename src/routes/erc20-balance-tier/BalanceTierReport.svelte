@@ -25,7 +25,13 @@ import {
 import {
     push
 } from 'svelte-spa-router'
-import { initBalanceTier } from './erc20-balance-tier';
+import {
+    initBalanceTier
+} from './erc20-balance-tier';
+import {
+    operationStore,
+    query
+} from '@urql/svelte'
 
 export let params
 
@@ -34,37 +40,57 @@ $: console.log('params', params)
 
 let balanceTierContract,
     erc20Contract,
-    erc20Name,
-    erc20Address,
-    erc20Symbol,
-    erc20Decimals,
     errorMsg,
     addressToReport,
     parsedReport,
-    tierValues,
     addressBalance,
     balanceTierAddress
 
-$: if (params.wild) {
-    initContract()
-}
-$: console.log('updated errors', errorMsg)
-const initContract = async () => {
-    if (ethers.utils.isAddress(params.wild)) {
-        // setting up the balance tier contract
-        ({
-            balanceTierContract,
-            tierValues,
-            errorMsg,
-            erc20Contract,
-            erc20Name,
-            erc20Decimals,
-            erc20Address,
-            erc20Symbol
-        } = await initBalanceTier(params.wild))
-    } else if (params.wild) {
-        errorMsg = 'Not a valid BalanceTier address'
+const balanceTier = operationStore(`
+query ($balanceTierAddress: Bytes!) {
+  erc20BalanceTiers (where: {id: $balanceTierAddress}) {
+    id
+    address
+    deployBlock
+    deployTimestamp
+    deployer
+    token {
+      id
+      name
+      symbol
+      decimals
     }
+    tierValues
+  }
+}
+`,
+{balanceTierAddress},
+{
+    pause: true,
+    requestPolicy: "network-only"
+})
+
+query(balanceTier)
+
+$: if (params.wild) {
+    runQuery()
+}
+
+const runQuery = () => {
+    console.log(params.wild)
+    $balanceTier.variables.balanceTierAddress = params.wild
+    $balanceTier.context.pause = false
+    $balanceTier.reexecute()
+}
+
+$: _balanceTier = $balanceTier.data?.erc20BalanceTiers[0]
+
+$: if (_balanceTier) {initContracts()}
+$: console.log(_balanceTier)
+
+const initContracts = async () => {
+    balanceTierContract = new ethers.Contract(_balanceTier.address, BalanceTierAbi.abi, $signer)
+    erc20Contract = new ethers.Contract(_balanceTier.token.id, ERC20Abi.abi, $signer)
 }
 
 const report = async () => {
@@ -96,13 +122,13 @@ const reportMyAddress = () => {
         </span>
         {/if}
     </div>
-    {#if ethers.utils.isAddress(params.wild) && params.wild && !errorMsg}
+    {#if !$balanceTier.fetching && !$balanceTier.error }
     <FormPanel heading="ERC20 used for this BalanceTier">
         <div class="flex flex-col gap-y-2 mb-4">
             <div class="text-gray-400 flex flex-col">
-                <span>Name: {erc20Name}</span>
-                <span>Symbol: {erc20Symbol}</span>
-                <span>Address: {erc20Address}</span>
+                <span>Name: {_balanceTier.token.name}</span>
+                <span>Symbol: {_balanceTier.token.symbol}</span>
+                <span>Address: {_balanceTier.token.id}</span>
             </div>
         </div>
     </FormPanel>
@@ -115,12 +141,11 @@ const reportMyAddress = () => {
             <Button shrink on:click={report}>Get a report</Button>
             <Button shrink on:click={reportMyAddress}>Report my address</Button>
         </div>
-        {#if tierValues}
         <div class="flex flex-col gap-y-2">
             <span class="text-lg">Token values for this BalanceTier:</span>
-            {#each tierValues as value, i}
+            {#each _balanceTier.tierValues as value, i}
             <span class="text-gray-400">
-                Tier {i+1}: {ethers.utils.formatUnits(value, erc20Decimals)}
+                Tier {i+1}: {ethers.utils.formatUnits(value, _balanceTier.token.decimals)}
                 {#if parsedReport?.[i] == 0}
                 ✅
                 {:else if parsedReport?.[i] > 0}
@@ -130,8 +155,7 @@ const reportMyAddress = () => {
             {/each}
         </div>
         {#if addressBalance}
-        <span>Balance for {addressToReport}: {ethers.utils.formatUnits(addressBalance, erc20Decimals)} {erc20Symbol}</span>
-        {/if}
+        <span>Balance for {addressToReport}: {ethers.utils.formatUnits(addressBalance, _balanceTier.token.decimals)} {_balanceTier.token.symbol}</span>
         {/if}
     </FormPanel>
     {:else if errorMsg}

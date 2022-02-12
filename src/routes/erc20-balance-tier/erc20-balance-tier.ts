@@ -29,7 +29,9 @@ export const initBalanceTier = async (address: string) => {
         return
     }
     // setting up the erc20 contract
+    console.log(balanceTierContract)
     const _erc20address = await balanceTierContract.erc20()
+    console.log(_erc20address)
     const _erc20contract = new ethers.Contract(_erc20address, ERC20Abi.abi)
     erc20Contract = _erc20contract.connect(get(signer))
     erc20Name = await erc20Contract.name()

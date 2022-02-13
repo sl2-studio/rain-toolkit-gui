@@ -1,13 +1,12 @@
 <script lang="ts" type="module">
 import ERC721BalanceTierReport from './routes/erc721-balance-tier/ERC721BalanceTierReport.svelte';
 import { connected } from 'svelte-ethers-store';
-import Contracts from './init-stores/Contracts.svelte';
 import Router from 'svelte-spa-router'
 import DeployBalanceTier from './routes/erc20-balance-tier/DeployBalanceTier.svelte';
 import BalanceTierReport from './routes/erc20-balance-tier/BalanceTierReport.svelte';
 import Home from './routes/Home.svelte';
-import DeployGatedMinter from './routes/gated-minter/DeployGatedMinter.svelte';
-import MintNft from './routes/gated-minter/MintNFT.svelte';
+import DeployGatedNFT from './routes/gated-nft/DeployGatedNFT.svelte';
+import MintNft from './routes/gated-nft/MintNFT.svelte';
 import Header from './layout/Header.svelte';
 import Sidebar from './layout/Sidebar.svelte';
 import ListBalanceTier from './routes/erc20-balance-tier/ListBalanceTier.svelte';
@@ -41,8 +40,8 @@ routes = {
 	'/combinetier/deploy': DeployCombineTier,
 	'/combinetier/report/*': CombineTierReport,
 
-	'/gatededition/deploy/*': DeployGatedMinter,
-	'/gatededition/mint/*': MintNft,
+	'/gatednft/deploy/*': DeployGatedNFT,
+	'/gatednft/mint/*': MintNft,
 
 	'/sale/deploy': DeploySale,
 	'/sale/purchase/*': PurchaseSale,
@@ -76,5 +75,3 @@ routes = {
 	</div>
 	
 </main>
-
-<Contracts />

@@ -1,5 +1,9 @@
 import { isAddress } from "ethers/lib/utils"
 
+export const defaultValidator = () => {
+    return true
+}
+
 export const tierValidate = (value) => {
     if (value == "") {
         return { error: "Can't be blank" }

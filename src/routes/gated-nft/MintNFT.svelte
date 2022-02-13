@@ -7,7 +7,7 @@ import {
     ethers
 } from "ethers";
 
-import GatedMinterArtifact from "../../abis/ApprovingSingleEditionMintable.json"
+import GatedNFTArtifact from "../../abis/GatedNFT.json"
 import Button from '../../components/Button.svelte';
 import FormPanel from '../../components/FormPanel.svelte';
 import Input from '../../components/Input.svelte';
@@ -23,21 +23,21 @@ $: if (params.wild) { initMinter() }
 
 const initMinter = async () => {
     if (params.wild && ethers.utils.isAddress(params.wild)) {
-        const _gatedMinter = new ethers.Contract(params.wild, GatedMinterArtifact.abi)
-        gatedMinter = _gatedMinter.connect($signer)
+        gatedMinter = new ethers.Contract(params.wild, GatedNFTArtifact.abi, $signer)
     }
 }
 
-const mintEdition = async () => {
+const mint = async () => {
     mintError = null
     if (ethers.utils.isAddress(recipientAddress)) {
         let receipt, tx
         try {
-            tx = await gatedMinter.mintEdition(recipientAddress)
+            tx = await gatedMinter.mint(recipientAddress)
             receipt = await tx.wait()
             return receipt
         } catch (error) {
             console.log(error)
+            throw error
         }
     } else {
         mintError = "Not a valid Ethereum address."
@@ -45,12 +45,12 @@ const mintEdition = async () => {
 }
 
 const handleClick = () => {
-    mintPromise = mintEdition()
+    mintPromise = mint()
 }
 
 const mintForSigner = () => {
     recipientAddress = $signerAddress
-    mintPromise = mintEdition()
+    mintPromise = mint()
 }
 
 // NFT contract: 0x8123b0891639E9Ca7a02db53a70990c9b7EEB271
@@ -101,7 +101,7 @@ const mintForSigner = () => {
     {:else if !params.wild}
     <FormPanel>
         <Input bind:value={gatedNFTaddress} type="string" placeholder="Contract address" />
-        <Button shrink on:click={()=>{push(`/gatededition/mint/${gatedNFTaddress}`)}}>
+        <Button shrink on:click={()=>{push(`/gatednft/mint/${gatedNFTaddress}`)}}>
             Load
         </Button>
     </FormPanel>

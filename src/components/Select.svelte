@@ -1,6 +1,13 @@
 <script>
-  export let value
+  export let value = 0
   export let items = []
+
+  export const validate = () => {
+    return {
+            ok: true,
+            value
+      }
+  }
 </script>
 
 <div class="gap-y-2 flex flex-col w-full">

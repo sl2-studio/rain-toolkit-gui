@@ -8,23 +8,10 @@ import {
     formatUnits
 } from "ethers/lib/utils";
 import {
-    onMount
-} from "svelte";
-import {
     push
 } from "svelte-spa-router";
 import Button from "../../components/Button.svelte";
 import FormPanel from "../../components/FormPanel.svelte";
-import {
-    BALANCE_TIER_FACTORY_ADDRESS
-} from "../../constants";
-import {
-    decodeLogs,
-    getLogs
-} from "../../queries";
-import {
-    initBalanceTier
-} from "./erc20-balance-tier";
 import {
     operationStore,
     query

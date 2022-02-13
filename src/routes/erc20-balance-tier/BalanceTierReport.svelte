@@ -5,15 +5,7 @@ import {
 } from 'svelte-ethers-store'
 import {
     ethers,
-    utils
 } from 'ethers'
-import {
-    formatUnits,
-    isAddress
-} from 'ethers/lib/utils'
-import {
-    onMount
-} from 'svelte'
 import FormPanel from '../../components/FormPanel.svelte'
 import BalanceTierAbi from '../../abis/ERC20BalanceTier.json'
 import ERC20Abi from '../../abis/ReserveToken.json'
@@ -26,17 +18,11 @@ import {
     push
 } from 'svelte-spa-router'
 import {
-    initBalanceTier
-} from './erc20-balance-tier';
-import {
     operationStore,
     query
 } from '@urql/svelte'
 
 export let params
-
-$: console.log('signer address', $signerAddress)
-$: console.log('params', params)
 
 let balanceTierContract,
     erc20Contract,
@@ -77,7 +63,6 @@ $: if (params.wild) {
 }
 
 const runQuery = () => {
-    console.log(params.wild)
     $balanceTier.variables.balanceTierAddress = params.wild
     $balanceTier.context.pause = false
     $balanceTier.reexecute()
@@ -86,7 +71,6 @@ const runQuery = () => {
 $: _balanceTier = $balanceTier.data?.erc20BalanceTiers[0]
 
 $: if (_balanceTier) {initContracts()}
-$: console.log(_balanceTier)
 
 const initContracts = async () => {
     balanceTierContract = new ethers.Contract(_balanceTier.address, BalanceTierAbi.abi, $signer)

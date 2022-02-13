@@ -74,7 +74,7 @@ Loading...
         </div>
         <div class="flex flex-row gap-x-2">
             <Button on:click={push(`/balancetier/report/${balanceTier.address}`)}>Report</Button>
-            <Button on:click={push(`/gatededition/deploy/${balanceTier.address}`)}>Gate an edition</Button>
+            <Button on:click={push(`/gatednft/deploy/${balanceTier.address}`)}>Gate an edition</Button>
         </div>
     </FormPanel>
     {/each}

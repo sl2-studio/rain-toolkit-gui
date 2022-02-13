@@ -106,13 +106,13 @@ const reportMyAddress = () => {
         </span>
         {/if}
     </div>
-    {#if !$balanceTier.fetching && !$balanceTier.error }
+    {#if !$balanceTier.fetching && !$balanceTier.error && $balanceTier.data }
     <FormPanel heading="ERC20 used for this BalanceTier">
         <div class="flex flex-col gap-y-2 mb-4">
             <div class="text-gray-400 flex flex-col">
-                <span>Name: {_balanceTier.token.name}</span>
-                <span>Symbol: {_balanceTier.token.symbol}</span>
-                <span>Address: {_balanceTier.token.id}</span>
+                <span>Name: {_balanceTier?.token.name}</span>
+                <span>Symbol: {_balanceTier?.token.symbol}</span>
+                <span>Address: {_balanceTier?.token.id}</span>
             </div>
         </div>
     </FormPanel>

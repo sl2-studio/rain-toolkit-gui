@@ -13,15 +13,11 @@ import {
 } from 'ethers'
 import FormPanel from '../../components/FormPanel.svelte'
 import Button from '../../components/Button.svelte'
-import {
-    getNewChildFromReceipt
-} from '../../utils';
 import { BLOCK_EXPLORER } from '../../constants'
 
 let erc20Address, erc20AddressError, erc20Contract, erc20name, erc20symbol, erc20balance, erc20decimals
 let balanceTierAddress, deployPromise
 let tiers = []
-$: console.log(tiers)
 
 $: if (erc20Address) {
     getERC20()
@@ -56,7 +52,6 @@ const deployBalanceTier = async () => {
         }
     })
     return receipt
-    // balanceTierAddress = getNewChildFromReceipt(receipt, $balanceTierFactory)
 }
 
 const handleClick = () => {
@@ -83,6 +78,7 @@ const handleClick = () => {
             {:else if erc20name && erc20balance}
             <div class="flex flex-col gap-y-2 font-light text-gray-300">
                 <span>Token name: {erc20name}</span>
+                <span>Token symbol: {erc20symbol}</span>
                 <span>Your balance: {erc20balance.toString()}</span>
             </div>
             {/if}

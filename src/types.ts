@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers"
+import { BigNumber, BigNumberish, BytesLike } from "ethers"
 
 export type ERC20Config = {
     /// Name as defined by Open Zeppelin ERC20.
@@ -13,15 +13,22 @@ export type ERC20Config = {
     initialSupply : BigNumber
 }
 
+export type StateConfigStruct = {
+    sources: BytesLike[];
+    constants: BigNumberish[];
+    stackLength: BigNumberish;
+    argumentsLength: BigNumberish;
+  };
+
 export type SaleConfig = {
-    vmStateConfig : any,
-    recipient : string,
-    reserve : string,
-    startBlock : number,
-    cooldownDuration : number,
-    saleTimeout : number,
-    minimumRaise : BigNumber,
-    dustSize : number,
+    canStartStateConfig: StateConfigStruct;
+    canEndStateConfig: StateConfigStruct;
+    calculatePriceStateConfig: StateConfigStruct;
+    recipient: string;
+    reserve: string;
+    cooldownDuration: BigNumberish;
+    minimumRaise: BigNumberish;
+    dustSize: BigNumberish;
 }
 
 export type SaleRedeemableERC20Config = {

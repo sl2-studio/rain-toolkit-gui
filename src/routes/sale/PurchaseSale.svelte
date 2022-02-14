@@ -17,6 +17,8 @@ import {
 import Button from '../../components/Button.svelte'
 import FormPanel from '../../components/FormPanel.svelte'
 import Input from '../../components/Input.svelte'
+import MyBuys from './MyBuys.svelte'
+import MyRefunds from './MyRefunds.svelte';
 import {
     BuyConfig,
     initSaleContract
@@ -29,7 +31,7 @@ export let params: {
 let sale, reserve, token
 let errorMsg, saleAddress
 let units, totalPrice
-let showBuy, initPromise, calcPricePromise, buyPromise, approvePromise
+let showBuy, initPromise, calcPricePromise, buyPromise, approvePromise, startPromise, endPromise
 
 $: if (params.wild) {
     initPromise = initContract()
@@ -46,6 +48,16 @@ const initContract = async () => {
 const calculatePrice = async () => {
     const _units = parseUnits(units.toString(), token.erc20decimals.toString())
     return await sale.calculatePrice(_units)
+}
+
+const startSale = async () => {
+    const tx = await sale.start()
+    await tx.wait()
+}
+
+const endSale = async () => {
+    const tx = await sale.end()
+    await tx.wait()
 }
 
 const approve = async () => {
@@ -101,31 +113,38 @@ const buy = async () => {
     {#await initPromise}
     Loading...
     {:then}
-    <FormPanel heading="rTKN">
-        <div class="flex flex-col gap-y-2">
-            <span>Name: {token.erc20name}</span>
-            <span>Symbol: {token.erc20symbol}</span>
-            <span>
-                Total supply: {formatUnits(token.erc20totalSupply, token.erc20decimals.toString())}
-            </span>
-            <span>
-                Your balance: {formatUnits(token.erc20balance, token.erc20decimals.toString())}
-            </span>
+    <div class="grid grid-cols-2 gap-x-4">
+        <FormPanel heading="rTKN">
+            <div class="flex flex-col gap-y-2">
+                <span>Name: {token.erc20name}</span>
+                <span>Symbol: {token.erc20symbol}</span>
+                <span>
+                    Total supply: {formatUnits(token.erc20totalSupply, token.erc20decimals.toString())}
+                </span>
+                <span>
+                    Your balance: {formatUnits(token.erc20balance, token.erc20decimals.toString())}
+                </span>
+            </div>
+        </FormPanel>
+        <FormPanel heading="Reserve">
+            <div class="flex flex-col gap-y-2">
+                <span>Name: {reserve.erc20name}</span>
+                <span>Symbol: {reserve.erc20symbol}</span>
+                <span>
+                    Total supply: {formatUnits(reserve.erc20totalSupply, reserve.erc20decimals.toString())}
+                </span>
+                <span>
+                    Your balance: {formatUnits(reserve.erc20balance, reserve.erc20decimals.toString())}
+                </span>
+            </div>
+        </FormPanel>
+    </div>
+    <FormPanel>
+        <div class="grid grid-cols-2 gap-x-2 w-full">
+            <Button on:click={()=>{startPromise = startSale()}}>Start sale</Button>
+            <Button on:click={()=>{endPromise = endSale()}}>End sale</Button>
         </div>
     </FormPanel>
-    <FormPanel heading="Reserve">
-        <div class="flex flex-col gap-y-2">
-            <span>Name: {reserve.erc20name}</span>
-            <span>Symbol: {reserve.erc20symbol}</span>
-            <span>
-                Total supply: {formatUnits(reserve.erc20totalSupply, reserve.erc20decimals.toString())}
-            </span>
-            <span>
-                Your balance: {formatUnits(reserve.erc20balance, reserve.erc20decimals.toString())}
-            </span>
-        </div>
-    </FormPanel>
-
     <FormPanel heading="Buy rTKN">
         {#if !showBuy}
         <Input type="number" bind:value={units}>
@@ -157,34 +176,42 @@ const buy = async () => {
         {/if}
 
         {#if showBuy}
-            <span>
-                Buying: {units} {token.erc20symbol}
-            </span>
-            {#await calculatePrice()}
-            <span>Calculating price...</span>
-            {:then price}
-            <span>Price: {formatUnits(price, reserve.erc20decimals)} {reserve.erc20symbol} per {token.erc20symbol}</span>
-            <span>Total: {formatUnits(price.mul(BigNumber.from(units)), reserve.erc20decimals)} {reserve.erc20symbol}</span>
-            {/await}
-            {#if !approvePromise}
-                <Button shrink on:click={()=>{approvePromise = approve()}}>Approve</Button>
-            {:else}
-                {#await approvePromise}
-                    Approving...
-                {:then}
-                    {#if !buyPromise}
-                        <Button shrink on:click={()=>{buyPromise = buy()}}>Confirm Buy</Button>
-                    {:else}
-                        {#await buyPromise}
-                        Confirming...
-                        {:then}
-                        Buy complete! Refresh to see your balance.
-                        {/await}
-                    {/if}
-                {/await}
-            {/if}
+        <span>
+            Buying: {units} {token.erc20symbol}
+        </span>
+        {#await calculatePrice()}
+        <span>Calculating price...</span>
+        {:then price}
+        <span>Price: {formatUnits(price, reserve.erc20decimals)} {reserve.erc20symbol} per {token.erc20symbol}</span>
+        <span>Total: {formatUnits(price.mul(BigNumber.from(units)), reserve.erc20decimals)} {reserve.erc20symbol}</span>
+        {/await}
+        {#if !approvePromise}
+        <Button shrink on:click={()=>{approvePromise = approve()}}>Approve</Button>
+        {:else}
+        {#await approvePromise}
+        Approving...
+        {:then}
+        {#if !buyPromise}
+        <Button shrink on:click={()=>{buyPromise = buy()}}>Confirm Buy</Button>
+        {:else}
+        {#await buyPromise}
+        Confirming...
+        {:then}
+        Buy complete! Refresh to see your balance.
+        {/await}
+        {/if}
+        {/await}
+        {/if}
         {/if}
     </FormPanel>
     {/await}
+    {#if sale}
+    <FormPanel>
+        <MyBuys saleContract={sale}/>
+    </FormPanel>
+    <FormPanel>
+        <MyRefunds saleContract={sale}/>
+    </FormPanel>
+    {/if}
     {/if}
 </div>

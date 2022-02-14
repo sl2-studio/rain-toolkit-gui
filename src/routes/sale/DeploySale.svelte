@@ -23,9 +23,11 @@ import {
     validateFields
 } from "../../utils";
 import {
+afterTimestampConfig,
     Opcode,
     saleDeploy
 } from './sale';
+import {DatePicker, CalendarStyle} from "@beyonk/svelte-datepicker"
 
 let fields: any = {}
 let deployPromise
@@ -45,6 +47,9 @@ let symbol = "rTKN"
 let initialSupply = 1000
 let tier = "0xC064055DFf6De32f44bB7cCB0ca59Cbd8434B2de"
 let minimumStatus = 0
+let raiseRange
+
+$: console.log(Math.floor(raiseRange?.[0].$d.getTime()/1000))
 
 // @TODO write validators
 const defaultValidator = () => {
@@ -71,7 +76,9 @@ const deploy = async () => {
     if (validationResult) {
         ([sale, token] = await saleDeploy(
             $signer, {
-                vmStateConfig: {
+                canStartStateConfig: afterTimestampConfig(Math.floor(raiseRange?.[0].$d.getTime()/1000)),
+                canEndStateConfig: afterTimestampConfig(Math.floor(raiseRange?.[1].$d.getTime()/1000)),
+                calculatePriceStateConfig: {
                     sources,
                     constants,
                     stackLength: 1,
@@ -79,9 +86,7 @@ const deploy = async () => {
                 },
                 recipient: fieldValues.recipient,
                 reserve: fieldValues.reserve,
-                startBlock: parseInt(fieldValues.startBlock),
                 cooldownDuration: parseInt(fieldValues.cooldownDuration),
-                saleTimeout: parseInt(fieldValues.saleTimeout),
                 minimumRaise: parseUnits(fieldValues.minimumRaise.toString(), reserveErc20.erc20decimals),
                 dustSize: 0,
             }, {
@@ -142,21 +147,15 @@ $: if (reserve && fields?.reserve) {
         </span>
         </Input>
 
-        <Input type="number" bind:this={fields.startBlock} bind:value={startBlock} validator={defaultValidator}>
-        <span slot="label">
-            Start block:
+        <span class="w-full flex flex-col gap-y-3 z-20">
+            <span>Raise start/end time</span>
+            <DatePicker styling={new CalendarStyle({buttonWidth: "100%"})} bind:selected={raiseRange} time={true} range={true} placeholder="Select date/time" format="DD / MM / YYYY hh:mm"></DatePicker>
+            <span></span>
         </span>
-        </Input>
 
         <Input type="number" bind:this={fields.cooldownDuration} bind:value={cooldownDuration} validator={defaultValidator}>
         <span slot="label">
             Cool down duration (in blocks):
-        </span>
-        </Input>
-
-        <Input type="number" bind:this={fields.saleTimeout} bind:value={saleTimeout} validator={defaultValidator}>
-        <span slot="label">
-            Sale timeout (in blocks):
         </span>
         </Input>
 

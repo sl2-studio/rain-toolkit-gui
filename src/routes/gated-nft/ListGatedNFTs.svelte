@@ -60,7 +60,8 @@ Loading...
                 <span>{gatedNFT.description}</span>
             </div>
             <Button on:click={push(`/gatednft/mint/${gatedNFT.id}`)}>Mint</Button>
-            </FormPanel>
-            {/each}
         </div>
-        {/if}
+    </FormPanel>
+    {/each}
+</div>
+{/if}

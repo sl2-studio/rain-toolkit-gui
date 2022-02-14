@@ -44,13 +44,17 @@ import SidebarLinkGroup from "../components/SidebarLinkGroup.svelte";
         </SidebarLink>
     </SidebarLinkGroup>
 
-    <SidebarLinkGroup label="Gated Editions" url="/gatednft/*">
+    <SidebarLinkGroup label="GatedNFT" url="/gatednft/*">
         <SidebarLink url="/gatednft/deploy/">
             Deploy a Gated NFT
         </SidebarLink>
 
         <SidebarLink url="/gatednft/mint/">
             Mint a Gated NFT
+        </SidebarLink>
+
+        <SidebarLink url="/gatednft/list">
+            List deployed GatedNFTs
         </SidebarLink>
     </SidebarLinkGroup>
 

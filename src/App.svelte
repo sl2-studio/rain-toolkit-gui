@@ -1,4 +1,5 @@
 <script lang="ts" type="module">
+	import ListGatedNFTs from './routes/gated-nft/ListGatedNFTs.svelte';
 import ERC721BalanceTierReport from './routes/erc721-balance-tier/ERC721BalanceTierReport.svelte';
 import { connected } from 'svelte-ethers-store';
 import Router from 'svelte-spa-router'
@@ -41,6 +42,7 @@ routes = {
 	'/combinetier/report/*': CombineTierReport,
 
 	'/gatednft/deploy/*': DeployGatedNFT,
+	'/gatednft/list': ListGatedNFTs,
 	'/gatednft/mint/*': MintNft,
 
 	'/sale/deploy': DeploySale,

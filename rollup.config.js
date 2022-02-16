@@ -8,6 +8,7 @@ import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
 import json from '@rollup/plugin-json';
 import replace from '@rollup/plugin-replace';
+import alias from '@rollup/plugin-alias';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -56,6 +57,12 @@ export default {
 				dev: !production
 			},
 		}),
+		alias({
+			entries: [
+			  { find: 'components', replacement: 'src/components' },
+			  { find: 'abis', replacement: 'src/abis' }
+			]
+		  }),
 		// we'll extract any component CSS out into
 		// a separate file - better for performance
 		css({ output: 'bundle.css' }),
@@ -67,7 +74,7 @@ export default {
 		// https://github.com/rollup/plugins/tree/master/packages/commonjs
 		resolve({
 			browser: true,
-			dedupe: ['svelte']
+			dedupe: ['svelte', 'svelte/transition', 'svelte/interal']
 		}),
 		commonjs(),
 		production ? replace({ 'process.env.NODE_ENV': JSON.stringify('production') }) : replace({ 'process.env.NODE_ENV': JSON.stringify('development') }),

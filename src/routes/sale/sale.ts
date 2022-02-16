@@ -139,3 +139,16 @@ export const afterTimestampConfig = (timestamp) => {
     argumentsLength: 0,
   };
 };
+
+export const getAfterTimestampDate = (stateConfig) => {
+  if (stateConfig.sources[0] === "0x050001000a00") {
+    return new Date(parseInt(stateConfig.constants[0])*1000)
+  }
+}
+
+export const saleStatuses = [
+  'Pending',
+  'Active',
+  'Success',
+  'Fail'
+]

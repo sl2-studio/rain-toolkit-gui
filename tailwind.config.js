@@ -12,6 +12,9 @@ module.exports = {
     extend: {
       colors: {
         gray: colors.stone
+      },
+      width: {
+        '600': '600px'
       }
     },
   },

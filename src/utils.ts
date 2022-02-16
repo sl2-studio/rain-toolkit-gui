@@ -197,3 +197,44 @@ export const validateFields = (fields: any[]) => {
     fieldValues
   }
 }
+
+// to split a timestamp into the separate components
+export function splitTime(timestamp) {
+  const msPerMinute = 60 * 1000;
+  const msPerHour = msPerMinute * 60;
+  const msPerDay = msPerHour * 24;
+  const msPerWeek = msPerDay * 7;
+  const msPerMonth = msPerDay * 30;
+  const msPerYear = msPerDay * 365;
+
+  let weeks = Math.floor(timestamp/msPerWeek)
+  let lessWeeks = timestamp % msPerWeek
+  let days = Math.floor(lessWeeks/msPerDay)
+  let lessDays = lessWeeks % msPerDay
+  let hours = Math.floor(lessDays/msPerHour)
+  let lessHours = lessDays % msPerHour
+  let minutes = Math.floor(lessHours/msPerMinute)
+  let lessMinutes = lessHours % msPerMinute
+  let seconds = Math.floor(lessMinutes/1000)
+
+  return [weeks, days, hours, minutes, seconds]
+}
+
+export function timeString(timestamp, options?) {
+  const timeArray = splitTime(Math.abs(timestamp))
+  const weeks = timeArray[0] ? timeArray[0] + 'w ' : ''
+  const days = timeArray[1] ? timeArray[1] + 'd ' : ''
+  const hours = timeArray[2] ? timeArray[2] + 'h ' : ''
+  const minutes = timeArray[3] ? timeArray[3] + 'm ' : ''
+  const seconds = timeArray[4] ? timeArray[4] + 's' : ''
+
+  const strings = new Map([
+      ['wdhms', weeks + days + hours + minutes + seconds],
+      ['wdhm', weeks + days + hours + minutes],
+      ['wdh', weeks + days + hours],
+      ['wd', weeks + days],
+      ['w', weeks],
+  ])
+
+  return strings.get(options) || weeks + days + hours + minutes + seconds
+}

@@ -1,5 +1,5 @@
 <script lang="ts" type="module">
-	import ListGatedNFTs from './routes/gated-nft/ListGatedNFTs.svelte';
+import ListGatedNFTs from './routes/gated-nft/ListGatedNFTs.svelte';
 import ERC721BalanceTierReport from './routes/erc721-balance-tier/ERC721BalanceTierReport.svelte';
 import { connected } from 'svelte-ethers-store';
 import Router from 'svelte-spa-router'
@@ -19,7 +19,8 @@ import PurchaseSale from './routes/sale/PurchaseSale.svelte';
 import DeployEmissions from './routes/emissions-erc20/DeployEmissions.svelte';
 import ClaimEmissions from './routes/emissions-erc20/ClaimEmissions.svelte';
 import { initClient } from '@urql/svelte';
-
+import Modal from 'svelte-simple-modal'
+import { fly } from 'svelte/transition';
 
 const client = initClient({
   url: 'https://api.thegraph.com/subgraphs/name/beehive-innovation/rain-protocol-v2-mumbai',
@@ -65,6 +66,14 @@ routes = {
 	@tailwind utilities;
 </style>
 
+<Modal
+unstyled={true}
+closeButton={false}
+classWindow="relative max-w-full max-h-full my-2 mx-auto text-white rounded-xl shadow-md bg-gray-800"
+classBg="fixed top-0 left-0 w-screen h-screen flex flex-col justify-center bg-gray-900 bg-opacity-75 z-50 backdrop-blur"
+classWindowWrap="relative m-2 max-h-full flex flex-col"
+classContent="p-6"
+>
 <Header />
 <main class="text-gray-50 flex relative">	
 	<Sidebar />
@@ -77,3 +86,4 @@ routes = {
 	</div>
 	
 </main>
+</Modal>

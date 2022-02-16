@@ -1,35 +1,38 @@
 <script lang="ts">
-  import { signer } from 'svelte-ethers-store'
-  import Button from '../../components/Button.svelte'
+	import Button from 'components/Button.svelte';
+  import Refund from './Refund.svelte'
   import { operationStore, query } from '@urql/svelte'
-  import { formatUnits, getAddress } from 'ethers/lib/utils'
-  import { BigNumber, ethers } from 'ethers'
-  import { BLOCK_EXPLORER } from '../../constants'
-  import ReserveTokenArtifact from '../../abis/ReserveToken.json'
+  import { formatUnits } from 'ethers/lib/utils'
+  import { signerAddress } from 'svelte-ethers-store'
+  import { getContext } from 'svelte'
+  import { fade } from 'svelte/transition'
 
+  const { open } = getContext('simple-modal')
   export let saleContract
 
-  let saleAddress, refundPromise, approvePromise
+  let saleContractAddress, sender
 
   const buysQuery = operationStore(
     `
-query ($saleAddress: Bytes!) {
-  sales (where: {id: $saleAddress}) {
-    id
-    deployer
-    token {
-        id
-      symbol
-      name
-      decimals
-    }
-    reserve {
-      id
-      symbol
-      name
-      decimals
-    }
-    buys {
+query ($saleContractAddress: Bytes!, $sender: Bytes!) {
+  saleBuys (where: {saleContractAddress: $saleContractAddress, sender: $sender}) {
+      sender
+      saleContractAddress
+      saleContract {
+          token {
+              id
+              name
+              symbol
+              decimals
+          }
+          reserve {
+              id
+              name
+              symbol
+              decimals
+          }
+          cooldownDuration
+      }
       minimumUnits
       desiredUnits
       maximumPrice
@@ -44,51 +47,24 @@ query ($saleAddress: Bytes!) {
         price
       }
     }
-    saleStatus
-  }
 }
 `,
     {
-      saleAddress,
+      saleContractAddress,
+      sender,
     },
     {
       requestPolicy: 'network-only',
     },
   )
 
-  $buysQuery.variables.saleAddress = saleContract.address.toLowerCase()
+  $buysQuery.variables.saleContractAddress = saleContract.address.toLowerCase()
+  $buysQuery.variables.sender = $signerAddress.toLowerCase()
   query(buysQuery)
-
-  $: reserve = $buysQuery.data?.sales[0].reserve
-  $: token = $buysQuery.data?.sales[0].token
-
-  $: console.log($buysQuery)
-
-  const approve = async (receipt) => {
-    const rTKN = new ethers.Contract(
-      $buysQuery.data.sales[0].token.id,
-      ReserveTokenArtifact.abi,
-      $signer,
-    )
-    const tx = await rTKN.approve(
-      saleContract.address,
-      BigNumber.from(receipt.units),
-    )
-    const txReceipt = await tx.wait()
-    return txReceipt
-  }
-
-  const refund = async (receipt) => {
-    const tx = await saleContract.refund({
-      id: BigNumber.from(receipt.receiptId),
-      feeRecipient: receipt.feeRecipient,
-      fee: BigNumber.from(receipt.fee),
-      units: BigNumber.from(receipt.units),
-      price: BigNumber.from(receipt.price),
-    })
-    const txReceipt = await tx.wait()
-    return txReceipt
-  }
+  console.log($buysQuery)
+  $: reserve = $buysQuery.data?.saleBuys[0]?.saleContract.reserve
+  $: token = $buysQuery.data?.saleBuys[0]?.saleContract.token
+  $: sale = $buysQuery.data?.saleBuys[0]?.saleContract
 </script>
 
 <div class="flex flex-col gap-y-4">
@@ -97,57 +73,39 @@ query ($saleAddress: Bytes!) {
     Loading buys...
   {:else if $buysQuery.error}
     Something went wrong.
-  {:else if $buysQuery.data}
-    {#each $buysQuery.data.sales[0].buys as buy}
-      <div class="flex flex-col gap-y-4 border border-gray-500 p-4 rounded-md w-full">
-        <div class="grid grid-cols-2 gap-3">
-          <span class="text-gray-400">Purchased:</span>
-          <span>
+  {:else if $buysQuery.data.saleBuys.length}
+    <table class="table-fixed w-full space-y-2">
+      <tr class="border-b border-gray-600 uppercase text-sm">
+        <th class="text-gray-400 text-left pb-2 font-light">Purchased</th>
+        <th class="text-gray-400 text-left pb-2 font-light">Price/rTKN</th>
+        <th class="text-gray-400 text-left pb-2 font-light">Fee</th>
+        <th class="text-gray-400 text-left pb-2 font-light">Total paid</th>
+        <th />
+      </tr>
+      {#each $buysQuery.data.saleBuys as buy}
+        <tr>
+          <td>
             {formatUnits(buy.receipt.units, token.decimals)} {token.symbol}
-          </span>
-          <span class="text-gray-400">Price per rTKN:</span>
-          <span>
+          </td>
+          <td>
             {formatUnits(buy.receipt.price, reserve.decimals)} {reserve.symbol}
-          </span>
-          <span class="text-gray-400">Fee:</span>
-          <span>{formatUnits(buy.fee, reserve.decimals)} {reserve.symbol}</span>
-          <span class="text-gray-400">Total paid:</span>
-          <span>
-            {formatUnits(buy.totalIn, reserve.decimals)} {reserve.symbol}
-          </span>
-        </div>
-        <Button
-          on:click={() => {
-            approvePromise = approve(buy.receipt)
-          }}>
-          Approve rTKN for refund
-        </Button>
-        {#if approvePromise}
-          {#await approvePromise}
-            <span class="text-blue-400">Waiting on confirmation...</span>
-          {:then}
+          </td>
+          <td>{formatUnits(buy.fee, reserve.decimals)} {reserve.symbol}</td>
+          <td>{formatUnits(buy.totalIn, reserve.decimals)} {reserve.symbol}</td>
+          <td class="pt-2 text-right">
             <Button
+              small
+              shrink
               on:click={() => {
-                refundPromise = refund(buy.receipt)
+                open(Refund, { saleContract, token, reserve, buy, sale })
               }}>
               Refund
             </Button>
-            {#if refundPromise}
-              {#await refundPromise}
-                <span class="text-blue-400">Waiting on confirmation...</span>
-              {:then receipt}
-                <span class="text-blue-400">Refund confirmed!</span>
-                <a
-                  class="text-blue-400 underline"
-                  target="_blank"
-                  href={`${BLOCK_EXPLORER}/tx/${receipt.transactionHash}`}>
-                  See transaction.
-                </a>
-              {/await}
-            {/if}
-          {/await}
-        {/if}
-      </div>
-    {/each}
+          </td>
+        </tr>
+      {/each}
+    </table>
+  {:else}
+  You haven't made any purchases.
   {/if}
 </div>

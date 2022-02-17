@@ -53,7 +53,7 @@ query ($balanceTierAddress: Bytes!) {
   }
   $: console.log(balanceTier);
   const runQuery = () => {
-    $balanceTier.variables.balanceTierAddress = params.wild;
+    $balanceTier.variables.balanceTierAddress = params.wild.toLowerCase();
     $balanceTier.context.pause = false;
     $balanceTier.reexecute();
   };

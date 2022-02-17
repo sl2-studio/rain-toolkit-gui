@@ -112,12 +112,12 @@
       <span>{formatUnits(buy.totalIn, reserve.decimals)} {token.symbol}</span>
     </div>
 
-    {#if activeStep == 0}
+    {#if activeStep == RefundSteps.Approve}
       <span>Approve the sale contract to spend your {token.symbol}.</span>
       <Button on:click={approve}>Approve</Button>
     {/if}
 
-    {#if activeStep == 1}
+    {#if activeStep == RefundSteps.Confirm}
       <span>Confirm your refund.</span>
       <span
         >You will not be able to make another purchase or refund for {sale.cooldownDuration}
@@ -126,7 +126,7 @@
       <Button on:click={refund}>Confirm</Button>
     {/if}
 
-    {#if activeStep == 2}
+    {#if activeStep == RefundSteps.Complete}
       <span>Refund confirmed!</span>
       <span
         >You will not be able to make another purchase or refund until block

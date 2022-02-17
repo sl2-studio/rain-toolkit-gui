@@ -8,7 +8,7 @@
 
   export let saleContract;
 
-  let saleAddress, polling, timeRemaining, timeElapsed;
+  let saleAddress, updateTime, timeRemaining, timeElapsed;
 
   const buysQuery = operationStore(
     `
@@ -62,7 +62,7 @@ query ($saleAddress: Bytes!) {
 
   $: sale = $buysQuery.data?.sales[0];
   $: if (!$buysQuery.fetching) {
-    polling = setTimeout(poll, 1000);
+    updateTime = setInterval(getTime, 1000);
   }
 
   const poll = () => {
@@ -79,7 +79,7 @@ query ($saleAddress: Bytes!) {
   };
 
   onDestroy(() => {
-    clearTimeout(polling);
+    clearInterval(updateTime);
   });
 </script>
 

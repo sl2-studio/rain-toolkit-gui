@@ -62,6 +62,7 @@ export default {
       entries: [
         { find: "components", replacement: "src/components" },
         { find: "abis", replacement: "src/abis" },
+        { find: "src", replacement: "src" },
       ],
     }),
     // we'll extract any component CSS out into

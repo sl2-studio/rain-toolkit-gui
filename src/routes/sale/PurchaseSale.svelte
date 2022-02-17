@@ -51,7 +51,7 @@
   };
 </script>
 
-<div class="flex w-full max-w-prose flex-col gap-y-4">
+<div class="flex w-900 flex-col gap-y-4">
   <div class="mb-2 flex flex-col gap-y-2">
     <span class="text-2xl">Purchase from a deployed Sale</span>
   </div>

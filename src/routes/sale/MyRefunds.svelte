@@ -1,21 +1,18 @@
 <script lang="ts">
-  import { signer } from "svelte-ethers-store";
-  import Button from "../../components/Button.svelte";
+  import dayjs from "dayjs";
   import { operationStore, query } from "@urql/svelte";
-  import { formatUnits, getAddress } from "ethers/lib/utils";
-  import { BigNumber, ethers } from "ethers";
+  import { formatUnits } from "ethers/lib/utils";
   import { BLOCK_EXPLORER } from "../../constants";
-  import ReserveTokenArtifact from "../../abis/ReserveToken.json";
+  import IconLibrary from "components/IconLibrary.svelte";
 
   export let saleContract;
 
-  let saleAddress, refundPromise, approvePromise;
+  let saleAddress;
 
   const buysQuery = operationStore(
     `
 query ($saleAddress: Bytes!) {
   sales (where: {id: $saleAddress}) {
-    id
     deployer
     token {
       symbol
@@ -28,6 +25,9 @@ query ($saleAddress: Bytes!) {
       decimals
     }
     refunds {
+      timestamp
+      transactionHash
+      id
       receipt {
         units
         price
@@ -53,43 +53,52 @@ query ($saleAddress: Bytes!) {
 
   $: reserve = $buysQuery.data?.sales[0].reserve;
   $: token = $buysQuery.data?.sales[0].token;
-
-  $: console.log($buysQuery);
 </script>
 
-<div class="flex flex-col gap-y-4">
+<div class="flex w-full flex-col gap-y-4">
   <span class="text-lg font-semibold">Your refunds</span>
   {#if $buysQuery.fetching}
     Loading refunds...
   {:else if $buysQuery.error}
     Something went wrong.
   {:else if $buysQuery.data}
-    {#each $buysQuery.data.sales[0].refunds as refund}
-      <div
-        class="flex flex-col gap-y-2 border border-gray-500 p-4 rounded-md w-full"
-      >
-        <div class="grid grid-cols-2 gap-3">
-          <span class="text-gray-400">Refunded:</span>
-          <span>
+    <table class="table-auto w-full space-y-2">
+      <tr class="border-b border-gray-600 uppercase text-sm">
+        <th class="text-gray-400 text-left pb-2 font-light">Time</th>
+        <th class="text-gray-400 text-left pb-2 font-light">Refunded</th>
+        <th class="text-gray-400 text-left pb-2 font-light">Price/rTKN</th>
+        <th class="text-gray-400 text-left pb-2 font-light">Fee</th>
+        <th class="text-gray-400 text-left pb-2 font-light">Total</th>
+        <th />
+      </tr>
+      {#each $buysQuery.data.sales[0].refunds as refund}
+        <tr>
+          <td class="py-2">
+            {dayjs.unix(refund.timestamp).format("DD/MM/YYYY hh:mm:ss")}
+          </td>
+          <td class="py-2">
             {formatUnits(refund.receipt.units, token.decimals)}
             {token.symbol}
-          </span>
-          <span class="text-gray-400">Price per rTKN:</span>
-          <span>
+          </td>
+          <td>
             {formatUnits(refund.receipt.price, reserve.decimals)}
             {reserve.symbol}
-          </span>
-          <span class="text-gray-400">Fee:</span>
-          <span
-            >{formatUnits(refund.fee, reserve.decimals)} {reserve.symbol}</span
-          >
-          <span class="text-gray-400">Total refunded:</span>
-          <span>
+          </td>
+          <td>{formatUnits(refund.fee, reserve.decimals)} {reserve.symbol}</td>
+          <td>
             {formatUnits(refund.totalOut, reserve.decimals)}
             {reserve.symbol}
-          </span>
-        </div>
-      </div>
-    {/each}
+          </td>
+          <td class="w-36 text-right">
+            <a
+              href={`${BLOCK_EXPLORER}/tx/${refund.transactionHash}`}
+              target="_blank"
+            >
+              <IconLibrary icon="link" color="font-gray-100" width="10" />
+            </a>
+          </td>
+        </tr>
+      {/each}
+    </table>
   {/if}
 </div>

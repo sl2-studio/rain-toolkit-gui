@@ -1,12 +1,33 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
+
   export let type = "text";
   export let value: string | number = "";
   export let placeholder = "";
   export let validator = (value: any): any => null;
+  export let debounce: boolean;
+  export let debounceTime: number = 750;
   let error: string;
+  let timer;
+
+  const dispatch = createEventDispatcher();
 
   const handleInput = (e: any) => {
-    value = type.match(/^(number|range)$/) ? +e.target.value : e.target.value;
+    const v = type.match(/^(number|range)$/) ? +e.target.value : e.target.value;
+    if (debounce) {
+      doDebounce(v);
+    } else {
+      value = v;
+      dispatch("input", v);
+    }
+  };
+
+  const doDebounce = (v) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      value = v;
+      dispatch("input", v);
+    }, debounceTime);
   };
 
   export const validate = () => {

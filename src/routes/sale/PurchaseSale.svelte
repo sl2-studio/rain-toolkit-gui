@@ -9,6 +9,7 @@
   import Buy from "./Buy.svelte";
   import MyBuys from "./MyBuys.svelte";
   import MyRefunds from "./MyRefunds.svelte";
+  import MyTransactions from "./MyTransactions.svelte";
   import { BuyConfig, initSaleContract } from "./sale";
   import SaleProgress from "./SaleProgress.svelte";
 
@@ -163,10 +164,7 @@
     {/await}
     {#if sale}
       <FormPanel>
-        <MyBuys saleContract={sale} />
-      </FormPanel>
-      <FormPanel>
-        <MyRefunds saleContract={sale} />
+        <MyTransactions saleContract={sale} />
       </FormPanel>
     {/if}
   {/if}

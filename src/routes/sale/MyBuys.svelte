@@ -1,6 +1,6 @@
 <script lang="ts">
   import Button from "components/Button.svelte";
-  import Refund from "./Refund.svelte";
+  import RefundModal from "./RefundModal.svelte";
   import { operationStore, query } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
   import { signerAddress } from "svelte-ethers-store";
@@ -109,7 +109,13 @@ query ($saleContractAddress: Bytes!, $sender: Bytes!) {
               <span
                 class="underline cursor-pointer text-gray-400 mr-4"
                 on:click={() => {
-                  open(Refund, { saleContract, token, reserve, buy, sale });
+                  open(RefundModal, {
+                    saleContract,
+                    token,
+                    reserve,
+                    buy,
+                    sale,
+                  });
                 }}
               >
                 Refund

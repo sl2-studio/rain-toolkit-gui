@@ -8,7 +8,7 @@
 
   export let saleContract;
 
-  let saleAddress, updateTime, timeRemaining, timeElapsed;
+  let saleAddress, updateTime, timeRemaining, timeElapsed, queryTimeout;
 
   const buysQuery = operationStore(
     `
@@ -57,19 +57,34 @@ query ($saleAddress: Bytes!) {
     }
   );
 
+  // set variables for the query
   $buysQuery.variables.saleAddress = saleContract.address.toLowerCase();
+
+  // init the query
   query(buysQuery);
 
-  $: sale = $buysQuery.data?.sales[0];
-  $: if (!$buysQuery.fetching) {
-    updateTime = setInterval(getTime, 1000);
-  }
-
-  const poll = () => {
-    getTime();
-    buysQuery.reexecute();
+  // re-execute the query every 3 seconds, unless a current fetch is in already progress
+  const queryLoop = () => {
+    if (!$buysQuery.fetching) {
+      buysQuery.reexecute();
+    }
+    queryTimeout = setTimeout(queryLoop, 3000);
   };
 
+  // alias the sale for convenience
+  $: sale = $buysQuery.data?.sales[0];
+
+  // the first time we get data, start a loop that updates the timer every 3 seconds
+  $: if (!$buysQuery.fetching) {
+    if (!updateTime) {
+      updateTime = setInterval(getTime, 1000);
+    }
+  }
+
+  // start the query polling loop
+  queryLoop();
+
+  // update the time elapse/remaining
   const getTime = () => {
     const now = Math.floor(Date.now() / 1000);
     const end = getAfterTimestampDate(sale.canEndStateConfig).getTime() / 1000;
@@ -78,8 +93,10 @@ query ($saleAddress: Bytes!) {
     timeElapsed = timeString((now - start) * 1000);
   };
 
+  // clear both loops on component destroy
   onDestroy(() => {
     clearInterval(updateTime);
+    clearTimeout(queryTimeout);
   });
 </script>
 
@@ -92,16 +109,28 @@ query ($saleAddress: Bytes!) {
       </tr>
       <tr>
         <td class="text-gray-400">Minimum raise:</td>
-        <td>{formatUnits(sale.minimumRaise, sale.reserve.decimals)}</td>
+        <td
+          >{Number(
+            +formatUnits(sale.minimumRaise, sale.reserve.decimals)
+          ).toFixed(4)}</td
+        >
       </tr>
       <tr>
         <td class="text-gray-400">rTKN available:</td>
-        <td>{formatUnits(sale.unitsAvailable, sale.token.decimals)}</td>
+        <td
+          >{Number(
+            (+formatUnits(sale.unitsAvailable, sale.token.decimals)).toFixed(4)
+          )}</td
+        >
       </tr>
       {#if !(sale?.saleStatus == 0)}
         <tr>
           <td class="text-gray-400">Total raised:</td>
-          <td>{formatUnits(sale.totalRaised, sale.reserve.decimals)}</td>
+          <td
+            >{Number(
+              (+formatUnits(sale.totalRaised, sale.reserve.decimals)).toFixed(4)
+            )}</td
+          >
         </tr>
         <tr>
           <td class="text-gray-400">Percent raised:</td>

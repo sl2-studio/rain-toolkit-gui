@@ -1,11 +1,11 @@
 import { BigNumber, Contract, ethers, Signer } from "ethers";
 import { SaleConfig, SaleRedeemableERC20Config } from "../../types";
 import { getERC20, getNewChildFromReceipt, op } from "../../utils";
-import SaleFactoryArtifact from '../../abis/SaleFactory.json'
-import SaleArtifact from '../../abis/Sale.json'
+import SaleFactoryArtifact from "../../abis/SaleFactory.json";
+import SaleArtifact from "../../abis/Sale.json";
 import { SALE_FACTORY } from "../../constants";
-import RedeemableERC20Artifact from '../../abis/RedeemableERC20.json'
-import ReserveTokenArtifact from '../../abis/ReserveToken.json'
+import RedeemableERC20Artifact from "../../abis/RedeemableERC20.json";
+import ReserveTokenArtifact from "../../abis/ReserveToken.json";
 import { concat } from "ethers/lib/utils";
 
 export const enum Opcode {
@@ -51,22 +51,19 @@ export const enum Opcode {
 }
 
 export type BuyConfig = {
-  feeRecipient: string
-  fee: BigNumber
-  minimumUnits: BigNumber
-  desiredUnits: BigNumber
-  maximumPrice: BigNumber
-}
+  feeRecipient: string;
+  fee: BigNumber;
+  minimumUnits: BigNumber;
+  desiredUnits: BigNumber;
+  maximumPrice: BigNumber;
+};
 
-export const initSaleContract = async (
-  signer: Signer,
-  address: string
-) => {
-  const sale = new ethers.Contract(address, SaleArtifact.abi, signer)
-  const reserve = await getERC20(await sale.reserve(), signer)
-  const token = await getERC20(await sale.token(), signer)
-  return [sale, reserve, token]
-}
+export const initSaleContract = async (signer: Signer, address: string) => {
+  const sale = new ethers.Contract(address, SaleArtifact.abi, signer);
+  const reserve = await getERC20(await sale.reserve(), signer);
+  const token = await getERC20(await sale.token(), signer);
+  return [sale, reserve, token];
+};
 
 export const saleDeploy = async (
   deployer: Signer,
@@ -74,17 +71,21 @@ export const saleDeploy = async (
   saleRedeemableERC20Config: SaleRedeemableERC20Config,
   ...args
 ): Promise<[Contract, any]> => {
-  console.log(config)
-  console.log(saleRedeemableERC20Config)
-  console.log(config.calculatePriceStateConfig.constants[0].toString())
-  const saleFactory = new ethers.Contract(SALE_FACTORY, SaleFactoryArtifact.abi, deployer)
+  console.log(config);
+  console.log(saleRedeemableERC20Config);
+  console.log(config.calculatePriceStateConfig.constants[0].toString());
+  const saleFactory = new ethers.Contract(
+    SALE_FACTORY,
+    SaleFactoryArtifact.abi,
+    deployer
+  );
   const txDeploy = await saleFactory.createChildTyped(
     config,
     saleRedeemableERC20Config,
     ...args
   );
-  const receipt = await txDeploy.wait()
-  const saleContractAddress = getNewChildFromReceipt(receipt, saleFactory)
+  const receipt = await txDeploy.wait();
+  const saleContractAddress = getNewChildFromReceipt(receipt, saleFactory);
   const sale = new ethers.Contract(
     saleContractAddress,
     SaleArtifact.abi,
@@ -103,7 +104,11 @@ export const saleDeploy = async (
   // @ts-ignore
   sale.deployTransaction = txDeploy;
 
-  const token = new ethers.Contract(await sale.token(), RedeemableERC20Artifact.abi, deployer) as Contract;
+  const token = new ethers.Contract(
+    await sale.token(),
+    RedeemableERC20Artifact.abi,
+    deployer
+  ) as Contract;
 
   return [sale, token];
 };
@@ -142,13 +147,8 @@ export const afterTimestampConfig = (timestamp) => {
 
 export const getAfterTimestampDate = (stateConfig) => {
   if (stateConfig.sources[0] === "0x050001000a00") {
-    return new Date(parseInt(stateConfig.constants[0])*1000)
+    return new Date(parseInt(stateConfig.constants[0]) * 1000);
   }
-}
+};
 
-export const saleStatuses = [
-  'Pending',
-  'Active',
-  'Success',
-  'Fail'
-]
+export const saleStatuses = ["Pending", "Active", "Success", "Fail"];

@@ -1,16 +1,16 @@
 <script>
-  export let value = 0
-  export let items = []
+  export let value = 0;
+  export let items = [];
 
   export const validate = () => {
     return {
-            ok: true,
-            value
-      }
-  }
+      ok: true,
+      value,
+    };
+  };
 </script>
 
-<div class="gap-y-2 flex flex-col w-full">
+<div class="flex w-full flex-col gap-y-2">
   {#if $$slots.label}
     <div class="font-light text-gray-100">
       <slot name="label" />
@@ -21,11 +21,12 @@
       <slot name="description" />
     </span>
   {/if}
-  <div class="rounded-md border text-white border-gray-500 self-start">
+  <div class="self-start rounded-md border border-gray-500 text-white">
     <select
-      class="text-light text-gray-400 px-4 py-2 outline-none border-none
-      bg-transparent"
-      bind:value>
+      class="text-light outline-none border-none bg-transparent px-4 py-2
+      text-gray-400"
+      bind:value
+    >
       {#each items as item}
         <option class="text-white" value={item}>{item.label}</option>
       {/each}

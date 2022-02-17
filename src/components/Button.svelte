@@ -1,57 +1,72 @@
 <script>
-import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher } from "svelte";
 
-const dispatch = createEventDispatcher()
+  const dispatch = createEventDispatcher();
 
-function click() {
-    dispatch("click")
-}
+  function click() {
+    dispatch("click");
+  }
 
-export let label = null
-export let variant = 'primary'
-export let disabled = false
-export let small = false
-export let id = ""
-export let shrink = false
-$: variantCalc = disabled ? 'disabled' : variant
- 
+  export let label = null;
+  export let variant = "primary";
+  export let disabled = false;
+  export let small = false;
+  export let id = "";
+  export let shrink = false;
+  $: variantCalc = disabled ? "disabled" : variant;
 </script>
 
 {#if small}
-<button {disabled} {id} on:click={click} class="{'rounded-lg transition-colors text-sm leading-none py-3 px-5 text-white ' + variantCalc}">
-    <slot></slot>
+  <button
+    {disabled}
+    {id}
+    on:click={click}
+    class={"rounded-lg transition-colors text-sm leading-none py-3 px-5 text-white " +
+      variantCalc}
+  >
+    <slot />
     {#if !$$slots.default}
-        {label}
+      {label}
     {/if}
-</button>
+  </button>
+{:else if shrink}
+  <button
+    {disabled}
+    {id}
+    on:click={click}
+    class={"transition-colors rounded-lg text-base leading-none py-3 px-5 text-white " +
+      variantCalc}
+  >
+    <slot />
+    {#if !$$slots.default}
+      {label}
+    {/if}
+  </button>
 {:else}
-{#if shrink}
-    <button {disabled} {id} on:click={click} class="{'transition-colors rounded-lg text-base leading-none py-3 px-5 text-white ' + variantCalc}">
-        <slot></slot>
-        {#if !$$slots.default}
-            {label}
-        {/if}
-    </button>
-{:else}
-    <button {disabled} {id} on:click={click} class="{'w-full transition-colors rounded-lg text-base leading-none py-3 px-5 text-white ' + variantCalc}">
-        <slot></slot>
-        {#if !$$slots.default}
-            {label}
-        {/if}
-    </button>
-{/if}
+  <button
+    {disabled}
+    {id}
+    on:click={click}
+    class={"w-full transition-colors rounded-lg text-base leading-none py-3 px-5 text-white " +
+      variantCalc}
+  >
+    <slot />
+    {#if !$$slots.default}
+      {label}
+    {/if}
+  </button>
 {/if}
 
 <style lang="postcss">
-    .primary {
-        @apply bg-gray-700 hover:bg-gray-600
-    }
+  .primary {
+    @apply bg-gray-700 hover:bg-gray-600;
+  }
 
-    .secondary {
-        @apply bg-gray-200
-    }
+  .secondary {
+    @apply bg-gray-200;
+  }
 
-    .disabled {
-        @apply bg-gray-400 cursor-not-allowed
-    }
+  .disabled {
+    @apply cursor-not-allowed bg-gray-400;
+  }
 </style>

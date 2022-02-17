@@ -1,16 +1,18 @@
 import { BigNumber, Contract, ethers } from "ethers";
 import type { BytesLike } from "ethers";
 import { concat, Hexable, hexlify, zeroPad } from "ethers/lib/utils";
-import ReserveTokenArtifact from './abis/ReserveToken.json'
+import ReserveTokenArtifact from "./abis/ReserveToken.json";
 
 export const getNewChildFromReceipt = (receipt, parentContract) => {
   return ethers.utils.defaultAbiCoder.decode(
-    ['address', 'address'],
-    receipt.events.filter(event => 
-      event.event == 'NewChild' && event.address.toUpperCase() == parentContract.address.toUpperCase())
-      [0].data,
-  )[1]
-}
+    ["address", "address"],
+    receipt.events.filter(
+      (event) =>
+        event.event == "NewChild" &&
+        event.address.toUpperCase() == parentContract.address.toUpperCase()
+    )[0].data
+  )[1];
+};
 
 /**
  * Utility function that transforms a hexadecimal number from the output of the ITier contract report
@@ -37,8 +39,11 @@ export function tierReport(report: string): number[] {
 }
 
 export function formatAddress(address) {
-  let formatted = address.slice(0, 6) + '...' + address.slice(address.length - 4, address.length)
-  return formatted
+  let formatted =
+    address.slice(0, 6) +
+    "..." +
+    address.slice(address.length - 4, address.length);
+  return formatted;
 }
 
 /**
@@ -107,7 +112,7 @@ export function tierRange(startTier: number, endTier: number): number {
  * @param loopSize - number of times to subdivide vals, reduces uint size but allows for more vals (range 0-7)
  * @param valSize - number of vals in outer stack (range 0-7)
  */
- export function callSize(
+export function callSize(
   sourceIndex: number,
   loopSize: number,
   valSize: number
@@ -154,19 +159,25 @@ export enum selectLteMode {
 }
 
 export const getERC20 = async (erc20Address, signer) => {
-  let erc20AddressError, erc20Contract, erc20name, erc20symbol, erc20balance, erc20decimals, erc20totalSupply
+  let erc20AddressError,
+    erc20Contract,
+    erc20name,
+    erc20symbol,
+    erc20balance,
+    erc20decimals,
+    erc20totalSupply;
 
   if (ethers.utils.isAddress(erc20Address)) {
-    erc20AddressError = null
-    erc20Contract = new ethers.Contract(erc20Address, ReserveTokenArtifact.abi)
-    erc20Contract = erc20Contract.connect(signer)
+    erc20AddressError = null;
+    erc20Contract = new ethers.Contract(erc20Address, ReserveTokenArtifact.abi);
+    erc20Contract = erc20Contract.connect(signer);
     try {
-      console.log(signer)
-      erc20name = await erc20Contract.name()
-      erc20symbol = await erc20Contract.symbol()
-      erc20balance = await erc20Contract.balanceOf(signer._address)
-      erc20decimals = await erc20Contract.decimals()
-      erc20totalSupply = await erc20Contract.totalSupply()
+      console.log(signer);
+      erc20name = await erc20Contract.name();
+      erc20symbol = await erc20Contract.symbol();
+      erc20balance = await erc20Contract.balanceOf(signer._address);
+      erc20decimals = await erc20Contract.decimals();
+      erc20totalSupply = await erc20Contract.totalSupply();
       return {
         erc20Contract,
         erc20name,
@@ -174,29 +185,29 @@ export const getERC20 = async (erc20Address, signer) => {
         erc20balance,
         erc20decimals,
         erc20AddressError,
-        erc20totalSupply
-      }
+        erc20totalSupply,
+      };
     } catch (error) {
-      console.log(error)
-      erc20AddressError = 'not a valid ERC20 token address'
+      console.log(error);
+      erc20AddressError = "not a valid ERC20 token address";
     }
   } else {
-    erc20AddressError = 'not a valid address'
+    erc20AddressError = "not a valid address";
   }
-}
+};
 
 export const validateFields = (fields: any[]) => {
-  let fieldValues: any = {}
-  const validations = Object.keys(fields).map(key => {
-    const validationResult = fields[key].validate()
-    fieldValues[key] = validationResult.value
-    return validationResult
-  })
+  let fieldValues: any = {};
+  const validations = Object.keys(fields).map((key) => {
+    const validationResult = fields[key].validate();
+    fieldValues[key] = validationResult.value;
+    return validationResult;
+  });
   return {
-    validationResult: validations.every(validation => validation.ok),
-    fieldValues
-  }
-}
+    validationResult: validations.every((validation) => validation.ok),
+    fieldValues,
+  };
+};
 
 // to split a timestamp into the separate components
 export function splitTime(timestamp) {
@@ -207,34 +218,34 @@ export function splitTime(timestamp) {
   const msPerMonth = msPerDay * 30;
   const msPerYear = msPerDay * 365;
 
-  let weeks = Math.floor(timestamp/msPerWeek)
-  let lessWeeks = timestamp % msPerWeek
-  let days = Math.floor(lessWeeks/msPerDay)
-  let lessDays = lessWeeks % msPerDay
-  let hours = Math.floor(lessDays/msPerHour)
-  let lessHours = lessDays % msPerHour
-  let minutes = Math.floor(lessHours/msPerMinute)
-  let lessMinutes = lessHours % msPerMinute
-  let seconds = Math.floor(lessMinutes/1000)
+  let weeks = Math.floor(timestamp / msPerWeek);
+  let lessWeeks = timestamp % msPerWeek;
+  let days = Math.floor(lessWeeks / msPerDay);
+  let lessDays = lessWeeks % msPerDay;
+  let hours = Math.floor(lessDays / msPerHour);
+  let lessHours = lessDays % msPerHour;
+  let minutes = Math.floor(lessHours / msPerMinute);
+  let lessMinutes = lessHours % msPerMinute;
+  let seconds = Math.floor(lessMinutes / 1000);
 
-  return [weeks, days, hours, minutes, seconds]
+  return [weeks, days, hours, minutes, seconds];
 }
 
 export function timeString(timestamp, options?) {
-  const timeArray = splitTime(Math.abs(timestamp))
-  const weeks = timeArray[0] ? timeArray[0] + 'w ' : ''
-  const days = timeArray[1] ? timeArray[1] + 'd ' : ''
-  const hours = timeArray[2] ? timeArray[2] + 'h ' : ''
-  const minutes = timeArray[3] ? timeArray[3] + 'm ' : ''
-  const seconds = timeArray[4] ? timeArray[4] + 's' : ''
+  const timeArray = splitTime(Math.abs(timestamp));
+  const weeks = timeArray[0] ? timeArray[0] + "w " : "";
+  const days = timeArray[1] ? timeArray[1] + "d " : "";
+  const hours = timeArray[2] ? timeArray[2] + "h " : "";
+  const minutes = timeArray[3] ? timeArray[3] + "m " : "";
+  const seconds = timeArray[4] ? timeArray[4] + "s" : "";
 
   const strings = new Map([
-      ['wdhms', weeks + days + hours + minutes + seconds],
-      ['wdhm', weeks + days + hours + minutes],
-      ['wdh', weeks + days + hours],
-      ['wd', weeks + days],
-      ['w', weeks],
-  ])
+    ["wdhms", weeks + days + hours + minutes + seconds],
+    ["wdhm", weeks + days + hours + minutes],
+    ["wdh", weeks + days + hours],
+    ["wd", weeks + days],
+    ["w", weeks],
+  ]);
 
-  return strings.get(options) || weeks + days + hours + minutes + seconds
+  return strings.get(options) || weeks + days + hours + minutes + seconds;
 }

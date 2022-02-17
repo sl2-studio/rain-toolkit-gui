@@ -13,6 +13,10 @@
     "baseUrl": "./"
   },
 
-  "include": ["src/**/*", "src/**/*.ts", "node_modules/@beehiveinnovation/rain-protocol/typechain/**/*"],
+  "include": [
+    "src/**/*",
+    "src/**/*.ts",
+    "node_modules/@beehiveinnovation/rain-protocol/typechain/**/*"
+  ],
   "exclude": ["__sapper__/*", "public/*"]
 }

@@ -1,81 +1,68 @@
 <script>
-import SidebarLink from "../components/SidebarLink.svelte";
-import SidebarLinkGroup from "../components/SidebarLinkGroup.svelte";
+  import SidebarLink from "../components/SidebarLink.svelte";
+  import SidebarLinkGroup from "../components/SidebarLinkGroup.svelte";
 </script>
-<div class="border-r border-gray-700 w-96 min-h-screen">
-<div class="flex flex-col gap-y-3 p-5  sticky top-16 self-start">
+
+<div class="min-h-screen w-96 border-r border-gray-700">
+  <div class="sticky top-16 flex flex-col  gap-y-3 self-start p-5">
     <SidebarLinkGroup label="BalanceTier" url="/balancetier/*">
-        <SidebarLink url="/balancetier/deploy">
-            Deploy an ERC20BalanceTier
-        </SidebarLink>
+      <SidebarLink url="/balancetier/deploy">
+        Deploy an ERC20BalanceTier
+      </SidebarLink>
 
-        <SidebarLink url="/balancetier/report/">
-            Check an ERC20BalanceTier Report
-        </SidebarLink>
+      <SidebarLink url="/balancetier/report/">
+        Check an ERC20BalanceTier Report
+      </SidebarLink>
 
-        <SidebarLink url="/balancetier/list">
-            Browse deployed ERC20BalanceTiers
-        </SidebarLink>
+      <SidebarLink url="/balancetier/list">
+        Browse deployed ERC20BalanceTiers
+      </SidebarLink>
 
-        <SidebarLink url="/721balancetier/deploy">
-            Deploy an ERC721BalanceTier
-        </SidebarLink>
+      <SidebarLink url="/721balancetier/deploy">
+        Deploy an ERC721BalanceTier
+      </SidebarLink>
 
-        <SidebarLink url="/721balancetier/report/">
-            Check an ERC721BalanceTier Report
-        </SidebarLink>
+      <SidebarLink url="/721balancetier/report/">
+        Check an ERC721BalanceTier Report
+      </SidebarLink>
 
-        <SidebarLink url="/721balancetier/list">
-            Browse deployed ERC721BalanceTiers
-        </SidebarLink>
+      <SidebarLink url="/721balancetier/list">
+        Browse deployed ERC721BalanceTiers
+      </SidebarLink>
     </SidebarLinkGroup>
 
     <SidebarLinkGroup label="CombineTier" url="/combinetier/*">
-        <SidebarLink url="/combinetier/deploy">
-            Deploy a CombineTier
-        </SidebarLink>
+      <SidebarLink url="/combinetier/deploy">Deploy a CombineTier</SidebarLink>
 
-        <SidebarLink url="/combinetier/report/">
-            Check a CombineTier Report
-        </SidebarLink>
+      <SidebarLink url="/combinetier/report/">
+        Check a CombineTier Report
+      </SidebarLink>
 
-        <SidebarLink url="/balancetier/list">
-            Browse deployed CombineTiers
-        </SidebarLink>
+      <SidebarLink url="/balancetier/list">
+        Browse deployed CombineTiers
+      </SidebarLink>
     </SidebarLinkGroup>
 
     <SidebarLinkGroup label="GatedNFT" url="/gatednft/*">
-        <SidebarLink url="/gatednft/deploy/">
-            Deploy a Gated NFT
-        </SidebarLink>
+      <SidebarLink url="/gatednft/deploy/">Deploy a Gated NFT</SidebarLink>
 
-        <SidebarLink url="/gatednft/mint/">
-            Mint a Gated NFT
-        </SidebarLink>
+      <SidebarLink url="/gatednft/mint/">Mint a Gated NFT</SidebarLink>
 
-        <SidebarLink url="/gatednft/list">
-            List deployed GatedNFTs
-        </SidebarLink>
+      <SidebarLink url="/gatednft/list">List deployed GatedNFTs</SidebarLink>
     </SidebarLinkGroup>
 
     <SidebarLinkGroup label="Sale" url="/sale/*">
-        <SidebarLink url="/sale/deploy">
-            Deploy a Sale
-        </SidebarLink>
+      <SidebarLink url="/sale/deploy">Deploy a Sale</SidebarLink>
 
-        <SidebarLink url="/sale/purchase/">
-            Purchase rTKN from a Sale
-        </SidebarLink>
+      <SidebarLink url="/sale/purchase/">Purchase rTKN from a Sale</SidebarLink>
     </SidebarLinkGroup>
 
     <SidebarLinkGroup label="Emissions" url="/emissions/*">
-        <SidebarLink url="/emissions/deploy">
-            Deploy an EmissionsERC20
-        </SidebarLink>
+      <SidebarLink url="/emissions/deploy">
+        Deploy an EmissionsERC20
+      </SidebarLink>
 
-        <SidebarLink url="/emissions/claim/">
-            Claim an EmissionsERC20
-        </SidebarLink>
+      <SidebarLink url="/emissions/claim/">Claim an EmissionsERC20</SidebarLink>
     </SidebarLinkGroup>
-</div>
+  </div>
 </div>

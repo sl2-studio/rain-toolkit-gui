@@ -1,30 +1,30 @@
 <script lang="ts">
-  import { BigNumber, ethers } from 'ethers'
-  import { formatUnits, parseUnits } from 'ethers/lib/utils'
-  import { signerAddress } from 'svelte-ethers-store'
-  import Button from 'components/Button.svelte'
-  import FormPanel from 'components/FormPanel.svelte'
-  import Input from 'components/Input.svelte'
+  import { BigNumber, ethers } from "ethers";
+  import { formatUnits, parseUnits } from "ethers/lib/utils";
+  import { signerAddress } from "svelte-ethers-store";
+  import Button from "components/Button.svelte";
+  import FormPanel from "components/FormPanel.svelte";
+  import Input from "components/Input.svelte";
 
-  export let sale
-  export let token
-  export let reserve
+  export let sale;
+  export let token;
+  export let reserve;
 
-  let units, showBuy, calcPricePromise, buyPromise, approvePromise
+  let units, showBuy, calcPricePromise, buyPromise, approvePromise;
 
   const calculatePrice = async () => {
-    const _units = parseUnits(units.toString(), token.erc20decimals.toString())
-    return await sale.calculatePrice(_units)
-  }
+    const _units = parseUnits(units.toString(), token.erc20decimals.toString());
+    return await sale.calculatePrice(_units);
+  };
 
   const approve = async () => {
-    const _units = BigNumber.from(units)
+    const _units = BigNumber.from(units);
     const tx = await reserve.erc20Contract.approve(
       sale.address,
-      _units.mul(await sale.calculatePrice(_units)),
-    )
-    await tx.wait()
-  }
+      _units.mul(await sale.calculatePrice(_units))
+    );
+    await tx.wait();
+  };
 
   const buy = async () => {
     const buyConfig = {
@@ -32,18 +32,18 @@
       fee: BigNumber.from(0),
       minimumUnits: parseUnits(
         units.toString(),
-        token.erc20decimals.toString(),
+        token.erc20decimals.toString()
       ),
       desiredUnits: parseUnits(
         units.toString(),
-        token.erc20decimals.toString(),
+        token.erc20decimals.toString()
       ),
       maximumPrice: ethers.constants.MaxUint256,
-    }
+    };
 
-    const tx = await sale.buy(buyConfig)
-    await tx.wait()
-  }
+    const tx = await sale.buy(buyConfig);
+    await tx.wait();
+  };
 </script>
 
 <FormPanel heading="Buy rTKN">
@@ -56,7 +56,8 @@
         {#await calcPricePromise}
           Getting price...
         {:then price}
-          Price will be {formatUnits(price, reserve.erc20decimals)} {reserve.erc20symbol}
+          Price will be {formatUnits(price, reserve.erc20decimals)}
+          {reserve.erc20symbol}
           per {token.erc20symbol}
         {/await}
       </div>
@@ -64,14 +65,16 @@
     <div class="flex flex-row gap-x-2">
       <Button
         on:click={() => {
-          calcPricePromise = calculatePrice()
-        }}>
+          calcPricePromise = calculatePrice();
+        }}
+      >
         Calculate price
       </Button>
       <Button
         on:click={() => {
-          showBuy = !showBuy
-        }}>
+          showBuy = !showBuy;
+        }}
+      >
         Buy
       </Button>
     </div>
@@ -83,11 +86,15 @@
       <span>Calculating price...</span>
     {:then price}
       <span>
-        Price: {formatUnits(price, reserve.erc20decimals)} {reserve.erc20symbol}
+        Price: {formatUnits(price, reserve.erc20decimals)}
+        {reserve.erc20symbol}
         per {token.erc20symbol}
       </span>
       <span>
-        Total: {formatUnits(price.mul(BigNumber.from(units)), reserve.erc20decimals)}
+        Total: {formatUnits(
+          price.mul(BigNumber.from(units)),
+          reserve.erc20decimals
+        )}
         {reserve.erc20symbol}
       </span>
     {/await}
@@ -95,8 +102,9 @@
       <Button
         shrink
         on:click={() => {
-          approvePromise = approve()
-        }}>
+          approvePromise = approve();
+        }}
+      >
         Approve
       </Button>
     {:else}
@@ -107,8 +115,9 @@
           <Button
             shrink
             on:click={() => {
-              buyPromise = buy()
-            }}>
+              buyPromise = buy();
+            }}
+          >
             Confirm Buy
           </Button>
         {:else}

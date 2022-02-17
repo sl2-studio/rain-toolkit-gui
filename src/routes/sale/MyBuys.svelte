@@ -1,16 +1,16 @@
 <script lang="ts">
-	import Button from 'components/Button.svelte';
-  import Refund from './Refund.svelte'
-  import { operationStore, query } from '@urql/svelte'
-  import { formatUnits } from 'ethers/lib/utils'
-  import { signerAddress } from 'svelte-ethers-store'
-  import { getContext } from 'svelte'
-  import { fade } from 'svelte/transition'
+  import Button from "components/Button.svelte";
+  import Refund from "./Refund.svelte";
+  import { operationStore, query } from "@urql/svelte";
+  import { formatUnits } from "ethers/lib/utils";
+  import { signerAddress } from "svelte-ethers-store";
+  import { getContext } from "svelte";
+  import { fade } from "svelte/transition";
 
-  const { open } = getContext('simple-modal')
-  export let saleContract
+  const { open } = getContext("simple-modal");
+  export let saleContract;
 
-  let saleContractAddress, sender
+  let saleContractAddress, sender;
 
   const buysQuery = operationStore(
     `
@@ -54,17 +54,17 @@ query ($saleContractAddress: Bytes!, $sender: Bytes!) {
       sender,
     },
     {
-      requestPolicy: 'network-only',
-    },
-  )
+      requestPolicy: "network-only",
+    }
+  );
 
-  $buysQuery.variables.saleContractAddress = saleContract.address.toLowerCase()
-  $buysQuery.variables.sender = $signerAddress.toLowerCase()
-  query(buysQuery)
-  console.log($buysQuery)
-  $: reserve = $buysQuery.data?.saleBuys[0]?.saleContract.reserve
-  $: token = $buysQuery.data?.saleBuys[0]?.saleContract.token
-  $: sale = $buysQuery.data?.saleBuys[0]?.saleContract
+  $buysQuery.variables.saleContractAddress = saleContract.address.toLowerCase();
+  $buysQuery.variables.sender = $signerAddress.toLowerCase();
+  query(buysQuery);
+  console.log($buysQuery);
+  $: reserve = $buysQuery.data?.saleBuys[0]?.saleContract.reserve;
+  $: token = $buysQuery.data?.saleBuys[0]?.saleContract.token;
+  $: sale = $buysQuery.data?.saleBuys[0]?.saleContract;
 </script>
 
 <div class="flex flex-col gap-y-4">
@@ -85,10 +85,12 @@ query ($saleContractAddress: Bytes!, $sender: Bytes!) {
       {#each $buysQuery.data.saleBuys as buy}
         <tr>
           <td>
-            {formatUnits(buy.receipt.units, token.decimals)} {token.symbol}
+            {formatUnits(buy.receipt.units, token.decimals)}
+            {token.symbol}
           </td>
           <td>
-            {formatUnits(buy.receipt.price, reserve.decimals)} {reserve.symbol}
+            {formatUnits(buy.receipt.price, reserve.decimals)}
+            {reserve.symbol}
           </td>
           <td>{formatUnits(buy.fee, reserve.decimals)} {reserve.symbol}</td>
           <td>{formatUnits(buy.totalIn, reserve.decimals)} {reserve.symbol}</td>
@@ -97,8 +99,9 @@ query ($saleContractAddress: Bytes!, $sender: Bytes!) {
               small
               shrink
               on:click={() => {
-                open(Refund, { saleContract, token, reserve, buy, sale })
-              }}>
+                open(Refund, { saleContract, token, reserve, buy, sale });
+              }}
+            >
               Refund
             </Button>
           </td>
@@ -106,6 +109,6 @@ query ($saleContractAddress: Bytes!, $sender: Bytes!) {
       {/each}
     </table>
   {:else}
-  You haven't made any purchases.
+    You haven't made any purchases.
   {/if}
 </div>

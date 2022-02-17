@@ -1,62 +1,58 @@
 <script lang="ts">
-  import { BigNumber, ethers } from 'ethers'
-  import { formatUnits, parseUnits } from 'ethers/lib/utils'
-  import { signer, signerAddress } from 'svelte-ethers-store'
-  import { push } from 'svelte-spa-router'
-  import Button from '../../components/Button.svelte'
-  import FormPanel from '../../components/FormPanel.svelte'
-  import Input from '../../components/Input.svelte'
-import Buy from './Buy.svelte'
-  import MyBuys from './MyBuys.svelte'
-  import MyRefunds from './MyRefunds.svelte'
-  import { BuyConfig, initSaleContract } from './sale'
-  import SaleProgress from './SaleProgress.svelte'
+  import { BigNumber, ethers } from "ethers";
+  import { formatUnits, parseUnits } from "ethers/lib/utils";
+  import { signer, signerAddress } from "svelte-ethers-store";
+  import { push } from "svelte-spa-router";
+  import Button from "../../components/Button.svelte";
+  import FormPanel from "../../components/FormPanel.svelte";
+  import Input from "../../components/Input.svelte";
+  import Buy from "./Buy.svelte";
+  import MyBuys from "./MyBuys.svelte";
+  import MyRefunds from "./MyRefunds.svelte";
+  import { BuyConfig, initSaleContract } from "./sale";
+  import SaleProgress from "./SaleProgress.svelte";
 
   export let params: {
-    wild: string
-  }
+    wild: string;
+  };
 
-  let sale, reserve, token
-  let errorMsg, saleAddress
-  let initPromise,
-    startPromise,
-    endPromise
+  let sale, reserve, token;
+  let errorMsg, saleAddress;
+  let initPromise, startPromise, endPromise;
 
   $: if (params.wild) {
-    initPromise = initContract()
+    initPromise = initContract();
   }
 
   const initContract = async () => {
-    if (ethers.utils.isAddress(params.wild || '')) {
-      ;[sale, reserve, token] = await initSaleContract($signer, params.wild)
+    if (ethers.utils.isAddress(params.wild || "")) {
+      [sale, reserve, token] = await initSaleContract($signer, params.wild);
     } else if (params.wild) {
-      errorMsg = 'Not a valid contract address'
+      errorMsg = "Not a valid contract address";
     }
-  }
+  };
 
   const startSale = async () => {
     try {
-      const tx = await sale.start()
-      await tx.wait()
+      const tx = await sale.start();
+      await tx.wait();
     } catch (error) {
-      throw error
+      throw error;
     }
-  }
+  };
 
   const endSale = async () => {
     try {
-      const tx = await sale.end()
-      await tx.wait()
+      const tx = await sale.end();
+      await tx.wait();
     } catch (error) {
-      throw error
+      throw error;
     }
-  }
-
-
+  };
 </script>
 
-<div class="w-full max-w-prose flex flex-col gap-y-4">
-  <div class="flex flex-col gap-y-2 mb-2">
+<div class="flex w-full max-w-prose flex-col gap-y-4">
+  <div class="mb-2 flex flex-col gap-y-2">
     <span class="text-2xl">Purchase from a deployed Sale</span>
   </div>
 
@@ -66,11 +62,13 @@ import Buy from './Buy.svelte'
       <Input
         bind:value={saleAddress}
         type="string"
-        placeholder="Contract address" />
+        placeholder="Contract address"
+      />
       <Button
         on:click={() => {
-          push(`/sale/purchase/${saleAddress}`)
-        }}>
+          push(`/sale/purchase/${saleAddress}`);
+        }}
+      >
         Load
       </Button>
     </FormPanel>
@@ -88,8 +86,9 @@ import Buy from './Buy.svelte'
           <div class="flex flex-col gap-y-2">
             <Button
               on:click={() => {
-                startPromise = startSale()
-              }}>
+                startPromise = startSale();
+              }}
+            >
               Start sale
             </Button>
             {#if startPromise}
@@ -105,8 +104,9 @@ import Buy from './Buy.svelte'
           <div class="flex flex-col gap-y-2">
             <Button
               on:click={() => {
-                endPromise = endSale()
-              }}>
+                endPromise = endSale();
+              }}
+            >
               End sale
             </Button>
             {#if endPromise}
@@ -127,10 +127,16 @@ import Buy from './Buy.svelte'
             <span>Name: {token.erc20name}</span>
             <span>Symbol: {token.erc20symbol}</span>
             <span>
-              Total supply: {formatUnits(token.erc20totalSupply, token.erc20decimals.toString())}
+              Total supply: {formatUnits(
+                token.erc20totalSupply,
+                token.erc20decimals.toString()
+              )}
             </span>
             <span>
-              Your balance: {formatUnits(token.erc20balance, token.erc20decimals.toString())}
+              Your balance: {formatUnits(
+                token.erc20balance,
+                token.erc20decimals.toString()
+              )}
             </span>
           </div>
         </FormPanel>
@@ -139,10 +145,16 @@ import Buy from './Buy.svelte'
             <span>Name: {reserve.erc20name}</span>
             <span>Symbol: {reserve.erc20symbol}</span>
             <span>
-              Total supply: {formatUnits(reserve.erc20totalSupply, reserve.erc20decimals.toString())}
+              Total supply: {formatUnits(
+                reserve.erc20totalSupply,
+                reserve.erc20decimals.toString()
+              )}
             </span>
             <span>
-              Your balance: {formatUnits(reserve.erc20balance, reserve.erc20decimals.toString())}
+              Your balance: {formatUnits(
+                reserve.erc20balance,
+                reserve.erc20decimals.toString()
+              )}
             </span>
           </div>
         </FormPanel>

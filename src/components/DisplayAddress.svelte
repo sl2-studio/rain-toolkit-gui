@@ -1,15 +1,13 @@
 <script>
-import { onMount } from 'svelte';
-import { formatAddress } from '../utils'
-import GenericSkeletonLoader from './GenericSkeletonLoader.svelte';
+  import { onMount } from "svelte";
+  import { formatAddress } from "../utils";
+  import GenericSkeletonLoader from "./GenericSkeletonLoader.svelte";
 
-export let address
+  export let address;
 
-$: displayAddress = address ? formatAddress(address) : "XXXX....XXXX"
-
-
+  $: displayAddress = address ? formatAddress(address) : "XXXX....XXXX";
 </script>
 
 <GenericSkeletonLoader show={address}>
-    <span class="text-sm">{displayAddress}</span>
+  <span class="text-sm">{displayAddress}</span>
 </GenericSkeletonLoader>

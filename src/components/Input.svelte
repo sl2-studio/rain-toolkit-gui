@@ -5,7 +5,7 @@
   export let value: string | number = "";
   export let placeholder = "";
   export let validator = (value: any): any => null;
-  export let debounce: boolean;
+  export let debounce: boolean = false;
   export let debounceTime: number = 750;
   let error: string;
   let timer;

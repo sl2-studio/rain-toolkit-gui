@@ -58,10 +58,26 @@ export type BuyConfig = {
   maximumPrice: BigNumber;
 };
 
-export const initSaleContract = async (signer: Signer, address: string) => {
-  const sale = new ethers.Contract(address, SaleArtifact.abi, signer);
-  const reserve = await getERC20(await sale.reserve(), signer);
-  const token = await getERC20(await sale.token(), signer);
+export interface SaleTokenData {
+  id: string;
+  token: {
+    id: string,
+    name: string,
+    symbols: string,
+    decimals: string,
+  };
+  reserve: {
+    id: string,
+    name: string,
+    symbols: string,
+    decimals: string,
+  }
+}
+
+export const initSaleContracts = (saleData: SaleTokenData, signer: Signer) => {
+  const sale = new ethers.Contract(saleData.id, SaleArtifact.abi, signer);
+  const reserve = new ethers.Contract(saleData.reserve.id, ReserveTokenArtifact.abi, signer);
+  const token = new ethers.Contract(saleData.token.id, ReserveTokenArtifact.abi, signer);
   return [sale, reserve, token];
 };
 

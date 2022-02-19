@@ -23,8 +23,19 @@
     Pending,
     Confirmed,
   }
+  interface SaleData {
+    cooldownDuration: string;
+    token: {
+      decimals: string;
+      symbol: string;
+    };
+    reserve: {
+      decimals: string;
+      symbol: string;
+    };
+  }
 
-  export let signer, token, reserve, sale;
+  export let signer, sale, saleData: SaleData;
 
   let units,
     fee,
@@ -37,10 +48,10 @@
 
   const calculatePrice = async (amount) => {
     priceConfirmed = PriceConfirmed.Pending;
-    const one = parseUnits("1", token.erc20decimals.toString());
+    const one = parseUnits("1", saleData.token.decimals.toString());
     const _units = parseUnits(
       amount.toString(),
-      token.erc20decimals.toString()
+      saleData.token.decimals.toString()
     );
     units = _units;
     const price = await sale.calculatePrice(_units);
@@ -114,16 +125,19 @@
           {:then result}
             <div class="flex flex-row gap-x-3">
               <span
-                >Price: {formatUnits(result.subtotal, reserve.erc20decimals)}
-                {reserve.erc20symbol}</span
+                >Price: {formatUnits(
+                  result.subtotal,
+                  saleData.reserve.decimals
+                )}
+                {saleData.reserve.symbol}</span
               >
               <span
-                >Fee: {formatUnits(result.fee, reserve.erc20decimals)}
-                {reserve.erc20symbol}</span
+                >Fee: {formatUnits(result.fee, saleData.reserve.decimals)}
+                {saleData.reserve.symbol}</span
               >
               <span
-                >Total: {formatUnits(result.total, reserve.erc20decimals)}
-                {reserve.erc20symbol}</span
+                >Total: {formatUnits(result.total, saleData.reserve.decimals)}
+                {saleData.reserve.symbol}</span
               >
             </div>
           {/await}
@@ -140,10 +154,10 @@
           class="text-blue-400 underline"
           target="_blank"
           href={`${BLOCK_EXPLORER}/block/${
-            parseInt(sale.cooldownDuration) + txReceipt.blockNumber
+            parseInt(saleData.cooldownDuration) + txReceipt.blockNumber
           }`}
         >
-          {parseInt(sale.cooldownDuration) + txReceipt.blockNumber}
+          {parseInt(saleData.cooldownDuration) + txReceipt.blockNumber}
         </a>.
       </span>
       <a

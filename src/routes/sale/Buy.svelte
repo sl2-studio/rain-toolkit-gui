@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { BigNumber, ethers } from "ethers";
+  import { BigNumber, Contract, ethers } from "ethers";
   import { signer, signerAddress } from "svelte-ethers-store";
   import Button from "components/Button.svelte";
   import FormPanel from "components/FormPanel.svelte";
@@ -8,19 +8,19 @@
   import ApproveModal from "./ApproveModal.svelte";
 
   const { open } = getContext("simple-modal");
+  interface SaleData {
+    cooldownDuration: string;
+  }
 
-  export let sale;
-  export let token;
-  export let reserve;
+  export let saleData: SaleData;
+  export let sale: Contract;
+  export let token: Contract;
+  export let reserve: Contract;
 
-  console.log(token);
   let approved, checkApprovalPromise;
 
   const checkApproval = async () => {
-    const allowance = await reserve.erc20Contract.allowance(
-      $signerAddress,
-      sale.address
-    );
+    const allowance = await reserve.allowance($signerAddress, sale.address);
 
     approved = allowance.gte(
       BigNumber.from(ethers.constants.MaxUint256).div(BigNumber.from(2))
@@ -56,7 +56,7 @@
       {:else}
         <Button
           on:click={() => {
-            open(BuyModal, { signer, sale, token, reserve });
+            open(BuyModal, { signer, sale, token, reserve, saleData });
           }}>Buy</Button
         >
       {/if}

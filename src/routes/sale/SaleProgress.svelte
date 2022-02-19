@@ -89,7 +89,7 @@ query ($saleAddress: Bytes!) {
     const now = Math.floor(Date.now() / 1000);
     const end = getAfterTimestampDate(sale.canEndStateConfig).getTime() / 1000;
     const start = parseInt(sale.startEvent.timestamp);
-    timeRemaining = timeString((end - now) * 1000);
+    timeRemaining = end - now > 0 ? timeString((end - now) * 1000) : "Can end";
     timeElapsed = timeString((now - start) * 1000);
   };
 

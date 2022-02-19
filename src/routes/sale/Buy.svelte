@@ -42,7 +42,7 @@
           on:click={() => {
             open(
               ApproveModal,
-              { signer, reserve, sale },
+              { signer, reserve, sale, saleData },
               {},
               {
                 onClosed: () => {

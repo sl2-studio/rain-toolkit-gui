@@ -20,7 +20,7 @@
     Complete,
   }
 
-  export let signer, reserve, sale;
+  export let signer, reserve, sale, saleData;
 
   let activeStep = ApproveSteps.Approve,
     txStatus = TxStatus.None,
@@ -29,10 +29,7 @@
 
   const approve = async () => {
     txStatus = TxStatus.AwaitingSignature;
-    const tx = await reserve.erc20Contract.approve(
-      sale.address,
-      ethers.constants.MaxUint256
-    );
+    const tx = await reserve.approve(saleData.id, ethers.constants.MaxUint256);
 
     txStatus = TxStatus.AwaitingConfirmation;
     txReceipt = await tx.wait();
@@ -54,7 +51,9 @@
     />
 
     {#if activeStep == ApproveSteps.Approve}
-      <span>Approve the sale contract to spend your {reserve.symbol}</span>
+      <span
+        >Approve the sale contract to spend your {saleData.token.symbol}</span
+      >
       <Button on:click={approve}>Approve</Button>
     {/if}
 

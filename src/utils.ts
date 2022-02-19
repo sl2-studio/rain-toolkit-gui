@@ -249,3 +249,7 @@ export function timeString(timestamp, options?) {
 
   return strings.get(options) || weeks + days + hours + minutes + seconds;
 }
+
+export const copyToClipboard = async (text) => {
+  await navigator.clipboard.writeText(text)
+}

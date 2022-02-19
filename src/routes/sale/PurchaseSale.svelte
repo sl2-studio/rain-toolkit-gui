@@ -11,6 +11,7 @@
   import MyTransactions from "./MyTransactions.svelte";
   import { initSaleContracts } from "./sale";
   import SaleProgress from "./SaleProgress.svelte";
+  import CheckTier from "./CheckTier.svelte";
 
   export let params: {
     wild: string;
@@ -18,7 +19,7 @@
 
   let sale, reserve, token;
   let errorMsg, saleAddress, saleAddressInput;
-  let initPromise, startPromise, endPromise;
+  let startPromise, endPromise;
 
   const saleQuery = operationStore(
     `
@@ -31,6 +32,11 @@
         symbol
         decimals
         totalSupply
+        minimumTier
+        tier {
+          id
+          __typename
+        }
       }
       reserve {
         id
@@ -40,6 +46,7 @@
         totalSupply
       }
       cooldownDuration
+      deployBlock
     }
   }
   `,
@@ -56,7 +63,8 @@
   };
 
   if (ethers.utils.isAddress(params.wild)) {
-    $saleQuery.variables.saleAddress = params.wild;
+    console.log("queried");
+    $saleQuery.variables.saleAddress = params.wild.toLowerCase();
     query(saleQuery);
   } else if (params.wild) {
     errorMsg = "Not a valid contract address";
@@ -65,6 +73,10 @@
   $: if (!$saleQuery.fetching && $saleQuery.data?.sale) {
     initContracts();
   }
+
+  $: console.log(sale);
+  $: console.log(saleQuery);
+  $: console.log(saleData);
 
   $: saleData = $saleQuery.data?.sale;
 
@@ -114,7 +126,9 @@
 
   {#if $saleQuery.fetching}
     Loading...
-  {:else}
+  {:else if !$saleQuery.data?.sale && $saleQuery.data}
+    No Sale found with that address.
+  {:else if sale}
     <FormPanel>
       <SaleProgress saleContract={sale} />
       <div class="grid grid-cols-2 gap-2 w-full">
@@ -155,6 +169,14 @@
           {/if}
         </div>
       </div>
+    </FormPanel>
+    <FormPanel heading="Eligibility">
+      <CheckTier
+        {signer}
+        minimumStatus={parseInt(saleData?.token.minimumTier)}
+        tierData={saleData?.token.tier}
+        againstBlock={saleData?.deployBlock}
+      />
     </FormPanel>
     <div class="grid grid-cols-2 gap-4">
       <FormPanel heading="Raise Token">

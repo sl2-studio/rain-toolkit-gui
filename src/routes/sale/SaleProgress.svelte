@@ -88,9 +88,12 @@ query ($saleAddress: Bytes!) {
   const getTime = () => {
     const now = Math.floor(Date.now() / 1000);
     const end = getAfterTimestampDate(sale.canEndStateConfig).getTime() / 1000;
-    const start = parseInt(sale.startEvent.timestamp);
-    timeRemaining = end - now > 0 ? timeString((end - now) * 1000) : "Can end";
-    timeElapsed = timeString((now - start) * 1000);
+    if (sale?.saleStatus == 1) {
+      const start = parseInt(sale.startEvent.timestamp);
+      timeRemaining =
+        end - now > 0 ? timeString((end - now) * 1000) : "Can end";
+      timeElapsed = timeString((now - start) * 1000);
+    }
   };
 
   // clear both loops on component destroy

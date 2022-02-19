@@ -1,12 +1,16 @@
 <script lang="ts">
+  import { balanceTierFactory } from "./../../stores.ts";
   import { signer, signerAddress } from "svelte-ethers-store";
   import Input from "../../components/Input.svelte";
-  import { balanceTierFactory } from "../../stores";
   import ReserveToken from "../../abis/ReserveToken.json";
-  import { ethers } from "ethers";
+  import { Contract, ethers } from "ethers";
   import FormPanel from "../../components/FormPanel.svelte";
   import Button from "../../components/Button.svelte";
-  import { BLOCK_EXPLORER } from "../../constants";
+  import {
+    BALANCE_TIER_FACTORY_ADDRESS,
+    BLOCK_EXPLORER,
+  } from "../../constants";
+  import BalanceTierFactoryArtifact from "abis/ERC20BalanceTierFactory.json";
 
   let erc20Address,
     erc20AddressError,
@@ -42,12 +46,17 @@
   };
 
   const deployBalanceTier = async () => {
+    const balanceTierFactory = new ethers.Contract(
+      BALANCE_TIER_FACTORY_ADDRESS,
+      BalanceTierFactoryArtifact.abi,
+      $signer
+    );
     const parsedTiers = tiers.map((value) =>
       value
         ? ethers.utils.parseUnits(value.toString(), erc20decimals)
         : ethers.constants.MaxInt256
     );
-    let tx = await $balanceTierFactory.createChildTyped([
+    let tx = await balanceTierFactory.createChildTyped([
       erc20Contract.address,
       parsedTiers,
     ]);

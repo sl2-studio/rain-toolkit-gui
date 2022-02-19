@@ -9,5 +9,5 @@
 </script>
 
 <GenericSkeletonLoader show={address}>
-  <span class="text-sm">{displayAddress}</span>
+  <span>{displayAddress}</span>
 </GenericSkeletonLoader>

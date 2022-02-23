@@ -17,9 +17,12 @@ export const enum Opcode {
   BLOCK_TIMESTAMP,
   SENDER,
   IS_ZERO,
+  EAGER_IF,
   EQUAL_TO,
   LESS_THAN,
   GREATER_THAN,
+  EVERY,
+  ANY,
   ADD,
   SUB,
   MUL,
@@ -155,14 +158,14 @@ export const afterTimestampConfig = (timestamp) => {
         op(Opcode.GREATER_THAN),
       ]),
     ],
-    constants: [timestamp - 1],
+    constants: [timestamp],
     stackLength: 3,
     argumentsLength: 0,
   };
 };
 
 export const getAfterTimestampDate = (stateConfig) => {
-  if (stateConfig.sources[0] === "0x050001000a00") {
+  if (stateConfig.sources[0] === "0x050001000b00") {
     return new Date(parseInt(stateConfig.constants[0]) * 1000);
   }
 };

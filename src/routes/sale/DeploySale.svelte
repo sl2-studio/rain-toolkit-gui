@@ -28,6 +28,8 @@
   let name = "Raise token";
   let symbol = "rTKN";
   let initialSupply = 1000;
+  let distributionEndForwardingAddress = ethers.constants.AddressZero;
+  let walletCap = 10;
   let tier = "0xC064055DFf6De32f44bB7cCB0ca59Cbd8434B2de";
   let minimumStatus = 0;
   let raiseRange;
@@ -51,10 +53,29 @@
       reserveErc20.erc20decimals
     );
 
-    const constants = [staticPrice];
-    const v10 = op(Opcode.VAL, 0);
+    const walletCap = parseUnits(fieldValues.walletCap.toString());
 
-    const sources = [concat([v10])];
+    const constants = [staticPrice, walletCap, ethers.constants.MaxUint256];
+
+    const sources = [
+      concat([
+        op(Opcode.CURRENT_BUY_UNITS),
+        op(Opcode.TOKEN_ADDRESS),
+        op(Opcode.SENDER),
+        op(Opcode.ERC20_BALANCE_OF),
+        op(Opcode.ADD, 2),
+        op(Opcode.VAL, 1),
+        op(Opcode.GREATER_THAN),
+        op(Opcode.VAL, 2),
+        op(Opcode.VAL, 0),
+        op(Opcode.EAGER_IF),
+      ]),
+    ];
+
+    // const constants = [staticPrice];
+    // const v10 = op(Opcode.VAL, 0);
+
+    // const sources = [concat([v10])];
 
     if (validationResult) {
       [sale, token] = await saleDeploy(
@@ -69,7 +90,7 @@
           calculatePriceStateConfig: {
             sources,
             constants,
-            stackLength: 1,
+            stackLength: 10,
             argumentsLength: 0,
           },
           recipient: fieldValues.recipient,
@@ -93,6 +114,8 @@
           },
           tier: fieldValues.tier,
           minimumTier: fieldValues.minimumStatus,
+          distributionEndForwardingAddress:
+            fieldValues.distributionEndForwardingAddress,
         }
       );
 
@@ -188,6 +211,19 @@
     >
       <span slot="label"> Price: </span>
     </Input>
+
+    <Input
+      type="number"
+      bind:this={fields.walletCap}
+      bind:value={walletCap}
+      validator={defaultValidator}
+    >
+      <span slot="label"> Cap per wallet: </span>
+      <span slot="description"
+        >The maximum number of raise tokens purchaseable by each eligible
+        address.</span
+      >
+    </Input>
   </FormPanel>
 
   <FormPanel heading="RedeemableERC20 config">
@@ -216,6 +252,20 @@
       validator={defaultValidator}
     >
       <span slot="label"> Initial supply: </span>
+    </Input>
+
+    <Input
+      type="text"
+      bind:this={fields.distributionEndForwardingAddress}
+      bind:value={distributionEndForwardingAddress}
+      validator={defaultValidator}
+    >
+      <span slot="label">Forwarding address: </span>
+      <span slot="description">
+        If set to anything other than the zero address, all unsold rTKN will be
+        forwarded to this address at the end of the raise. If the minimum raise
+        is 0, this must be set to something other than the zero address.
+      </span>
     </Input>
 
     <Input

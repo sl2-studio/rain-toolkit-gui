@@ -35,6 +35,7 @@ export type SaleRedeemableERC20Config = {
   erc20Config: ERC20Config;
   tier: string;
   minimumTier: Tier;
+  distributionEndForwardingAddress: string;
 };
 
 export enum Tier {

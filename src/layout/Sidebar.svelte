@@ -70,7 +70,7 @@
         Deploy a Verify & VerifyTier
       </SidebarLink>
 
-      <SidebarLink url="/verify/admin/">Administer a Verify</SidebarLink>
+      <SidebarLink url="/verify/administer/">Administer a Verify</SidebarLink>
     </SidebarLinkGroup>
   </div>
 </div>

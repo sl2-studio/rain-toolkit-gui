@@ -1,6 +1,6 @@
 <script>
-  export let value = 0;
   export let items = [];
+  export let value = items[0];
 
   export const validate = () => {
     return {

@@ -21,7 +21,8 @@
   import { initClient } from "@urql/svelte";
   import Modal from "svelte-simple-modal";
   import { fly } from "svelte/transition";
-import DeployVerify from "./routes/verify/DeployVerify.svelte";
+  import DeployVerify from "./routes/verify/DeployVerify.svelte";
+  import AdministerVerify from "./routes/verify/AdministerVerify.svelte";
 
   const client = initClient({
     url: "https://api.thegraph.com/subgraphs/name/beehive-innovation/rain-protocol-v2-mumbai",
@@ -53,7 +54,7 @@ import DeployVerify from "./routes/verify/DeployVerify.svelte";
     "/emissions/claim/*": ClaimEmissions,
 
     "/verify/deploy": DeployVerify,
-    "/verify/administer/*": DeployVerify,
+    "/verify/administer/*": AdministerVerify,
 
     "/": Home,
 

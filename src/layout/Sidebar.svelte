@@ -64,5 +64,13 @@
 
       <SidebarLink url="/emissions/claim/">Claim an EmissionsERC20</SidebarLink>
     </SidebarLinkGroup>
+
+    <SidebarLinkGroup label="Verify" url="/verify/*">
+      <SidebarLink url="/verify/deploy">
+        Deploy a Verify & VerifyTier
+      </SidebarLink>
+
+      <SidebarLink url="/verify/admin/">Administer a Verify</SidebarLink>
+    </SidebarLinkGroup>
   </div>
 </div>

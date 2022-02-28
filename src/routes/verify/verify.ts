@@ -1,3 +1,4 @@
+import { operationStore } from "@urql/svelte";
 import { ethers } from "ethers";
 
 export const roles = [
@@ -26,3 +27,24 @@ export const roles = [
         value: ethers.utils.keccak256(ethers.utils.toUtf8Bytes("BANNER")),
     },
 ];
+
+let verifyAddress
+
+export const verifyAddresses = operationStore(`
+query ($verifyAddress: Bytes!) {
+    verify (id: $verifyAddress ) {
+        id
+        verifyAddresses {
+          address
+          requestStatus
+          status
+          roles
+        }
+      }
+}`,
+    {
+        verifyAddress,
+    },
+    {
+        requestPolicy: "cache-and-network",
+    })

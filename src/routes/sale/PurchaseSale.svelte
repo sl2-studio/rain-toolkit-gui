@@ -63,7 +63,6 @@
   };
 
   if (ethers.utils.isAddress(params.wild)) {
-    console.log("queried");
     $saleQuery.variables.saleAddress = params.wild.toLowerCase();
     query(saleQuery);
   } else if (params.wild) {
@@ -73,10 +72,6 @@
   $: if (!$saleQuery.fetching && $saleQuery.data?.sale) {
     initContracts();
   }
-
-  $: console.log(sale);
-  $: console.log(saleQuery);
-  $: console.log(saleData);
 
   $: saleData = $saleQuery.data?.sale;
 

@@ -25,7 +25,7 @@
   import AdministerVerify from "./routes/verify/AdministerVerify.svelte";
 
   const client = initClient({
-    url: "https://api.thegraph.com/subgraphs/name/beehive-innovation/rain-protocol-v2-mumbai",
+    url: "https://api.thegraph.com/subgraphs/name/beehive-innovation/rain-protocol-v2_1-mumbai",
   });
 
   let routes = {};

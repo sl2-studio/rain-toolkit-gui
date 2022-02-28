@@ -3,7 +3,11 @@
   import { Contract } from "ethers";
   import FormPanel from "src/components/FormPanel.svelte";
   import AccountsTable from "./AccountsTable.svelte";
-  import { verifyAddresses } from "./verify";
+  import {
+    verifyAddresses,
+    verifyRequestStatuses,
+    verifyStatuses,
+  } from "./verify";
 
   export let verifyContract: Contract;
 
@@ -36,10 +40,10 @@
               {verifyAddress.address}
             </td>
             <td>
-              {verifyAddress.requestStatus}
+              {verifyRequestStatuses[Number(verifyAddress.requestStatus)]}
             </td>
             <td>
-              {verifyAddress.status}
+              {verifyStatuses[Number(verifyAddress.status)]}
             </td>
             <td class="py-2 text-right w-36" />
           </tr>

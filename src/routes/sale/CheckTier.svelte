@@ -56,7 +56,11 @@
     to participate in this Sale.
   </div>
   <div>
-    At block {againstBlock} you were tier {readableTiers[eligibleStatus - 1]}.
+    {#if eligibleStatus}
+      At block {againstBlock} you were tier {readableTiers[eligibleStatus - 1]}.
+    {:else}
+      At block {againstBlock} you had no tier.
+    {/if}
   </div>
   {#if eligibleStatus >= minimumStatus}
     <div>✅ You are eligible for this Sale.</div>

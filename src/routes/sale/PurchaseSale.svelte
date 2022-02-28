@@ -2,7 +2,7 @@
   import TokenInfo from "./TokenInfo.svelte";
   import { operationStore, query } from "@urql/svelte";
   import { ethers } from "ethers";
-  import { signer } from "svelte-ethers-store";
+  import { signer, provider } from "svelte-ethers-store";
   import { push } from "svelte-spa-router";
   import Button from "../../components/Button.svelte";
   import FormPanel from "../../components/FormPanel.svelte";
@@ -12,13 +12,14 @@
   import { initSaleContracts } from "./sale";
   import SaleProgress from "./SaleProgress.svelte";
   import CheckTier from "./CheckTier.svelte";
+  import { onMount } from "svelte";
 
   export let params: {
     wild: string;
   };
 
   let sale, reserve, token;
-  let errorMsg, saleAddress, saleAddressInput;
+  let errorMsg, saleAddress, saleAddressInput, latestBlock;
   let startPromise, endPromise;
 
   const saleQuery = operationStore(
@@ -92,6 +93,10 @@
       throw error;
     }
   };
+
+  onMount(async () => {
+    latestBlock = await $provider.getBlockNumber();
+  });
 </script>
 
 <div class="flex w-900 flex-col gap-y-4">
@@ -170,7 +175,7 @@
         {signer}
         minimumStatus={parseInt(saleData?.token.minimumTier)}
         tierData={saleData?.token.tier}
-        againstBlock={saleData?.deployBlock}
+        againstBlock={latestBlock}
       />
     </FormPanel>
     <div class="grid grid-cols-2 gap-4">

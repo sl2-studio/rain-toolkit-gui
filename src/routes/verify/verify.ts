@@ -48,3 +48,17 @@ query ($verifyAddress: Bytes!) {
     {
         requestPolicy: "cache-and-network",
     })
+
+export const verifyStatuses = [
+    "None",
+    "Approved",
+    "Banned",
+    "Removed"
+]
+
+export const verifyRequestStatuses = [
+    "None",
+    "Approve",
+    "Ban",
+    "Remove"
+]

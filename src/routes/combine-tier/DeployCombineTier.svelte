@@ -4,15 +4,12 @@
   import CombineTierFactoryArtifact from "../../abis/CombineTierFactory.json";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
-  import {
-    BLOCK_EXPLORER,
-    COMBINE_TIER_FACTORY_ADDRESS,
-  } from "../../constants";
   import { concat } from "ethers/lib/utils";
   import { op, selectLte, selectLteLogic, selectLteMode } from "../../utils";
   import { ContractReceipt, ethers } from "ethers";
   import { addressValidate } from "../../validation";
   import Select from "../../components/Select.svelte";
+  import { selectedNetwork } from "src/stores";
 
   let tierContractOne: string,
     tierContractTwo: string,
@@ -54,7 +51,7 @@
 
   const deployCombineTier = async () => {
     combineTierFactory = new ethers.Contract(
-      COMBINE_TIER_FACTORY_ADDRESS,
+      $selectedNetwork.addresses.COMBINE_TIER_FACTORY_ADDRESS,
       CombineTierFactoryArtifact.abi,
       $signer
     );
@@ -161,7 +158,7 @@
             New CombineTier deployed at:
             <a
               target="_blank"
-              href={`${BLOCK_EXPLORER}/address/${combineTierAddress}`}
+              href={`${$selectedNetwork.blockExplorer}/address/${combineTierAddress}`}
             >
               {combineTierAddress}
             </a>
@@ -170,7 +167,7 @@
             <a
               target="_blank"
               class="underline"
-              href={`${BLOCK_EXPLORER}/tx/${receipt.transactionHash}`}
+              href={`${$selectedNetwork.blockExplorer}/tx/${receipt.transactionHash}`}
             >
               See transaction.
             </a>

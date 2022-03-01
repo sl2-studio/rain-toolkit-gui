@@ -1,8 +1,6 @@
 import { ethers } from "ethers";
 import ERC721BalanceTierAbi from "../../abis/ERC721BalanceTier.json";
-import ERC20BalanceTierAbi from "../../abis/ERC20BalanceTier.json";
 import ERC721Abi from "../../abis/ERC721.json";
-import ERC20Abi from "../../abis/ReserveToken.json";
 import { signer } from "svelte-ethers-store";
 import { get } from "svelte/store";
 

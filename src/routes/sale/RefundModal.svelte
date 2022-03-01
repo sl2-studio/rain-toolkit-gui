@@ -3,10 +3,10 @@
   import { formatUnits } from "ethers/lib/utils";
   import Button from "components/Button.svelte";
   import Steps from "components/steps/Steps.svelte";
-  import { BLOCK_EXPLORER } from "src/constants";
   import Ring from "components/Ring.svelte";
   import { BigNumber, ethers } from "ethers";
   import ReserveTokenArtifact from "abis/ReserveToken.json";
+  import { selectedNetwork } from "src/stores";
 
   enum TxStatus {
     None,
@@ -113,12 +113,12 @@
       <span>Refunding:</span>
       <span>
         {formatUnits(transaction.receipt.units, token.decimals)}
-        {reserve.symbol}
+        {token.symbol}
       </span>
       <span>Total refund:</span>
       <span
         >{formatUnits(transaction.totalIn, reserve.decimals)}
-        {token.symbol}</span
+        {reserve.symbol}</span
       >
     </div>
 
@@ -143,7 +143,7 @@
         <a
           class="text-blue-400 underline"
           target="_blank"
-          href={`${BLOCK_EXPLORER}/block/${
+          href={`${$selectedNetwork.blockExplorer}/block/${
             parseInt(sale.cooldownDuration) + txReceipt.blockNumber
           }`}
         >
@@ -153,7 +153,7 @@
       <a
         class="text-blue-400 underline"
         target="_blank"
-        href={`${BLOCK_EXPLORER}/tx/${txReceipt?.transactionHash}`}
+        href={`${$selectedNetwork.blockExplorer}/tx/${txReceipt?.transactionHash}`}
       >
         See transaction.
       </a>

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { signer, signerAddress } from "svelte-ethers-store";
-  import { ethers } from "ethers";
+  import { Contract, ethers } from "ethers";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
   import Button from "../../components/Button.svelte";
@@ -13,7 +13,7 @@
     combineTierAddress: string,
     addressToReport: string,
     parsedReport: number[],
-    combineTierContract: CombineTier;
+    combineTierContract: Contract;
 
   const tierValues = new Array(8);
 

@@ -1,13 +1,12 @@
 <script lang="ts">
   import { signer, signerAddress } from "svelte-ethers-store";
   import Input from "../../components/Input.svelte";
-  import { erc721BalanceTierFactory } from "../../stores";
   import { BigNumber, Contract, ContractReceipt, ethers } from "ethers";
   import FormPanel from "../../components/FormPanel.svelte";
   import Button from "../../components/Button.svelte";
-  import { getNewChildFromReceipt } from "../../utils";
-  import { BLOCK_EXPLORER } from "../../constants";
   import ERC20Artifact from "../../abis/ERC721.json";
+  import ERC721BalanceTierFactoryArtifact from "../../abis/ERC721BalanceTierFactory.json";
+  import { selectedNetwork } from "src/stores";
 
   let balanceTierAddress: string,
     deployPromise: null | Promise<ContractReceipt | undefined>;
@@ -23,8 +22,6 @@
   $: if (erc721Address) {
     getERC721();
   }
-
-  console.log(erc721BalanceTierFactory);
 
   const getERC721 = async () => {
     if (erc721Address && ethers.utils.isAddress(erc721Address)) {
@@ -50,7 +47,12 @@
       const parsedTiers = tiers.map((value) =>
         value ? BigNumber.from(value) : ethers.constants.MaxInt256
       );
-      let tx = await $erc721BalanceTierFactory[
+      const erc721BalanceTierFactory = new ethers.Contract(
+        $selectedNetwork.addresses.ERC721_BALANCE_TIER_FACTORY_ADDRESS,
+        ERC721BalanceTierFactoryArtifact.abi,
+        $signer
+      );
+      let tx = await erc721BalanceTierFactory[
         "createChildTyped((address,uint256[8]))"
       ]([erc721Contract.address, parsedTiers]);
       const receipt = (await tx.wait()) as ContractReceipt;
@@ -120,7 +122,7 @@
             New BalanceTier deployed at:
             <a
               target="_blank"
-              href={`${BLOCK_EXPLORER}/address/${balanceTierAddress}`}
+              href={`${$selectedNetwork.blockExplorer}/address/${balanceTierAddress}`}
             >
               {balanceTierAddress}
             </a>
@@ -129,7 +131,7 @@
             <a
               target="_blank"
               class="underline"
-              href={`${BLOCK_EXPLORER}/tx/${receipt?.transactionHash}`}
+              href={`${$selectedNetwork.blockExplorer}/tx/${receipt?.transactionHash}`}
             >
               See transaction.
             </a>

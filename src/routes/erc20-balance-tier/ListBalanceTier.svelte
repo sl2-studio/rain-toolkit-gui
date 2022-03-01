@@ -27,6 +27,7 @@ query {
 `);
 
   query(balanceTiers);
+  $: console.log(balanceTiers);
 </script>
 
 {#if $balanceTiers.fetching}

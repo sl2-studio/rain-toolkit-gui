@@ -2,10 +2,10 @@
   import { formatUnits, parseUnits } from "ethers/lib/utils";
   import Button from "components/Button.svelte";
   import Steps from "components/steps/Steps.svelte";
-  import { BLOCK_EXPLORER } from "src/constants";
   import Ring from "components/Ring.svelte";
   import { BigNumber, ethers } from "ethers";
   import Input from "src/components/Input.svelte";
+  import { selectedNetwork } from "src/stores";
 
   enum TxStatus {
     None,
@@ -153,7 +153,7 @@
         <a
           class="text-blue-400 underline"
           target="_blank"
-          href={`${BLOCK_EXPLORER}/block/${
+          href={`${$selectedNetwork.blockExplorer}/block/${
             parseInt(saleData.cooldownDuration) + txReceipt.blockNumber
           }`}
         >
@@ -163,7 +163,7 @@
       <a
         class="text-blue-400 underline"
         target="_blank"
-        href={`${BLOCK_EXPLORER}/tx/${txReceipt?.transactionHash}`}
+        href={`${$selectedNetwork.blockExplorer}/tx/${txReceipt?.transactionHash}`}
       >
         See transaction.
       </a>

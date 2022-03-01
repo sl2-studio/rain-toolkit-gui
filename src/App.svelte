@@ -20,13 +20,17 @@
   import ClaimEmissions from "./routes/emissions-erc20/ClaimEmissions.svelte";
   import { initClient } from "@urql/svelte";
   import Modal from "svelte-simple-modal";
-  import { fly } from "svelte/transition";
   import DeployVerify from "./routes/verify/DeployVerify.svelte";
   import AdministerVerify from "./routes/verify/AdministerVerify.svelte";
+  import { selectedNetwork } from "./stores";
 
-  const client = initClient({
-    url: "https://api.thegraph.com/subgraphs/name/beehive-innovation/rain-protocol-v2_1-mumbai",
-  });
+  let client;
+
+  $: if ($selectedNetwork) {
+    client = initClient({
+      url: $selectedNetwork.graphUrl,
+    });
+  }
 
   let routes = {};
 

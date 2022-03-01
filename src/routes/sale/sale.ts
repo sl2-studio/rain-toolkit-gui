@@ -1,12 +1,13 @@
 import { BigNumber, Contract, ethers, Signer } from "ethers";
 import { SaleConfig, SaleRedeemableERC20Config } from "../../types";
-import { getERC20, getNewChildFromReceipt, op } from "../../utils";
+import { getNewChildFromReceipt, op } from "../../utils";
 import SaleFactoryArtifact from "../../abis/SaleFactory.json";
 import SaleArtifact from "../../abis/Sale.json";
-import { SALE_FACTORY } from "../../constants";
 import RedeemableERC20Artifact from "../../abis/RedeemableERC20.json";
 import ReserveTokenArtifact from "../../abis/ReserveToken.json";
 import { concat } from "ethers/lib/utils";
+import { selectedNetwork } from "src/stores";
+import { get } from "svelte/store";
 
 export const enum Opcode {
   SKIP,
@@ -94,7 +95,7 @@ export const saleDeploy = async (
   console.log(saleRedeemableERC20Config);
   console.log(config.calculatePriceStateConfig.constants[0].toString());
   const saleFactory = new ethers.Contract(
-    SALE_FACTORY,
+    get(selectedNetwork).addresses.SALE_FACTORY,
     SaleFactoryArtifact.abi,
     deployer
   );

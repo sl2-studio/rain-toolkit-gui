@@ -1,8 +1,6 @@
 <script lang="ts">
-  import { signer, signerAddress } from "svelte-ethers-store";
-  import { ethers, utils } from "ethers";
-  import { formatUnits, isAddress } from "ethers/lib/utils";
-  import { onMount } from "svelte";
+  import { signerAddress } from "svelte-ethers-store";
+  import { ethers } from "ethers";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
   import Button from "../../components/Button.svelte";

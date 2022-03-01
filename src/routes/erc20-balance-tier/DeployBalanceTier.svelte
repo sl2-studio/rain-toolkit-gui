@@ -1,16 +1,12 @@
 <script lang="ts">
-  import { balanceTierFactory } from "./../../stores.ts";
   import { signer, signerAddress } from "svelte-ethers-store";
   import Input from "../../components/Input.svelte";
   import ReserveToken from "../../abis/ReserveToken.json";
   import { Contract, ethers } from "ethers";
   import FormPanel from "../../components/FormPanel.svelte";
   import Button from "../../components/Button.svelte";
-  import {
-    BALANCE_TIER_FACTORY_ADDRESS,
-    BLOCK_EXPLORER,
-  } from "../../constants";
   import BalanceTierFactoryArtifact from "abis/ERC20BalanceTierFactory.json";
+  import { selectedNetwork } from "src/stores";
 
   let erc20Address,
     erc20AddressError,
@@ -47,7 +43,7 @@
 
   const deployBalanceTier = async () => {
     const balanceTierFactory = new ethers.Contract(
-      BALANCE_TIER_FACTORY_ADDRESS,
+      $selectedNetwork.addresses.BALANCE_TIER_FACTORY_ADDRESS,
       BalanceTierFactoryArtifact.abi,
       $signer
     );
@@ -126,7 +122,7 @@
           <span>
             New BalanceTier deployed at: <a
               target="_blank"
-              href={`${BLOCK_EXPLORER}/address/${balanceTierAddress}`}
+              href={`${$selectedNetwork.blockExplorer}/address/${balanceTierAddress}`}
               >{balanceTierAddress}</a
             >
           </span>
@@ -134,7 +130,7 @@
             <a
               target="_blank"
               class="underline"
-              href={`${BLOCK_EXPLORER}/tx/${receipt.transactionHash}`}
+              href={`${$selectedNetwork.blockExplorer}/tx/${receipt.transactionHash}`}
               >See transaction.</a
             >
           </span>

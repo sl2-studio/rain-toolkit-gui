@@ -9,7 +9,7 @@
   import VerifyFactoryArtifact from "abis/VerifyFactory.json";
   import VerifyTierFactoryArtifact from "abis/VerifyTierFactory.json";
   import { ethers } from "ethers";
-  import { VERIFY_FACTORY, VERIFY_TIER_FACTORY } from "src/constants";
+  import { selectedNetwork } from "src/stores";
 
   export const roles = [
     {
@@ -49,7 +49,7 @@
 
   const deployVerify = async () => {
     const verifyFactory = new ethers.Contract(
-      VERIFY_FACTORY,
+      $selectedNetwork.addresses.VERIFY_FACTORY,
       VerifyFactoryArtifact.abi,
       $signer
     );
@@ -62,7 +62,7 @@
 
   const deployVerifyTier = async () => {
     const verifyTierFactory = new ethers.Contract(
-      VERIFY_TIER_FACTORY,
+      $selectedNetwork.addresses.VERIFY_TIER_FACTORY,
       VerifyTierFactoryArtifact.abi,
       $signer
     );

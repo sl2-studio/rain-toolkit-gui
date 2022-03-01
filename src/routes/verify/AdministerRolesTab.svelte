@@ -3,7 +3,7 @@
   import FormPanel from "src/components/FormPanel.svelte";
   import Input from "src/components/Input.svelte";
   import Select from "src/components/Select.svelte";
-  import { BLOCK_EXPLORER } from "src/constants";
+  import { selectedNetwork } from "src/stores";
   import { roles } from "./verify";
 
   export let verifyContract;
@@ -49,7 +49,7 @@
           <a
             target="_blank"
             class="underline"
-            href={`${BLOCK_EXPLORER}/tx/${receipt.transactionHash}`}
+            href={`${$selectedNetwork.blockExplorer}/tx/${receipt.transactionHash}`}
             >See transaction.</a
           >
         </span>

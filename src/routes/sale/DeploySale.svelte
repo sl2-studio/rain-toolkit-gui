@@ -1,11 +1,8 @@
 <script lang="ts">
-  import { BigNumber, ethers } from "ethers";
-
+  import { ethers } from "ethers";
   import { concat, formatUnits, parseUnits } from "ethers/lib/utils";
-
   import { signer } from "svelte-ethers-store";
   import Button from "../../components/Button.svelte";
-
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
   import { getERC20, op, validateFields } from "../../utils";
@@ -33,8 +30,6 @@
   let tier = "0xC064055DFf6De32f44bB7cCB0ca59Cbd8434B2de";
   let minimumStatus = 0;
   let raiseRange;
-
-  $: console.log(Math.floor(raiseRange?.[0].$d.getTime() / 1000));
 
   // @TODO write validators
   const defaultValidator = () => {
@@ -72,11 +67,6 @@
       ]),
     ];
 
-    // const constants = [staticPrice];
-    // const v10 = op(Opcode.VAL, 0);
-
-    // const sources = [concat([v10])];
-
     if (validationResult) {
       [sale, token] = await saleDeploy(
         $signer,
@@ -107,10 +97,7 @@
             name: fieldValues.name,
             symbol: fieldValues.symbol,
             distributor: ethers.constants.AddressZero,
-            initialSupply: parseUnits(
-              fieldValues.initialSupply.toString(),
-              reserveErc20.erc20decimals
-            ),
+            initialSupply: parseUnits(fieldValues.initialSupply.toString()),
           },
           tier: fieldValues.tier,
           minimumTier: fieldValues.minimumStatus,
@@ -118,14 +105,11 @@
             fieldValues.distributionEndForwardingAddress,
         }
       );
-
-      console.log(sale, token);
     }
   };
   const getReserveErc20 = async () => {
     if (fields.reserve.validate()) {
       reserveErc20 = await getERC20(reserve, $signer);
-      console.log(reserveErc20);
     }
   };
 

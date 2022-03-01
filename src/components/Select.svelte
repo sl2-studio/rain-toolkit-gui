@@ -1,6 +1,10 @@
 <script>
+  import { createEventDispatcher } from "svelte";
+
   export let items = [];
   export let value = items[0];
+
+  const dispatch = createEventDispatcher();
 
   export const validate = () => {
     return {
@@ -23,9 +27,12 @@
   {/if}
   <div class="self-start rounded-md border border-gray-500 text-white">
     <select
-      class="text-light outline-none border-none bg-transparent px-4 py-2
+      class="text-light outline-none mr-2 border-none bg-transparent px-4 py-2
       text-gray-400"
       bind:value
+      on:change={() => {
+        dispatch("change");
+      }}
     >
       {#each items as item}
         <option class="text-white" value={item}>{item.label}</option>

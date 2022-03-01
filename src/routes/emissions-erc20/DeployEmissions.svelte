@@ -3,7 +3,6 @@
   import Button from "../../components/Button.svelte";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
-  import { BLOCK_EXPLORER, EMISSIONS_FACTORY } from "../../constants";
   import { validateFields } from "../../utils";
   import { ContractReceipt, ethers } from "ethers";
   import EmissionsFactoryArtifact from "../../abis/EmissionsERC20Factory.json";
@@ -14,6 +13,7 @@
     ERC20ConfigStruct,
     EmissionsERC20ConfigStruct,
   } from "./emissions";
+  import { selectedNetwork } from "src/stores";
 
   let deployPromise;
   let emissionsAddress;
@@ -39,7 +39,7 @@
 
   const deployEmissions = async () => {
     const emissionsFactory = new ethers.Contract(
-      EMISSIONS_FACTORY,
+      $selectedNetwork.addresses.EMISSIONS_FACTORY,
       EmissionsFactoryArtifact.abi,
       $signer
     );
@@ -194,7 +194,7 @@
             New EmissionsERC20 deployed at:
             <a
               target="_blank"
-              href={`${BLOCK_EXPLORER}/address/${emissionsAddress}`}
+              href={`${$selectedNetwork.blockExplorer}/address/${emissionsAddress}`}
             >
               {emissionsAddress}
             </a>
@@ -203,7 +203,7 @@
             <a
               target="_blank"
               class="underline"
-              href={`${BLOCK_EXPLORER}/tx/${receipt.transactionHash}`}
+              href={`${$selectedNetwork.blockExplorer}/tx/${receipt.transactionHash}`}
             >
               See transaction.
             </a>

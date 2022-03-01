@@ -1,14 +1,12 @@
 <script lang="ts">
-  import Button from "components/Button.svelte";
   import RefundModal from "./RefundModal.svelte";
   import { operationStore, query } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
   import { signerAddress } from "svelte-ethers-store";
   import { getContext, onDestroy } from "svelte";
-  import { fade } from "svelte/transition";
   import IconLibrary from "components/IconLibrary.svelte";
-  import { BLOCK_EXPLORER } from "src/constants";
   import dayjs from "dayjs";
+  import { selectedNetwork } from "src/stores";
 
   const { open } = getContext("simple-modal");
   export let saleContract;
@@ -190,7 +188,7 @@
               {/if}
             {/if}
             <a
-              href={`${BLOCK_EXPLORER}/tx/${transaction.transactionHash}`}
+              href={`${$selectedNetwork.blockExplorer}/tx/${transaction.transactionHash}`}
               target="_blank"
             >
               <IconLibrary icon="link" color="font-gray-100" width="10" />

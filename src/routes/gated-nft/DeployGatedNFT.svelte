@@ -2,7 +2,6 @@
   import { signer, signerAddress } from "svelte-ethers-store";
   import { BigNumber, BigNumberish, ethers } from "ethers";
   import GatedNFTFactoryArtifact from "../../abis/GatedNFTFactory.json";
-  import { BLOCK_EXPLORER, GATED_NFT_FACTORY } from "../../constants";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
   import Button from "../../components/Button.svelte";
@@ -19,6 +18,7 @@
   } from "./minter-validation";
   import Select from "../../components/Select.svelte";
   import { addressValidate } from "../../validation";
+  import { selectedNetwork } from "src/stores";
 
   type GatedNFTTokenConfig = {
     name: string;
@@ -74,7 +74,7 @@
     "0x0000000000000000000000000000000000000000000000000000000000000000";
 
   const gatedNftFactory = new ethers.Contract(
-    GATED_NFT_FACTORY,
+    $selectedNetwork.addresses.GATED_NFT_FACTORY,
     GatedNFTFactoryArtifact.abi,
     $signer
   );
@@ -308,7 +308,7 @@
             New GatedNFT deployed at:
             <a
               target="_blank"
-              href={`${BLOCK_EXPLORER}/address/${nftContract}`}
+              href={`${$selectedNetwork.blockExplorer}/address/${nftContract}`}
             >
               {nftContract}
             </a>
@@ -317,7 +317,7 @@
             <a
               target="_blank"
               class="underline"
-              href={`${BLOCK_EXPLORER}/tx/${receipt.transactionHash}`}
+              href={`${$selectedNetwork.blockExplorer}/tx/${receipt.transactionHash}`}
             >
               See transaction.
             </a>

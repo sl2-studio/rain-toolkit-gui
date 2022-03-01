@@ -1,10 +1,10 @@
 <script lang="ts">
   import Button from "components/Button.svelte";
   import Steps from "components/steps/Steps.svelte";
-  import { BLOCK_EXPLORER } from "src/constants";
   import Ring from "components/Ring.svelte";
   import { ethers } from "ethers";
   import { getContext } from "svelte";
+  import { selectedNetwork } from "src/stores";
 
   const { close } = getContext("simple-modal");
 
@@ -63,7 +63,7 @@
       <a
         class="text-blue-400 underline"
         target="_blank"
-        href={`${BLOCK_EXPLORER}/tx/${txReceipt?.transactionHash}`}
+        href={`${$selectedNetwork.blockExplorer}/tx/${txReceipt?.transactionHash}`}
       >
         See transaction.
       </a>

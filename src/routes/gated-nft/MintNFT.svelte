@@ -1,13 +1,12 @@
 <script lang="ts">
   import { signer, signerAddress } from "svelte-ethers-store";
   import { ethers } from "ethers";
-
   import GatedNFTArtifact from "../../abis/GatedNFT.json";
   import Button from "../../components/Button.svelte";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
   import { push } from "svelte-spa-router";
-  import { BLOCK_EXPLORER } from "../../constants";
+  import { selectedNetwork } from "src/stores";
 
   let gatedMinter,
     mintPromise,
@@ -98,7 +97,7 @@
               <a
                 target="_blank"
                 class="underline"
-                href={`${BLOCK_EXPLORER}/tx/${receipt.transactionHash}`}
+                href={`${$selectedNetwork.blockExplorer}/tx/${receipt.transactionHash}`}
                 >See transaction.</a
               >
             </span>

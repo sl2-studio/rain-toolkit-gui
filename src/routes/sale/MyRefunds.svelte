@@ -2,8 +2,8 @@
   import dayjs from "dayjs";
   import { operationStore, query } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
-  import { BLOCK_EXPLORER } from "../../constants";
   import IconLibrary from "components/IconLibrary.svelte";
+  import { selectedNetwork } from "src/stores";
 
   export let saleContract;
 
@@ -91,7 +91,7 @@ query ($saleAddress: Bytes!) {
           </td>
           <td class="w-36 text-right">
             <a
-              href={`${BLOCK_EXPLORER}/tx/${refund.transactionHash}`}
+              href={`${$selectedNetwork.blockExplorer}/tx/${refund.transactionHash}`}
               target="_blank"
             >
               <IconLibrary icon="link" color="font-gray-100" width="10" />

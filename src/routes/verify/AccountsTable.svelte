@@ -2,25 +2,75 @@
   import { query } from "@urql/svelte";
   import { Contract } from "ethers";
   import FormPanel from "src/components/FormPanel.svelte";
-  import AccountsTable from "./AccountsTable.svelte";
+  import IconLibrary from "src/components/IconLibrary.svelte";
+  import OverflowMenu from "src/components/overflow-menu/OverflowMenu.svelte";
+  import OverFlowMenuItem from "src/components/overflow-menu/OverFlowMenuItem.svelte";
+  import SimpleTransactionModal from "src/components/SimpleTransactionModal.svelte";
+  import { selectedNetwork } from "src/stores";
+  import { getContext } from "svelte";
   import {
     verifyAddresses,
-    verifyRequestStatuses,
-    verifyStatuses,
+    verifyRequestStatusNames,
+    VerifyStatuses,
+    verifyStatusNames,
   } from "./verify";
+
+  const { open } = getContext("simple-modal");
 
   export let verifyContract: Contract;
 
   verifyAddresses.variables.verifyAddress =
     verifyContract.address.toLowerCase();
-  query(verifyAddresses);
 
-  $: console.log($verifyAddresses);
+  $: if ($selectedNetwork) {
+    setQuery();
+  }
+
+  const setQuery = () => {
+    console.log(getContext("$$_urql"));
+    query(verifyAddresses);
+  };
+
+  const refresh = () => {
+    console.log("refreshing");
+    $verifyAddresses.reexecute();
+  };
+
+  const handleApprove = (address: string) => {
+    open(SimpleTransactionModal, {
+      method: verifyContract.approve,
+      args: [[{ account: address, data: "0x10" }]],
+      confirmationMsg: `${address} has been approved.`,
+    });
+  };
+
+  const handleBan = (address: string) => {
+    open(SimpleTransactionModal, {
+      method: verifyContract.ban,
+      args: [[{ account: address, data: "0x10" }]],
+      confirmationMsg: `${address} has been banned.`,
+    });
+  };
+
+  const handleRemove = (address: string) => {
+    open(SimpleTransactionModal, {
+      method: verifyContract.remove,
+      args: [[{ account: address, data: "0x10" }]],
+      confirmationMsg: `${address} has been removed.`,
+    });
+  };
+
+  // $: console.log($verifyAddresses);
 </script>
 
 <FormPanel>
   <div class="flex w-full flex-col gap-y-4">
-    <span class="text-lg font-semibold">Account statuses</span>
+    <div class="flex flex-row justify-between">
+      <span class="text-lg font-semibold">Account statuses</span>
+      <span class:animate-spin={$verifyAddresses.fetching} on:click={refresh}
+        ><IconLibrary icon="reload" /></span
+      >
+    </div>
     {#if $verifyAddresses.fetching}
       Loading accounts...
     {:else if $verifyAddresses.error}
@@ -40,12 +90,36 @@
               {verifyAddress.address}
             </td>
             <td>
-              {verifyRequestStatuses[Number(verifyAddress.requestStatus)]}
+              {verifyRequestStatusNames[Number(verifyAddress.requestStatus)]}
             </td>
             <td>
-              {verifyStatuses[Number(verifyAddress.status)]}
+              {verifyStatusNames[Number(verifyAddress.status)]}
             </td>
-            <td class="py-2 text-right w-36" />
+            <td class="py-2 text-right w-36">
+              <OverflowMenu>
+                {#if (verifyAddress.status !== VerifyStatuses.APPROVE && verifyAddress.status !== VerifyStatuses.BAN) || verifyAddress.requestStatus == VerifyStatuses.APPROVE}
+                  <OverFlowMenuItem
+                    on:click={() => {
+                      handleApprove(verifyAddress.address);
+                    }}>Approve</OverFlowMenuItem
+                  >
+                {/if}
+                {#if verifyAddress.status !== VerifyStatuses.REMOVE || verifyAddress.status == VerifyStatuses.NONE}
+                  <OverFlowMenuItem
+                    on:click={() => {
+                      handleRemove(verifyAddress.address);
+                    }}>Remove</OverFlowMenuItem
+                  >
+                {/if}
+                {#if verifyAddress.status !== VerifyStatuses.BAN}
+                  <OverFlowMenuItem
+                    on:click={() => {
+                      handleBan(verifyAddress.address);
+                    }}>Ban</OverFlowMenuItem
+                  >
+                {/if}
+              </OverflowMenu>
+            </td>
           </tr>
         {/each}
       </table>

@@ -23,14 +23,7 @@
   import DeployVerify from "./routes/verify/DeployVerify.svelte";
   import AdministerVerify from "./routes/verify/AdministerVerify.svelte";
   import { selectedNetwork } from "./stores";
-
-  let client;
-
-  $: if ($selectedNetwork) {
-    client = initClient({
-      url: $selectedNetwork.graphUrl,
-    });
-  }
+  import Client from "./Client.svelte";
 
   let routes = {};
 
@@ -81,7 +74,9 @@
     <Sidebar />
     <div class="w-full py-5 px-8">
       {#if $connected}
-        <Router {routes} />
+        <Client>
+          <Router {routes} />
+        </Client>
       {:else}
         Connect your wallet to get started.
       {/if}

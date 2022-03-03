@@ -1,8 +1,14 @@
 <script>
-  import NetworkSwitcher from "src/components/NetworkSwitcher.svelte";
+  import { getContext } from "svelte";
   import { signerAddress } from "svelte-ethers-store";
   import Connect from "../components/Connect.svelte";
   import User from "../components/User.svelte";
+
+  const { open } = getContext("simple-modal");
+
+  const handleConnect = () => {
+    open(Connect);
+  };
 </script>
 
 <div
@@ -11,12 +17,14 @@
   <span class="text-xl font-light text-gray-50">Rain UI Toolkit</span>
   <div class="flex flex-row items-center gap-x-4">
     {#if $signerAddress}
-      <NetworkSwitcher />
       <span class="text-gray-400">
         <User address={$signerAddress} />
       </span>
     {:else}
-      <Connect />
+      <button
+        class="rounded-md border-none bg-gray-700 px-4 py-2 text-gray-200"
+        on:click={handleConnect}>Connect</button
+      >
     {/if}
   </div>
 </div>

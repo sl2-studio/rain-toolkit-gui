@@ -1,5 +1,5 @@
 import { operationStore } from "@urql/svelte";
-import { ethers } from "ethers";
+import { Contract, ethers } from "ethers";
 
 export const roles = [
     {
@@ -46,19 +46,26 @@ query ($verifyAddress: Bytes!) {
         verifyAddress,
     },
     {
-        requestPolicy: "cache-and-network",
+        requestPolicy: "network-only",
     })
 
-export const verifyStatuses = [
+export const verifyStatusNames = [
     "None",
     "Approved",
     "Banned",
     "Removed"
 ]
 
-export const verifyRequestStatuses = [
+export const verifyRequestStatusNames = [
     "None",
     "Approve",
     "Ban",
     "Remove"
 ]
+
+export enum VerifyStatuses {
+    NONE,
+    APPROVE,
+    BAN,
+    REMOVE
+}

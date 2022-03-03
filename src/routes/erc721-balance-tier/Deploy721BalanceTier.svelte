@@ -32,6 +32,8 @@
       console.log(erc721Contract);
       try {
         erc721Name = await erc721Contract.name();
+      } catch {}
+      try {
         erc721Balance = await erc721Contract.balanceOf($signerAddress);
       } catch (error) {
         console.log(error);

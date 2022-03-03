@@ -1,4 +1,4 @@
 import { writable } from "svelte/store";
 import { networks } from "./constants";
 
-export const selectedNetwork = writable(networks[0])
+export const selectedNetwork = writable(networks[1])

@@ -49,3 +49,11 @@ export enum Tier {
   SEVEN,
   EIGHT,
 }
+
+export enum TxStatus {
+  None,
+  AwaitingSignature,
+  AwaitingConfirmation,
+  Error,
+  Confirmed
+}

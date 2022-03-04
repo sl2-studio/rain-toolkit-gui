@@ -158,7 +158,7 @@ export enum selectLteMode {
   first,
 }
 
-export const getERC20 = async (erc20Address, signer) => {
+export const getERC20 = async (erc20Address, signer, signerAddress) => {
   let erc20AddressError,
     erc20Contract,
     erc20name,
@@ -175,7 +175,7 @@ export const getERC20 = async (erc20Address, signer) => {
       console.log(signer);
       erc20name = await erc20Contract.name();
       erc20symbol = await erc20Contract.symbol();
-      erc20balance = await erc20Contract.balanceOf(signer._address);
+      erc20balance = await erc20Contract.balanceOf(signerAddress);
       erc20decimals = await erc20Contract.decimals();
       erc20totalSupply = await erc20Contract.totalSupply();
       return {

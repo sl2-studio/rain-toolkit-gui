@@ -262,6 +262,6 @@ export const initEmissions = async (signer: Signer, address: string) => {
     EmissionsERC20Artifact.abi,
     signer
   );
-  const token = await getERC20(address, signer);
+  const token = await getERC20(address, signer, signerAddress);
   return [emissionsContract, token];
 };

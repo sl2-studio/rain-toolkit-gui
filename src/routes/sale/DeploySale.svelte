@@ -1,7 +1,7 @@
 <script lang="ts">
   import { ethers } from "ethers";
   import { concat, formatUnits, parseUnits } from "ethers/lib/utils";
-  import { signer } from "svelte-ethers-store";
+  import { signer, signerAddress } from "svelte-ethers-store";
   import Button from "../../components/Button.svelte";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
@@ -43,12 +43,16 @@
   const deploy = async () => {
     const { validationResult, fieldValues } = validateFields(fields);
     console.log(fieldValues);
+
+    // utility functions for converting to token amounts with the req decimals
     const staticPrice = parseUnits(
       fieldValues.price.toString(),
       reserveErc20.erc20decimals
     );
 
     const walletCap = parseUnits(fieldValues.walletCap.toString());
+
+    //////////////////
 
     const constants = [staticPrice, walletCap, ethers.constants.MaxUint256];
 
@@ -66,6 +70,8 @@
         op(Opcode.EAGER_IF),
       ]),
     ];
+
+    ////////////////
 
     if (validationResult) {
       [sale, token] = await saleDeploy(
@@ -109,13 +115,15 @@
   };
   const getReserveErc20 = async () => {
     if (fields.reserve.validate()) {
-      reserveErc20 = await getERC20(reserve, $signer);
+      reserveErc20 = await getERC20(reserve, $signer, $signerAddress);
     }
   };
 
   $: if (reserve && fields?.reserve) {
     getReserveErc20();
   }
+
+  $: console.log($signer, $signerAddress)
 </script>
 
 <div class="flex w-3/4 flex-col gap-y-4">

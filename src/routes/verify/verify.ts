@@ -28,7 +28,7 @@ export const roles = [
     },
 ];
 
-let verifyAddress
+let verifyAddress, verifyContractAddress
 
 export const verifyAddresses = operationStore(`
 query ($verifyAddress: Bytes!) {
@@ -48,6 +48,33 @@ query ($verifyAddress: Bytes!) {
     {
         requestPolicy: "network-only",
     })
+
+export const verifyAddressQuery = operationStore(`
+query ($verifyAddress:Bytes!, $verifyContractAddress:Bytes!) 
+{
+    verifyEvents
+    (
+        where:
+        {
+            account:$verifyAddress,
+            verifyContract:$verifyContractAddress
+        },
+        orderBy: timestamp,
+        orderDirection:asc
+        )
+    {
+        id
+        __typename
+        sender
+        account
+        data
+    }
+}`,
+    { verifyAddress, verifyContractAddress },
+    {
+        requestPolicy: "network-only",
+    }
+)
 
 export const verifyStatusNames = [
     "None",

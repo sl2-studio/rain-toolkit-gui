@@ -3,22 +3,22 @@
   import FormPanel from "src/components/FormPanel.svelte";
   import Input from "src/components/Input.svelte";
   import Select from "src/components/Select.svelte";
-  import { selectedNetwork } from "src/stores";
+  import SimpleTransactionModal from "src/components/SimpleTransactionModal.svelte";
+  import { getContext } from "svelte";
   import { roles } from "./verify";
+
+  const { open } = getContext("simple-modal");
 
   export let verifyContract;
 
-  let roleAddress, selectedRole, grantRolePromise;
+  let roleAddress, selectedRole;
 
-  const grantRole = async (address, role, verifyContract) => {
-    let receipt;
-    try {
-      const tx = await verifyContract.grantRole(role, address);
-      receipt = await tx.wait();
-    } catch (error) {
-      throw error;
-    }
-    return receipt;
+  const handleClick = async () => {
+    open(SimpleTransactionModal, {
+      method: verifyContract.grantRole,
+      args: [selectedRole.value, roleAddress],
+      confirmationMsg: `${roleAddress} has been granted role '${selectedRole.label}'.`,
+    });
   };
 </script>
 
@@ -29,39 +29,5 @@
   <Select items={roles} bind:value={selectedRole}>
     <span slot="label">The role to grant:</span>
   </Select>
-  <Button
-    shrink
-    on:click={() => {
-      grantRolePromise = grantRole(
-        roleAddress,
-        selectedRole.value,
-        verifyContract
-      );
-    }}>Grant role</Button
-  >
-  {#if grantRolePromise}
-    {#await grantRolePromise}
-      <span class="text-blue-400">Granting role...</span>
-    {:then receipt}
-      <div class="text-blue-400">
-        <span> Role granted! </span>
-        <span>
-          <a
-            target="_blank"
-            class="underline"
-            href={`${$selectedNetwork.blockExplorer}/tx/${receipt.transactionHash}`}
-            >See transaction.</a
-          >
-        </span>
-      </div>
-    {:catch error}
-      <span class="text-red-400">
-        {#if error.message}
-          {error.message}
-        {:else}
-          {error}
-        {/if}
-      </span>
-    {/await}
-  {/if}
+  <Button shrink on:click={handleClick}>Grant role</Button>
 </FormPanel>

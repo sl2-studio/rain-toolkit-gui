@@ -47,7 +47,7 @@
   </div>
 {/if}
 {#if txStatus == TxStatus.Confirmed}
-  <div class="flex flex-col items-center gap-y-5 p-6">
+  <div class="flex max-w-md flex-col items-center gap-y-5 p-6">
     <span class="text-lg">Transaction confirmed</span>
     <span>
       {confirmationMsg}

@@ -6,10 +6,12 @@
   import OverflowMenu from "src/components/overflow-menu/OverflowMenu.svelte";
   import OverFlowMenuItem from "src/components/overflow-menu/OverFlowMenuItem.svelte";
   import SimpleTransactionModal from "src/components/SimpleTransactionModal.svelte";
-  import { selectedNetwork } from "src/stores";
   import { getContext } from "svelte";
+  import AccountHistoryModal from "./AccountHistoryModal.svelte";
+
   import {
     verifyAddresses,
+    verifyAddressQuery,
     verifyRequestStatusNames,
     VerifyStatuses,
     verifyStatusNames,
@@ -22,17 +24,10 @@
   verifyAddresses.variables.verifyAddress =
     verifyContract.address.toLowerCase();
 
-  $: if ($selectedNetwork) {
-    setQuery();
-  }
-
-  const setQuery = () => {
-    console.log(getContext("$$_urql"));
-    query(verifyAddresses);
-  };
+  query(verifyAddresses);
+  query(verifyAddressQuery);
 
   const refresh = () => {
-    console.log("refreshing");
     $verifyAddresses.reexecute();
   };
 
@@ -60,7 +55,13 @@
     });
   };
 
-  // $: console.log($verifyAddresses);
+  const handleEvidence = (address: string) => {
+    verifyAddressQuery.variables.verifyAddress = address.toLowerCase();
+    verifyAddressQuery.variables.verifyContractAddress =
+      verifyContract.address.toLowerCase();
+    verifyAddressQuery.reexecute();
+    open(AccountHistoryModal, { verifyAddressQuery });
+  };
 </script>
 
 <FormPanel>
@@ -118,6 +119,12 @@
                     }}>Ban</OverFlowMenuItem
                   >
                 {/if}
+                <span class="border-b border-gray-400 my-1" />
+                <OverFlowMenuItem
+                  on:click={() => {
+                    handleEvidence(verifyAddress.address);
+                  }}>Evidence</OverFlowMenuItem
+                >
               </OverflowMenu>
             </td>
           </tr>

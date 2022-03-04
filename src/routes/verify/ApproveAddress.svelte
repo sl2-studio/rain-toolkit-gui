@@ -2,70 +2,52 @@
   import { Contract } from "ethers";
   import Button from "src/components/Button.svelte";
   import FormPanel from "src/components/FormPanel.svelte";
-  import { selectedNetwork } from "src/stores";
+  import SimpleTransactionModal from "src/components/SimpleTransactionModal.svelte";
+  import { getContext } from "svelte";
 
+  const { open } = getContext("simple-modal");
   export let verifyContract: Contract;
 
   type Evidence = {
     account: string;
-    data: string;
+    data: Uint8Array;
   };
 
   let addresses = "";
-  let approvePromise;
+  let encoder = new TextEncoder();
 
-  $: splitAddresses = addresses.split(/\r?\n/);
+  $: lines = addresses.split(/\r?\n/);
 
   const approve = async () => {
-    try {
-      const evidences: Evidence[] = splitAddresses.map((address) => {
-        return { account: address, data: "0x10" };
-      });
-      const tx = await verifyContract.approve(evidences);
-      const receipt = await tx.wait();
-      return receipt;
-    } catch (error) {
-      throw error;
-    }
+    const evidences: Evidence[] = lines.map((line) => {
+      const splitLine = line.split("\t");
+      console.log(splitLine);
+      return { account: splitLine[0], data: encoder.encode(splitLine[1]) };
+    });
+
+    open(SimpleTransactionModal, {
+      method: verifyContract.approve,
+      args: [evidences],
+      confirmationMsg: "Addresses approved.",
+    });
   };
 </script>
 
 <FormPanel heading="Approve a list of addresses">
+  <div class="space-y-2">
+    <div>
+      Enter a tab separated list of addresses and evidence on new lines. For
+      example:
+    </div>
+    <div class="text-gray-400">
+      <div>0x00298097bb10daf49189c398799ab1ab4d3bd50a evidence</div>
+      <div>0x005e1ecfafe45d0887428b8f6c5db978ec72296a evidence</div>
+    </div>
+  </div>
   <textarea
     class="h-40 w-full rounded-md border border-gray-400 bg-transparent p-4"
-    placeholder="Enter a list of addresses on new lines"
+    placeholder=""
     bind:value={addresses}
   />
-  <Button
-    on:click={() => {
-      approvePromise = approve();
-    }}>Approve</Button
-  >
-  {#if approvePromise}
-    {#await approvePromise}
-      <span class="text-blue-400">Approving addresses...</span>
-    {:then receipt}
-      <div class="text-blue-400">
-        <span> Addresses approved! </span>
-        <span>
-          <a
-            target="_blank"
-            class="underline"
-            href={`${$selectedNetwork.blockExplorer}/tx/${receipt.transactionHash}`}
-            >See transaction.</a
-          >
-        </span>
-      </div>
-    {:catch error}
-      <span class="text-red-400">
-        {#if error?.data?.message}
-          {error.data.message}
-        {:else if error?.message}
-          {error.message}
-        {:else}
-          {error}
-        {/if}
-      </span>
-    {/await}
-  {/if}
+  <Button on:click={approve}>Approve</Button>
 </FormPanel>

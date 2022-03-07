@@ -10,13 +10,14 @@
   const { close } = getContext("simple-modal");
 
   const handleClick = async () => {
-    // await switchNetwork($selectedNetwork);
+    await switchNetwork($selectedNetwork);
     defaultEvmStores.setProvider();
     close();
   };
 
   $: if ($chainId) {
-    // check that chosen network in the select matches connected network in mm
+    // set the provider again if the connected network changes
+    defaultEvmStores.setProvider();
   }
 
   const switchNetwork = async (network) => {

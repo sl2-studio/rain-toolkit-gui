@@ -4,20 +4,19 @@
   import { networks } from "src/constants";
   import { selectedNetwork } from "src/stores";
   import { getContext } from "svelte";
-  import { defaultEvmStores, chainId } from "svelte-ethers-store";
+  import { defaultEvmStores, chainId, signerAddress } from "svelte-ethers-store";
   import Select from "./Select.svelte";
 
   const { close } = getContext("simple-modal");
 
-  const handleClick = () => {
-    defaultEvmStores.setProvider(
-      new ethers.providers.Web3Provider(window.ethereum, "any")
-    );
+  const handleClick = async () => {
+    // await switchNetwork($selectedNetwork);
+    defaultEvmStores.setProvider();
     close();
   };
 
   $: if ($chainId) {
-    switchNetwork($selectedNetwork);
+    // check that chosen network in the select matches connected network in mm
   }
 
   const switchNetwork = async (network) => {
@@ -41,6 +40,8 @@
       // handle other "switch" errors
     }
   };
+
+  $:console.log($signerAddress)
 </script>
 
 <div class="flex flex-col gap-y-4">

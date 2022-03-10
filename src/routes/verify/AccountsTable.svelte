@@ -123,7 +123,7 @@
                 <OverFlowMenuItem
                   on:click={() => {
                     handleEvidence(verifyAddress.address);
-                  }}>Evidence</OverFlowMenuItem
+                  }}>History</OverFlowMenuItem
                 >
               </OverflowMenu>
             </td>

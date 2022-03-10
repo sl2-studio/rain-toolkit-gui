@@ -64,6 +64,8 @@ query ($verifyAddress:Bytes!, $verifyContractAddress:Bytes!)
         )
     {
         id
+        timestamp
+        transactionHash
         __typename
         sender
         account

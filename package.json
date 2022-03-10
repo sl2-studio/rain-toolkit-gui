@@ -14,6 +14,7 @@
     "@rollup/plugin-node-resolve": "^11.0.0",
     "@rollup/plugin-replace": "^3.1.0",
     "@rollup/plugin-typescript": "^8.3.0",
+    "@smui/data-table": "^6.0.0-beta.15",
     "@tsconfig/svelte": "^2.0.0",
     "dayjs": "^1.10.7",
     "prettier": "^2.5.1",
@@ -44,6 +45,7 @@
     "sirv-cli": "^1.0.0",
     "svelte-ethers-store": "^0.6.3",
     "svelte-loading-animation": "^0.0.1",
+    "svelte-material-ui": "^6.0.0-beta.15",
     "svelte-select": "^4.4.7",
     "svelte-spa-router": "^3.2.0",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17"

@@ -95,7 +95,7 @@
   };
 
   onMount(async () => {
-    latestBlock = await $provider.getBlockNumber();
+    latestBlock = await $signer.provider.getBlockNumber();
   });
 </script>
 

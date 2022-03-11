@@ -1,7 +1,7 @@
 <script lang="ts" type="module">
   import ListGatedNFTs from "./routes/gated-nft/ListGatedNFTs.svelte";
   import ERC721BalanceTierReport from "./routes/erc721-balance-tier/ERC721BalanceTierReport.svelte";
-  import { connected } from "svelte-ethers-store";
+  import { signer } from "svelte-ethers-store";
   import Router from "svelte-spa-router";
   import DeployBalanceTier from "./routes/erc20-balance-tier/DeployBalanceTier.svelte";
   import BalanceTierReport from "./routes/erc20-balance-tier/BalanceTierReport.svelte";
@@ -73,7 +73,7 @@
   <main class="relative flex text-gray-50">
     <Sidebar />
     <div class="w-full py-5 px-8">
-      {#if $connected}
+      {#if $signer}
         <Client>
           <Router {routes} />
         </Client>

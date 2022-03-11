@@ -8,6 +8,7 @@
   import SimpleTransactionModal from "src/components/SimpleTransactionModal.svelte";
   import { getContext } from "svelte";
   import AccountHistoryModal from "./AccountHistoryModal.svelte";
+  import ActionsModal from "./ActionsModal.svelte";
 
   import {
     verifyAddresses,
@@ -32,25 +33,28 @@
   };
 
   const handleApprove = (address: string) => {
-    open(SimpleTransactionModal, {
+    open(ActionsModal, {
       method: verifyContract.approve,
-      args: [[{ account: address, data: "0x10" }]],
+      account: address,
+      action: "Approve",
       confirmationMsg: `${address} has been approved.`,
     });
   };
 
   const handleBan = (address: string) => {
-    open(SimpleTransactionModal, {
-      method: verifyContract.ban,
-      args: [[{ account: address, data: "0x10" }]],
+    open(ActionsModal, {
+      method: verifyContract.approve,
+      account: address,
+      action: "Ban",
       confirmationMsg: `${address} has been banned.`,
     });
   };
 
   const handleRemove = (address: string) => {
-    open(SimpleTransactionModal, {
-      method: verifyContract.remove,
-      args: [[{ account: address, data: "0x10" }]],
+    open(ActionsModal, {
+      method: verifyContract.approve,
+      account: address,
+      action: "Remove",
       confirmationMsg: `${address} has been removed.`,
     });
   };

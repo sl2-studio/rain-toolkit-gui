@@ -18,6 +18,7 @@
   let errorMsg, verifyAddressInput, verifyContract, selectedRole;
 
   const initContract = async (address) => {
+    console.log($signer);
     verifyContract = new ethers.Contract(
       address,
       VerifyContractArtifact.abi,

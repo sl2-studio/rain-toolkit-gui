@@ -7,7 +7,7 @@
 
   const { open } = getContext("simple-modal");
   export let verifyContract: Contract;
-
+  console.log(verifyContract);
   type Evidence = {
     account: string;
     data: Uint8Array;

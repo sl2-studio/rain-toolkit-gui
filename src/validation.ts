@@ -9,3 +9,7 @@ export const addressValidate = (value): true | { error: string } => {
   }
   return true;
 };
+
+export const defaultValidator = () => {
+  return true;
+};

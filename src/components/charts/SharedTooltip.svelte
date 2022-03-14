@@ -6,7 +6,7 @@
     import { getContext } from 'svelte';
     import { format } from 'd3-format';
   
-    import QuadTree from './QuadTree.svelte';
+    import QuadTree from './Quadtree.svelte';
 import { fade } from 'svelte/transition';
   
     const { data, width, yScale, config } = getContext('LayerCake');

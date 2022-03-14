@@ -4,7 +4,7 @@
 </script>
 
 <label class="switch" style="--theme-color: {color}">
-  <input type="checkbox" bind:checked />
+  <input type="checkbox" bind:checked on:change />
   <span class="slider" />
 </label>
 
@@ -12,8 +12,8 @@
   .switch {
     position: relative;
     display: inline-block;
-    width: 60px;
-    height: 34px;
+    width: 45px;
+    height: 24px;
   }
 
   .switch input {
@@ -38,10 +38,10 @@
   .slider:before {
     position: absolute;
     content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    bottom: 2px;
     background-color: white;
     -webkit-transition: 0.4s;
     transition: 0.4s;
@@ -57,8 +57,8 @@
   }
 
   input:checked + .slider:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
-    transform: translateX(26px);
+    -webkit-transform: translateX(21px);
+    -ms-transform: translateX(21px);
+    transform: translateX(21px);
   }
 </style>

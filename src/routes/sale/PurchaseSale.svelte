@@ -13,6 +13,7 @@
   import SaleProgress from "./SaleProgress.svelte";
   import CheckTier from "./CheckTier.svelte";
   import { onMount } from "svelte";
+  import TransactionsTable from "./TransactionsTable.svelte";
 
   export let params: {
     wild: string;
@@ -170,6 +171,7 @@
         </div>
       </div>
     </FormPanel>
+    <SaleChart />
     <FormPanel heading="Eligibility">
       <CheckTier
         {signer}
@@ -188,7 +190,7 @@
     </div>
     <Buy {saleData} {sale} {token} {reserve} />
     <FormPanel>
-      <MyTransactions saleContract={sale} />
+      <TransactionsTable saleContract={sale} />
     </FormPanel>
   {/if}
 </div>

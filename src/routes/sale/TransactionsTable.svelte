@@ -52,7 +52,7 @@
     <span class="text-lg font-semibold">Transaction history</span>
     <div class="flex flex-row items-center gap-x-4">
       <span class="text-sm"
-        >Showing {#if checked}only mine{:else}all transactions{/if}</span
+        >Showing {#if !checked}only mine{:else}all transactions{/if}</span
       >
       <Switch bind:checked />
       <span

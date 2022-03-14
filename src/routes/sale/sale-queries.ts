@@ -102,3 +102,34 @@ export const allTxQuery = operationStore(
         requestPolicy: "network-only",
     }
 );
+
+export const saleBuysQuery = operationStore(
+    `
+      query ($saleContractAddress: Bytes!) {
+        saleBuys (where: {saleContractAddress: $saleContractAddress, refunded: false}, orderBy: timestamp, orderDirection: asc) {
+          id
+          __typename
+          timestamp
+          transactionHash
+          saleContractAddress
+          totalIn
+          sender
+          refunded
+          receipt {
+            id
+            receiptId
+            fee
+            units
+            price
+            feeRecipient
+          }
+        }
+      }
+    `,
+    {
+        saleContractAddress
+    },
+    {
+        requestPolicy: "network-only",
+    }
+);

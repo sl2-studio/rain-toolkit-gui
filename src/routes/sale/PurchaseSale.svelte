@@ -14,6 +14,7 @@
   import CheckTier from "./CheckTier.svelte";
   import { onMount } from "svelte";
   import TransactionsTable from "./TransactionsTable.svelte";
+  import SaleChart from "./SaleChart.svelte";
 
   export let params: {
     wild: string;
@@ -170,6 +171,13 @@
           {/if}
         </div>
       </div>
+    </FormPanel>
+    <FormPanel>
+      <SaleChart
+        saleContract={sale}
+        token={saleData.token}
+        reserve={saleData.reserve}
+      />
     </FormPanel>
     <FormPanel heading="Eligibility">
       <CheckTier

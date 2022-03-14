@@ -12,7 +12,8 @@
     | "copy"
     | "close"
     | "options"
-    | "reload";
+    | "reload"
+    | "view";
   export let inline = true;
 
   $: if (!height) {
@@ -185,8 +186,8 @@
     class:inline
     {width}
     {height}
-    viewBox="0 0 24 24"
     class={color}
+    viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
@@ -208,6 +209,28 @@
       d="M4.58253 9.00315C5.14321 7.61541 6.08196 6.41278 7.29207 5.53197C8.50218 4.65116 9.93512 4.12749 11.428 4.02048C12.9209 3.91346 14.4139 4.2274 15.7373 4.92661C17.0606 5.62582 18.1613 6.68226 18.9142 7.97584"
       class="stroke-current"
       stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+{:else if icon == "view"}
+  <svg
+    class:inline
+    {width}
+    {height}
+    class={color}
+    viewBox="0 0 22 14"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M11 13C16.5228 13 21 7 21 7C21 7 16.5228 1 11 1C5.47715 1 1 7 1 7C1 7 5.47715 13 11 13Z"
+      class="stroke-current"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M11 9C12.1046 9 13 8.10457 13 7C13 5.89543 12.1046 5 11 5C9.89543 5 9 5.89543 9 7C9 8.10457 9.89543 9 11 9Z"
+      class="stroke-current"
       stroke-linecap="round"
       stroke-linejoin="round"
     />

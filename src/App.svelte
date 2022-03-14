@@ -70,7 +70,7 @@
   classContent="p-6"
 >
   <Header />
-  <main class="relative flex text-gray-50">
+  <main class="relative flex font-light text-gray-50">
     <Sidebar />
     <div class="w-full py-5 px-8">
       {#if $signer}

@@ -171,7 +171,6 @@
         </div>
       </div>
     </FormPanel>
-    <SaleChart />
     <FormPanel heading="Eligibility">
       <CheckTier
         {signer}

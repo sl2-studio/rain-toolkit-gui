@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { formatAddress } from "src/utils";
   import RefundModal from "./RefundModal.svelte";
   import { query } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
@@ -67,7 +68,7 @@
   {:else if $txQuery.error}
     Something went wrong.
   {:else if $txQuery?.data?.saleTransactions.length}
-    <table class="table-auto w-full space-y-2">
+    <table class="table-auto w-full space-y-2 text-sm">
       <tr class="border-b border-gray-600 uppercase text-sm">
         <th class="text-gray-400 text-left pb-2 font-light">Sender</th>
         <th class="text-gray-400 text-left pb-2 font-light">Type</th>
@@ -80,11 +81,12 @@
       </tr>
       {#each $txQuery.data.saleTransactions as transaction}
         <tr>
+          <td> {formatAddress(transaction.sender)} </td>
           <td>
             {typeMap.get(transaction.__typename)}
           </td>
           <td>
-            {dayjs.unix(transaction.timestamp).format("D/M/YYYY hh:mm:ss")}
+            {dayjs.unix(transaction.timestamp).format("MMM D h:mm:sa")}
           </td>
           <td>
             {Number(
@@ -128,7 +130,7 @@
               {reserve.symbol}</td
             >
           {/if}
-          <td class="py-2 text-right w-36">
+          <td class="py-2 text-right">
             {#if transaction.__typename == "SaleBuy"}
               {#if !transaction.refunded}
                 <span

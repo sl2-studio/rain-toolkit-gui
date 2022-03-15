@@ -4,7 +4,12 @@
   import { onDestroy } from "svelte";
   import ProgressBar from "components/ProgressBar.svelte";
   import { timeString } from "src/utils";
-  import { getAfterTimestampDate, saleStatuses } from "./sale";
+  import {
+    getAfterTimestamp,
+    getAfterTimestampDate,
+    saleStatuses,
+  } from "./sale";
+  import dayjs from "dayjs";
 
   export let saleContract;
 
@@ -137,7 +142,7 @@ query ($saleAddress: Bytes!) {
         </tr>
         <tr>
           <td class="text-gray-400">Percent raised:</td>
-          <td>{sale.percentRaised}%</td>
+          <td>{(+sale.percentRaised).toFixed(4)}%</td>
         </tr>
       {/if}
     </table>
@@ -145,24 +150,25 @@ query ($saleAddress: Bytes!) {
       <tr>
         <td class="text-gray-400">Could start:</td>
         <td
-          >{getAfterTimestampDate(
-            sale.canStartStateConfig
-          ).toLocaleString()}</td
+          >{dayjs
+            .unix(getAfterTimestamp(sale.canStartStateConfig))
+            .format("MMM D h:mm:ssa")}</td
         >
       </tr>
       <tr>
         <td class="text-gray-400">Can end:</td>
-        <td>{getAfterTimestampDate(sale.canEndStateConfig).toLocaleString()}</td
+        <td
+          >{dayjs
+            .unix(getAfterTimestamp(sale.canEndStateConfig))
+            .format("MMM D h:mm:ssa")}</td
         >
       </tr>
       {#if !(sale?.saleStatus == 0)}
         <tr>
           <td class="text-gray-400">Started:</td>
           <td
-            >{new Date(
-              parseInt(sale.startEvent.timestamp) * 1000
-            ).toLocaleString()}</td
-          >
+            >{dayjs.unix(sale.startEvent.timestamp).format("MMM D h:mm:ssa")}
+          </td>
         </tr>
       {/if}
       {#if sale?.saleStatus == 1}

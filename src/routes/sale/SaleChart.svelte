@@ -13,8 +13,20 @@
   import { timeFormat } from "d3-time-format";
   import { formatAddress } from "src/utils";
   import { writable } from "svelte/store";
+  import IconLibrary from "src/components/IconLibrary.svelte";
   export let saleContract: Contract;
   export let reserve, token;
+
+  let data,
+    dataset,
+    xKey = "timestamp",
+    yKey = "price";
+
+  // a store for matching the hovered point with a scatter dot
+  const hoverItem = writable(null);
+  setContext("found", hoverItem);
+
+  const formatTickX = timeFormat("%b. %e. %X");
 
   // setting the variables
   $saleBuysQuery.variables.saleContractAddress =
@@ -22,17 +34,11 @@
 
   query(saleBuysQuery);
 
-  let data,
-    dataset,
-    xKey = "timestamp",
-    yKey = "price";
+  const refresh = () => {
+    saleBuysQuery.reexecute();
+  };
 
-  const hoverItem = writable(null);
-
-  setContext("found", hoverItem);
-
-  const formatTickX = timeFormat("%b. %e. %X");
-
+  // mapping data from the subgraph query into a format for the chart
   saleBuysQuery.subscribe((query) => {
     console.log(query);
     if (query?.data?.saleBuys.length) {
@@ -69,25 +75,37 @@
   });
 </script>
 
-<div class="chart-container">
-  <LayerCake
-    padding={{ right: 10, bottom: 20, left: 25 }}
-    x={xKey}
-    y={yKey}
-    yDomain={[0, null]}
-    {data}
-  >
-    <Svg>
-      <AxisX gridlines={false} ticks={5} formatTick={formatTickX} />
-      <AxisY gridlines={true} ticks={4} />
-      <Line stroke="#FFFFFF" />
-      <Scatter />
-    </Svg>
+<div class="flex w-full flex-col gap-y-4">
+  <div class="flex flex-row justify-between">
+    <span class="text-lg font-semibold">Price history</span>
+    <span class:animate-spin={$saleBuysQuery.fetching} on:click={refresh}
+      ><IconLibrary icon="reload" /></span
+    >
+  </div>
+  <div class="chart-container">
+    <LayerCake
+      padding={{ right: 10, bottom: 20, left: 25 }}
+      x={xKey}
+      y={yKey}
+      yDomain={[0, null]}
+      {data}
+    >
+      <Svg>
+        <AxisX gridlines={false} ticks={5} formatTick={formatTickX} />
+        <AxisY
+          gridlines={true}
+          ticks={4}
+          formatTick={(d) => `${d} ${reserve.symbol}`}
+        />
+        <Line stroke="rgba(59, 130, 246" />
+        <Scatter />
+      </Svg>
 
-    <Html>
-      <SharedTooltip formatTitle={formatTickX} formatValue={(d) => d} />
-    </Html>
-  </LayerCake>
+      <Html>
+        <SharedTooltip formatTitle={formatTickX} formatValue={(d) => d} />
+      </Html>
+    </LayerCake>
+  </div>
 </div>
 
 <style>

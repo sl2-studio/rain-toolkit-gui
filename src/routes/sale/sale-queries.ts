@@ -3,7 +3,7 @@ import { operationStore } from "@urql/svelte";
 let saleContractAddress, sender
 
 export const myTxQuery = operationStore(
-    `
+  `
       query ($saleContractAddress: Bytes!, $sender: Bytes!) {
         saleTransactions (where: {saleContractAddress: $saleContractAddress, sender: $sender}, orderBy: timestamp, orderDirection: asc) {
           id
@@ -11,6 +11,7 @@ export const myTxQuery = operationStore(
           timestamp
           transactionHash
           saleContractAddress
+          sender
           saleContract {
             cooldownDuration
             token {
@@ -44,17 +45,17 @@ export const myTxQuery = operationStore(
         }
       }
     `,
-    {
-        saleContractAddress,
-        sender,
-    },
-    {
-        requestPolicy: "network-only",
-    }
+  {
+    saleContractAddress,
+    sender,
+  },
+  {
+    requestPolicy: "network-only",
+  }
 );
 
 export const allTxQuery = operationStore(
-    `
+  `
       query ($saleContractAddress: Bytes!) {
         saleTransactions (where: {saleContractAddress: $saleContractAddress}, orderBy: timestamp, orderDirection: asc) {
           id
@@ -62,6 +63,7 @@ export const allTxQuery = operationStore(
           timestamp
           transactionHash
           saleContractAddress
+          sender
           saleContract {
             cooldownDuration
             token {
@@ -95,16 +97,16 @@ export const allTxQuery = operationStore(
         }
       }
     `,
-    {
-        saleContractAddress
-    },
-    {
-        requestPolicy: "network-only",
-    }
+  {
+    saleContractAddress
+  },
+  {
+    requestPolicy: "network-only",
+  }
 );
 
 export const saleBuysQuery = operationStore(
-    `
+  `
       query ($saleContractAddress: Bytes!) {
         saleBuys (where: {saleContractAddress: $saleContractAddress, refunded: false}, orderBy: timestamp, orderDirection: asc) {
           id
@@ -126,10 +128,10 @@ export const saleBuysQuery = operationStore(
         }
       }
     `,
-    {
-        saleContractAddress
-    },
-    {
-        requestPolicy: "network-only",
-    }
+  {
+    saleContractAddress
+  },
+  {
+    requestPolicy: "network-only",
+  }
 );

@@ -2,13 +2,12 @@
   import TokenInfo from "./TokenInfo.svelte";
   import { operationStore, query } from "@urql/svelte";
   import { ethers } from "ethers";
-  import { signer, provider } from "svelte-ethers-store";
+  import { signer } from "svelte-ethers-store";
   import { push } from "svelte-spa-router";
   import Button from "../../components/Button.svelte";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
   import Buy from "./Buy.svelte";
-  import MyTransactions from "./MyTransactions.svelte";
   import { initSaleContracts } from "./sale";
   import SaleProgress from "./SaleProgress.svelte";
   import CheckTier from "./CheckTier.svelte";

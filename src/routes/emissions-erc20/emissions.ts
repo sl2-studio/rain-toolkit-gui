@@ -123,11 +123,11 @@ export const createEmissionsSource = (
   const BASE_REWARD_PER_TIER = paddedUInt256(
     ethers.BigNumber.from(
       "0x" +
-        paddedUInt32(0).repeat(4) +
-        paddedUInt32(REWARD_PER_BLOCK_PLAT) +
-        paddedUInt32(REWARD_PER_BLOCK_GOLD) +
-        paddedUInt32(REWARD_PER_BLOCK_SILV) +
-        paddedUInt32(REWARD_PER_BLOCK_BRNZ)
+      paddedUInt32(0).repeat(4) +
+      paddedUInt32(REWARD_PER_BLOCK_PLAT) +
+      paddedUInt32(REWARD_PER_BLOCK_GOLD) +
+      paddedUInt32(REWARD_PER_BLOCK_SILV) +
+      paddedUInt32(REWARD_PER_BLOCK_BRNZ)
     )
   );
 
@@ -151,88 +151,88 @@ export const createEmissionsSource = (
   // BEGIN SOURCE SNIPPETS
   // prettier-ignore
   const REWARD = () =>
-        concat([
-            valDuration,
-            valBaseReward,
-            op(Opcode.MUL, 2),
-        ]);
+    concat([
+      valDuration,
+      valBaseReward,
+      op(Opcode.MUL, 2),
+    ]);
 
   // prettier-ignore
   const PROGRESS = () =>
-        concat([
-            valBNOne,
-            valDuration,
-            valBNOne,
-            op(Opcode.MUL, 2),
-            valBlocksPerYear,
-            op(Opcode.DIV, 2),
-            op(Opcode.MIN, 2),
-        ]);
+    concat([
+      valBNOne,
+      valDuration,
+      valBNOne,
+      op(Opcode.MUL, 2),
+      valBlocksPerYear,
+      op(Opcode.DIV, 2),
+      op(Opcode.MIN, 2),
+    ]);
 
   // prettier-ignore
   const MULTIPLIER = () =>
-        concat([
-            PROGRESS(),
-            valBNOne,
-            op(Opcode.ADD, 2),
-        ]);
+    concat([
+      PROGRESS(),
+      valBNOne,
+      op(Opcode.ADD, 2),
+    ]);
 
   // prettier-ignore
   const FN = () =>
-        concat([
-            REWARD(),
-            MULTIPLIER(),
-            op(Opcode.MUL, 2),
-            valBNOneReward, // scale EACH tier result down by reward per block scaler
-            op(Opcode.DIV, 2),
-        ]);
+    concat([
+      REWARD(),
+      MULTIPLIER(),
+      op(Opcode.MUL, 2),
+      valBNOneReward, // scale EACH tier result down by reward per block scaler
+      op(Opcode.DIV, 2),
+    ]);
 
   // prettier-ignore
   const CURRENT_BLOCK_AS_REPORT = () =>
-        concat([
-            op(Opcode.NEVER),
-            op(Opcode.BLOCK_NUMBER),
-            op(
-                Opcode.UPDATE_BLOCKS_FOR_TIER_RANGE,
-                tierRange(Tier.ZERO, Tier.EIGHT)
-            ),
-        ]);
+    concat([
+      op(Opcode.NEVER),
+      op(Opcode.BLOCK_NUMBER),
+      op(
+        Opcode.UPDATE_BLOCKS_FOR_TIER_RANGE,
+        tierRange(Tier.ZERO, Tier.EIGHT)
+      ),
+    ]);
 
   // prettier-ignore
   const LAST_CLAIM_REPORT = () =>
-        concat([
-            op(Opcode.THIS_ADDRESS),
-            op(Opcode.CLAIMANT_ACCOUNT),
-            op(Opcode.REPORT),
-        ]);
+    concat([
+      op(Opcode.THIS_ADDRESS),
+      op(Opcode.CLAIMANT_ACCOUNT),
+      op(Opcode.REPORT),
+    ]);
 
   // prettier-ignore
   const TIER_REPORT = () =>
-        concat([
-            valTierAddress,
-            op(Opcode.CLAIMANT_ACCOUNT),
-            op(Opcode.REPORT),
-        ]);
+    concat([
+      valTierAddress,
+      op(Opcode.CLAIMANT_ACCOUNT),
+      op(Opcode.REPORT),
+    ]);
 
   // prettier-ignore
   const TIERWISE_DIFF = () =>
-        concat([
-            CURRENT_BLOCK_AS_REPORT(),
-            TIER_REPORT(),
-            LAST_CLAIM_REPORT(),
-            op(Opcode.BLOCK_NUMBER),
-            op(Opcode.SELECT_LTE, selectLte(selectLteLogic.any, selectLteMode.max, 2)),
-            op(Opcode.SATURATING_DIFF),
-        ]);
+    concat([
+      CURRENT_BLOCK_AS_REPORT(),
+      TIER_REPORT(),
+      LAST_CLAIM_REPORT(),
+      op(Opcode.BLOCK_NUMBER),
+      op(Opcode.SELECT_LTE, selectLte(selectLteLogic.any, selectLteMode.max, 2)),
+      op(Opcode.SATURATING_DIFF),
+    ]);
 
   // prettier-ignore
   const SOURCE = () =>
-        concat([
-            TIERWISE_DIFF(),
-            valBaseRewardPerTier,
-            op(Opcode.ZIPMAP, callSize(1, 3, 1)),
-            op(Opcode.ADD, 8),
-        ]);
+    concat([
+      TIERWISE_DIFF(),
+      valBaseRewardPerTier,
+      op(Opcode.ZIPMAP, callSize(1, 3, 1)),
+      op(Opcode.ADD, 8),
+    ]);
 
   // END Source snippets
 
@@ -256,7 +256,7 @@ export const createEmissionsSource = (
   };
 };
 
-export const initEmissions = async (signer: Signer, address: string) => {
+export const initEmissions = async (signer: Signer, address: string, signerAddress: string) => {
   const emissionsContract = new ethers.Contract(
     address,
     EmissionsERC20Artifact.abi,

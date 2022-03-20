@@ -23,7 +23,11 @@
 
   const initContract = async () => {
     if (ethers.utils.isAddress(params.wild || "")) {
-      [emissionsContract, token] = await initEmissions($signer, params.wild, $signerAddress);
+      [emissionsContract, token] = await initEmissions(
+        $signer,
+        params.wild,
+        $signerAddress
+      );
     } else if (params.wild) {
       errorMsg = "Not a valid contract address";
     }

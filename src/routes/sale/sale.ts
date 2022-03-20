@@ -90,7 +90,7 @@ export const saleDeploy = async (
   config: SaleConfig,
   saleRedeemableERC20Config: SaleRedeemableERC20Config,
   ...args
-): Promise<[Contract, any]> => {
+): Promise<Contract> => {
   console.log(config);
   console.log(saleRedeemableERC20Config);
   console.log(config.calculatePriceStateConfig.constants[0].toString());
@@ -118,19 +118,19 @@ export const saleDeploy = async (
     );
   }
 
-  await sale.deployed();
+  // await sale.deployed();
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  sale.deployTransaction = txDeploy;
+  // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // // @ts-ignore
+  // sale.deployTransaction = txDeploy;
 
-  const token = new ethers.Contract(
-    await sale.token(),
-    RedeemableERC20Artifact.abi,
-    deployer
-  ) as Contract;
+  // const token = new ethers.Contract(
+  //   await sale.token(),
+  //   RedeemableERC20Artifact.abi,
+  //   deployer
+  // ) as Contract;
 
-  return [sale, token];
+  return sale;
 };
 
 export const afterBlockNumberConfig = (blockNumber) => {

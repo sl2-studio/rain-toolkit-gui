@@ -74,7 +74,7 @@
     ////////////////
 
     if (validationResult) {
-      [sale, token] = await saleDeploy(
+      sale = await saleDeploy(
         $signer,
         {
           canStartStateConfig: afterTimestampConfig(
@@ -123,7 +123,7 @@
     getReserveErc20();
   }
 
-  $: console.log($signer, $signerAddress)
+  $: console.log($signer, $signerAddress);
 </script>
 
 <div class="flex w-3/4 flex-col gap-y-4">
@@ -292,7 +292,7 @@
         {:then}
           deployed
           <span>Sale contract: {sale.address}</span>
-          <span>RedeemableERC20 token address: {token.address}</span>
+          <!-- <span>RedeemableERC20 token address: {token.address}</span> -->
         {/await}
       </div>
     {/if}

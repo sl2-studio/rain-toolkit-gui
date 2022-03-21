@@ -80,21 +80,21 @@ query ($verifyAddress:Bytes!, $verifyContractAddress:Bytes!)
 
 export const verifyStatusNames = [
     "None",
+    "Added",
     "Approved",
-    "Banned",
-    "Removed"
+    "Banned"
 ]
 
 export const verifyRequestStatusNames = [
     "None",
-    "Approve",
-    "Ban",
-    "Remove"
+    "Added",
+    "Approved",
+    "Banned"
 ]
 
 export enum VerifyStatuses {
     NONE,
-    APPROVE,
-    BAN,
-    REMOVE
+    ADDED,
+    APPROVED,
+    BANNED
 }

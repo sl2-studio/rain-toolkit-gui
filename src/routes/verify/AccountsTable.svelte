@@ -5,7 +5,6 @@
   import IconLibrary from "src/components/IconLibrary.svelte";
   import OverflowMenu from "src/components/overflow-menu/OverflowMenu.svelte";
   import OverFlowMenuItem from "src/components/overflow-menu/OverFlowMenuItem.svelte";
-  import SimpleTransactionModal from "src/components/SimpleTransactionModal.svelte";
   import { getContext } from "svelte";
   import AccountHistoryModal from "./AccountHistoryModal.svelte";
   import ActionsModal from "./ActionsModal.svelte";
@@ -43,7 +42,7 @@
 
   const handleBan = (address: string) => {
     open(ActionsModal, {
-      method: verifyContract.approve,
+      method: verifyContract.ban,
       account: address,
       action: "Ban",
       confirmationMsg: `${address} has been banned.`,
@@ -52,7 +51,7 @@
 
   const handleRemove = (address: string) => {
     open(ActionsModal, {
-      method: verifyContract.approve,
+      method: verifyContract.remove,
       account: address,
       action: "Remove",
       confirmationMsg: `${address} has been removed.`,
@@ -102,21 +101,21 @@
             </td>
             <td class="py-2 text-right w-36">
               <OverflowMenu>
-                {#if (verifyAddress.status !== VerifyStatuses.APPROVE && verifyAddress.status !== VerifyStatuses.BAN) || verifyAddress.requestStatus == VerifyStatuses.APPROVE}
+                {#if (verifyAddress.status !== VerifyStatuses.APPROVED && verifyAddress.status !== VerifyStatuses.BANNED) || verifyAddress.requestStatus == VerifyStatuses.APPROVED}
                   <OverFlowMenuItem
                     on:click={() => {
                       handleApprove(verifyAddress.address);
                     }}>Approve</OverFlowMenuItem
                   >
                 {/if}
-                {#if verifyAddress.status !== VerifyStatuses.REMOVE || verifyAddress.status == VerifyStatuses.NONE}
+                {#if verifyAddress.status !== VerifyStatuses.NONE || verifyAddress.status == VerifyStatuses.NONE}
                   <OverFlowMenuItem
                     on:click={() => {
                       handleRemove(verifyAddress.address);
                     }}>Remove</OverFlowMenuItem
                   >
                 {/if}
-                {#if verifyAddress.status !== VerifyStatuses.BAN}
+                {#if verifyAddress.status !== VerifyStatuses.BANNED}
                   <OverFlowMenuItem
                     on:click={() => {
                       handleBan(verifyAddress.address);

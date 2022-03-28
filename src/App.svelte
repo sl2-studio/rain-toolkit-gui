@@ -1,4 +1,5 @@
 <script lang="ts" type="module">
+  import ListERC721BalanceTier from "./routes/erc721-balance-tier/ListERC721BalanceTier.svelte";
   import ListGatedNFTs from "./routes/gated-nft/ListGatedNFTs.svelte";
   import ERC721BalanceTierReport from "./routes/erc721-balance-tier/ERC721BalanceTierReport.svelte";
   import { signer } from "svelte-ethers-store";
@@ -18,27 +19,29 @@
   import PurchaseSale from "./routes/sale/PurchaseSale.svelte";
   import DeployEmissions from "./routes/emissions-erc20/DeployEmissions.svelte";
   import ClaimEmissions from "./routes/emissions-erc20/ClaimEmissions.svelte";
-  import { initClient } from "@urql/svelte";
   import Modal from "svelte-simple-modal";
   import DeployVerify from "./routes/verify/DeployVerify.svelte";
   import AdministerVerify from "./routes/verify/AdministerVerify.svelte";
-  import { selectedNetwork } from "./stores";
   import Client from "./Client.svelte";
+  import AddressLibrary from "./routes/address-library/AddressLibrary.svelte";
+  import ListCombineTier from "./routes/combine-tier/ListCombineTier.svelte";
+  import ListSale from "./routes/sale/ListSale.svelte";
 
   let routes = {};
 
   routes = {
     // Using named parameters, with last being optional
-    "/balancetier/deploy": DeployBalanceTier,
-    "/balancetier/report/*": BalanceTierReport,
-    "/balancetier/list": ListBalanceTier,
+    "/erc20balancetier/deploy": DeployBalanceTier,
+    "/erc20balancetier/report/*": BalanceTierReport,
+    "/erc20balancetier/list": ListBalanceTier,
 
-    "/721balancetier/deploy": Deploy721BalanceTier,
-    "/721balancetier/report/*": ERC721BalanceTierReport,
-    "/721balancetier/list": ListBalanceTier,
+    "/erc721balancetier/deploy": Deploy721BalanceTier,
+    "/erc721balancetier/report/*": ERC721BalanceTierReport,
+    "/erc721balancetier/list": ListERC721BalanceTier,
 
     "/combinetier/deploy": DeployCombineTier,
     "/combinetier/report/*": CombineTierReport,
+    "/combinetier/list": ListCombineTier,
 
     "/gatednft/deploy/*": DeployGatedNFT,
     "/gatednft/list": ListGatedNFTs,
@@ -46,12 +49,15 @@
 
     "/sale/deploy": DeploySale,
     "/sale/purchase/*": PurchaseSale,
+    "/sale/list": ListSale,
 
     "/emissions/deploy": DeployEmissions,
     "/emissions/claim/*": ClaimEmissions,
 
     "/verify/deploy": DeployVerify,
     "/verify/administer/*": AdministerVerify,
+
+    "/address-library": AddressLibrary,
 
     "/": Home,
 

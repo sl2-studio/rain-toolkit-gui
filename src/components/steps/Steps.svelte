@@ -2,7 +2,6 @@
   import Step from "./Step.svelte";
   export let steps = [];
   export let activeStep;
-  console.log(activeStep);
   export let lineBorderClass = "border-gray-200";
   export let fulfilledTextClass = "text-gray-800";
   export let unfulfilledTextClass = "text-gray-500";

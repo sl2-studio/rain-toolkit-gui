@@ -10,6 +10,7 @@
   import VerifyTierFactoryArtifact from "abis/VerifyTierFactory.json";
   import { ethers } from "ethers";
   import { selectedNetwork } from "src/stores";
+  import ContractDeploy from "src/components/ContractDeploy.svelte";
 
   export const roles = [
     {
@@ -38,14 +39,11 @@
     },
   ];
 
-  console.log(roles);
-
   let verifyFields: any = {},
     verifyTierFields: any = {},
     deployVerifyPromise,
     deployVerifyTierPromise,
-    verifyChild,
-    verifyTierChild;
+    verifyChild;
 
   const deployVerify = async () => {
     const verifyFactory = new ethers.Contract(
@@ -54,10 +52,10 @@
       $signer
     );
     const { validationResult, fieldValues } = validateFields(verifyFields);
-    console.log(fieldValues);
     const tx = await verifyFactory.createChildTyped(fieldValues.adminAddress);
     const receipt = await tx.wait();
     verifyChild = getNewChildFromReceipt(receipt, verifyFactory);
+    return receipt;
   };
 
   const deployVerifyTier = async () => {
@@ -67,12 +65,11 @@
       $signer
     );
     const { validationResult, fieldValues } = validateFields(verifyTierFields);
-    console.log(fieldValues);
     const tx = await verifyTierFactory.createChildTyped(
       fieldValues.verifyAddress
     );
     const receipt = await tx.wait();
-    verifyTierChild = getNewChildFromReceipt(receipt, verifyTierFactory);
+    return receipt;
   };
 </script>
 
@@ -105,22 +102,17 @@
         Approver, Remover, Banner.</span
       >
     </Input>
-    <Button
-      shrink
-      on:click={() => {
-        deployVerifyPromise = deployVerify();
-      }}>Deploy</Button
-    >
-
-    {#if deployVerifyPromise}
-      <div class="flex flex-col gap-y-2 text-blue-300">
-        {#await deployVerifyPromise}
-          ...deploying
-        {:then}
-          deployed
-          <span>Verify contract: {verifyChild}</span>
-        {/await}
-      </div>
+  </FormPanel>
+  <FormPanel>
+    {#if !deployVerifyPromise}
+      <Button
+        shrink
+        on:click={() => {
+          deployVerifyPromise = deployVerify();
+        }}>Deploy Verify</Button
+      >
+    {:else}
+      <ContractDeploy deployPromise={deployVerifyPromise} type="Verify" />
     {/if}
   </FormPanel>
 
@@ -137,22 +129,20 @@
         this VerifyTier</span
       >
     </Input>
-    <Button
-      shrink
-      on:click={() => {
-        deployVerifyTierPromise = deployVerifyTier();
-      }}>Deploy</Button
-    >
-
-    {#if deployVerifyTierPromise}
-      <div class="flex flex-col gap-y-2 text-blue-300">
-        {#await deployVerifyTierPromise}
-          ...deploying
-        {:then}
-          deployed
-          <span>VerifyTier contract: {verifyTierChild}</span>
-        {/await}
-      </div>
+  </FormPanel>
+  <FormPanel>
+    {#if !deployVerifyTierPromise}
+      <Button
+        shrink
+        on:click={() => {
+          deployVerifyTierPromise = deployVerifyTier();
+        }}>Deploy VerifyTier</Button
+      >
+    {:else}
+      <ContractDeploy
+        deployPromise={deployVerifyTierPromise}
+        type="VerifyTier"
+      />
     {/if}
   </FormPanel>
 </div>

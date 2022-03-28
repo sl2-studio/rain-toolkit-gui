@@ -64,7 +64,7 @@
     [sale, reserve, token] = initSaleContracts($saleQuery.data.sale, $signer);
   };
 
-  if (ethers.utils.isAddress(params.wild)) {
+  $: if (ethers.utils.isAddress(params.wild)) {
     $saleQuery.variables.saleAddress = params.wild.toLowerCase();
     query(saleQuery);
   } else if (params.wild) {
@@ -110,7 +110,7 @@
       <span class="text-gray-400">Enter a Sale contract address below.</span>
       <Input
         bind:value={saleAddressInput}
-        type="string"
+        type="address"
         placeholder="Contract address"
       />
       <Button

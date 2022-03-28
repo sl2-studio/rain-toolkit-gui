@@ -10,9 +10,6 @@
 
   export let params;
 
-  $: console.log("signer address", $signerAddress);
-  $: console.log("params", params);
-
   let balanceTierContract,
     tierValues,
     errorMsg,
@@ -28,7 +25,6 @@
   $: if (params.wild) {
     initContract();
   }
-  $: console.log("updated errors", errorMsg);
   const initContract = async () => {
     if (ethers.utils.isAddress(params.wild)) {
       // setting up the balance tier contract
@@ -55,8 +51,7 @@
       errorMsg = "Not a valid Ethereum address";
     }
   };
-  $: console.log(tierValues);
-  console.log(ethers.constants.MaxInt256);
+
   const reportMyAddress = () => {
     addressToReport = $signerAddress;
     report();
@@ -65,17 +60,17 @@
 
 <div class="flex w-full max-w-prose flex-col gap-y-4">
   <div class="mb-2 flex flex-col gap-y-2">
-    <span class="text-2xl"> Get a BalanceTier report. </span>
+    <span class="text-2xl"> Get an ERC721BalanceTier report. </span>
     <span class="text-gray-400">
-      BalanceTier checks the amount of a specific ERC721 held in a wallet.
+      ERC721BalanceTier checks the amount of a specific ERC721 held in a wallet.
     </span>
     {#if !params.wild}
       <span class="text-gray-400">
-        Enter a BalanceTier contract address below, or <span
+        Enter an ERC721BalanceTier contract address below, or <span
           class="cursor-pointer underline"
           on:click={() => {
-            push("/balancetier/list");
-          }}>browse all deployed BalanceTier contracts.</span
+            push("/erc721balancetier/list");
+          }}>browse all deployed ERC721BalanceTier contracts.</span
         >
       </span>
     {/if}
@@ -130,12 +125,12 @@
     <FormPanel>
       <Input
         bind:value={balanceTierAddress}
-        type="string"
+        type="address"
         placeholder="Contract address"
       />
       <Button
         on:click={() => {
-          push(`/721balancetier/report/${balanceTierAddress}`);
+          push(`/erc721balancetier/report/${balanceTierAddress}`);
         }}
       >
         Load

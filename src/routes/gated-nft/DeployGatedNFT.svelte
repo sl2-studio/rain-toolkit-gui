@@ -1,6 +1,6 @@
 <script lang="ts">
   import { signer, signerAddress } from "svelte-ethers-store";
-  import { BigNumber, BigNumberish, ethers } from "ethers";
+  import { BigNumber, BigNumberish, Contract, ethers } from "ethers";
   import GatedNFTFactoryArtifact from "../../abis/GatedNFTFactory.json";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
@@ -19,6 +19,8 @@
   import Select from "../../components/Select.svelte";
   import { addressValidate } from "../../validation";
   import { selectedNetwork } from "src/stores";
+  import NewAddress from "src/components/NewAddress.svelte";
+  import ContractDeploy from "src/components/ContractDeploy.svelte";
 
   type GatedNFTTokenConfig = {
     name: string;
@@ -91,8 +93,6 @@
       return validationResult;
     });
     if (validations.every((validation) => validation.ok)) {
-      console.log(fieldValues);
-
       fieldValues.royaltyBPS = BigNumber.from(
         Math.floor(fieldValues.royaltyPercent * 100)
       );
@@ -101,7 +101,6 @@
         "0x0000000000000000000000000000000000000000000000000000000000000000";
       fieldValues.animationHash =
         "0x0000000000000000000000000000000000000000000000000000000000000000";
-      console.log(fieldValues);
       const tokenConfig: GatedNFTTokenConfig = {
         name: fieldValues.name,
         symbol: fieldValues.symbol,
@@ -121,7 +120,6 @@
         royaltyRecipient_: fieldValues.royaltyRecipient,
         royaltyBPS_: fieldValues.royaltyBPS,
       };
-      console.log(gatedNftFactory);
       let tx = await gatedNftFactory.createChildTyped(
         tokenConfig,
         fieldValues.tier,
@@ -263,11 +261,7 @@
       </span>
     </Input>
 
-    <Select
-      items={transferrableOptions}
-      bind:this={fields.transferrable}
-      value="0"
-    >
+    <Select items={transferrableOptions} bind:this={fields.transferrable}>
       <span slot="label"> Transferrable: </span>
       <span slot="description">
         Whether this GatedNFT is non-transferrable, transferrable to anyone, or
@@ -277,7 +271,7 @@
     </Select>
 
     <Input
-      type="text"
+      type="address"
       bind:this={fields.tier}
       validator={tierValidate}
       value="0xcd953b94999808ee07a33860dd46689580c90cf4"
@@ -298,32 +292,10 @@
     </Input>
   </FormPanel>
   <FormPanel>
-    <Button shrink on:click={handleClick}>Create GatedNFT</Button>
-    {#if deployPromise}
-      <div class="flex flex-col gap-y-2 text-blue-300">
-        {#await deployPromise}
-          ...deploying
-        {:then receipt}
-          <span>
-            New GatedNFT deployed at:
-            <a
-              target="_blank"
-              href={`${$selectedNetwork.blockExplorer}/address/${nftContract}`}
-            >
-              {nftContract}
-            </a>
-          </span>
-          <span>
-            <a
-              target="_blank"
-              class="underline"
-              href={`${$selectedNetwork.blockExplorer}/tx/${receipt.transactionHash}`}
-            >
-              See transaction.
-            </a>
-          </span>
-        {/await}
-      </div>
+    {#if !deployPromise}
+      <Button shrink on:click={handleClick}>Create GatedNFT</Button>
+    {:else}
+      <ContractDeploy {deployPromise} type="GatedNFT" />
     {/if}
   </FormPanel>
 </div>

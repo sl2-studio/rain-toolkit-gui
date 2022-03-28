@@ -5,28 +5,30 @@
 
 <div class="min-h-screen w-96 border-r border-gray-700">
   <div class="sticky top-16 flex flex-col  gap-y-3 self-start p-5">
-    <SidebarLinkGroup label="BalanceTier" url="/balancetier/*">
-      <SidebarLink url="/balancetier/deploy">
+    <SidebarLinkGroup label="ERC20BalanceTier" url="/erc20balancetier/*">
+      <SidebarLink url="/erc20balancetier/deploy">
         Deploy an ERC20BalanceTier
       </SidebarLink>
 
-      <SidebarLink url="/balancetier/report/">
+      <SidebarLink url="/erc20balancetier/report/">
         Check an ERC20BalanceTier Report
       </SidebarLink>
 
       <SidebarLink url="/erc20balancetier/list">
         Browse deployed ERC20BalanceTiers
       </SidebarLink>
+    </SidebarLinkGroup>
 
-      <SidebarLink url="/721balancetier/deploy">
+    <SidebarLinkGroup label="ERC721BalanceTier" url="/erc721balancetier/*">
+      <SidebarLink url="/erc721balancetier/deploy">
         Deploy an ERC721BalanceTier
       </SidebarLink>
 
-      <SidebarLink url="/721balancetier/report/">
+      <SidebarLink url="/erc721balancetier/report/">
         Check an ERC721BalanceTier Report
       </SidebarLink>
 
-      <SidebarLink url="/721balancetier/list">
+      <SidebarLink url="/erc721balancetier/list">
         Browse deployed ERC721BalanceTiers
       </SidebarLink>
     </SidebarLinkGroup>
@@ -38,7 +40,7 @@
         Check a CombineTier Report
       </SidebarLink>
 
-      <SidebarLink url="/balancetier/list">
+      <SidebarLink url="/combinetier/list">
         Browse deployed CombineTiers
       </SidebarLink>
     </SidebarLinkGroup>
@@ -55,6 +57,8 @@
       <SidebarLink url="/sale/deploy">Deploy a Sale</SidebarLink>
 
       <SidebarLink url="/sale/purchase/">Purchase rTKN from a Sale</SidebarLink>
+
+      <SidebarLink url="/sale/list">List deployed Sales</SidebarLink>
     </SidebarLinkGroup>
 
     <SidebarLinkGroup label="Emissions" url="/emissions/*">

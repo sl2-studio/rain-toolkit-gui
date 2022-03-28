@@ -6,6 +6,7 @@
   import Button from "../../components/Button.svelte";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
+  import TokenInfo from "../sale/TokenInfo.svelte";
   import { initEmissions } from "./emissions";
 
   export let params: {
@@ -15,7 +16,7 @@
   let emissionsContract, token;
   let errorMsg, emissionsAddress;
   let showClaim;
-  let initPromise, calcClaimPromsie, claimPromise;
+  let initPromise, calcClaimPromise, claimPromise;
 
   $: if (params.wild) {
     initPromise = initContract();
@@ -60,7 +61,7 @@
       >
       <Input
         bind:value={emissionsAddress}
-        type="string"
+        type="address"
         placeholder="Contract address"
       />
       <Button
@@ -79,23 +80,16 @@
     {#await initPromise}
       Loading...
     {:then}
-      <FormPanel heading="rTKN">
-        <div class="flex flex-col gap-y-2">
-          <span>Name: {token.erc20name}</span>
-          <span>Symbol: {token.erc20symbol}</span>
-          <span>
-            Total supply: {formatUnits(
-              token.erc20totalSupply,
-              token.erc20decimals.toString()
-            )}
-          </span>
-          <span>
-            Your balance: {formatUnits(
-              token.erc20balance,
-              token.erc20decimals.toString()
-            )}
-          </span>
-        </div>
+      <FormPanel heading="Emissions Token">
+        <TokenInfo
+          tokenData={{
+            name: token.erc20name,
+            symbol: token.erc20symbol,
+            decimals: token.erc20decimals,
+            id: emissionsContract.address,
+            totalSupply: token.erc20totalSupply,
+          }}
+        />
       </FormPanel>
 
       <FormPanel heading="Claim">
@@ -106,16 +100,16 @@
             >
             <Button
               on:click={() => {
-                calcClaimPromsie = calculateClaim();
+                calcClaimPromise = calculateClaim();
               }}
             >
               Calculate
             </Button>
           </div>
         {/if}
-        {#if calcClaimPromsie}
+        {#if calcClaimPromise}
           <div>
-            {#await calcClaimPromsie}
+            {#await calcClaimPromise}
               Getting eligible claim...
             {:then claim}
               Your claim will be {formatUnits(claim, token.erc20decimals)}

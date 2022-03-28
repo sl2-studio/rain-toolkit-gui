@@ -91,9 +91,7 @@ export const saleDeploy = async (
   saleRedeemableERC20Config: SaleRedeemableERC20Config,
   ...args
 ): Promise<Contract> => {
-  console.log(config);
-  console.log(saleRedeemableERC20Config);
-  console.log(config.calculatePriceStateConfig.constants[0].toString());
+
   const saleFactory = new ethers.Contract(
     get(selectedNetwork).addresses.SALE_FACTORY,
     SaleFactoryArtifact.abi,
@@ -105,32 +103,8 @@ export const saleDeploy = async (
     ...args
   );
   const receipt = await txDeploy.wait();
-  const saleContractAddress = getNewChildFromReceipt(receipt, saleFactory);
-  const sale = new ethers.Contract(
-    saleContractAddress,
-    SaleArtifact.abi,
-    deployer
-  ) as Contract;
 
-  if (!ethers.utils.isAddress(sale.address)) {
-    throw new Error(
-      `invalid sale address: ${sale.address} (${sale.address.length} chars)`
-    );
-  }
-
-  // await sale.deployed();
-
-  // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // // @ts-ignore
-  // sale.deployTransaction = txDeploy;
-
-  // const token = new ethers.Contract(
-  //   await sale.token(),
-  //   RedeemableERC20Artifact.abi,
-  //   deployer
-  // ) as Contract;
-
-  return sale;
+  return receipt;
 };
 
 export const afterBlockNumberConfig = (blockNumber) => {

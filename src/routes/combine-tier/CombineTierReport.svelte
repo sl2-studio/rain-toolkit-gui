@@ -20,7 +20,6 @@
   $: if (params.wild) {
     initContract();
   }
-  $: console.log("updated errors", errorMsg);
 
   const initContract = async () => {
     if (ethers.utils.isAddress(params.wild || "")) {
@@ -61,8 +60,8 @@
         Enter a CombineTier contract address below, or <span
           class="cursor-pointer underline"
           on:click={() => {
-            push("/balancetier/list");
-          }}>browse all deployed BalanceTier contracts.</span
+            push("/combinetier/list");
+          }}>browse all deployed CombineTier contracts.</span
         >
       </span>
     {/if}
@@ -100,7 +99,7 @@
     <FormPanel>
       <Input
         bind:value={combineTierAddress}
-        type="string"
+        type="address"
         placeholder="Contract address"
       />
       <Button

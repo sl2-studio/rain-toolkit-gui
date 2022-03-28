@@ -18,7 +18,6 @@
   let errorMsg, verifyAddressInput, verifyContract, selectedRole;
 
   const initContract = async (address) => {
-    console.log($signer);
     verifyContract = new ethers.Contract(
       address,
       VerifyContractArtifact.abi,
@@ -26,7 +25,7 @@
     );
   };
 
-  if (ethers.utils.isAddress(params.wild)) {
+  $: if (ethers.utils.isAddress(params.wild)) {
     initContract(params.wild);
   } else if (params.wild) {
     errorMsg = "Not a valid contract address";
@@ -43,7 +42,7 @@
       <span class="text-gray-400">Enter a Verify contract address below.</span>
       <Input
         bind:value={verifyAddressInput}
-        type="string"
+        type="address"
         placeholder="Contract address"
       />
       <Button

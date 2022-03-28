@@ -40,7 +40,6 @@ export const animationUrlValidate = (value) => {
     let url;
     try {
       url = new URL(value);
-      console.log(url.protocol);
       if (
         !(
           url.protocol === "http:" ||
@@ -64,7 +63,6 @@ export const imageUrlValidate = (value) => {
   let url;
   try {
     url = new URL(value);
-    console.log(url.protocol);
     if (
       !(
         url.protocol === "http:" ||

@@ -66,14 +66,6 @@
   const refund = async () => {
     let tx;
     txStatus = TxStatus.AwaitingSignature;
-    console.log(saleContract);
-    console.log({
-      id: BigNumber.from(receipt.receiptId),
-      feeRecipient: receipt.feeRecipient,
-      fee: BigNumber.from(receipt.fee),
-      units: BigNumber.from(receipt.units),
-      price: BigNumber.from(receipt.price),
-    });
     try {
       tx = await saleContract.refund({
         id: BigNumber.from(receipt.receiptId),

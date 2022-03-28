@@ -51,7 +51,6 @@ query ($balanceTierAddress: Bytes!) {
   $: if (params.wild) {
     runQuery();
   }
-  $: console.log(balanceTier);
   const runQuery = () => {
     $balanceTier.variables.balanceTierAddress = params.wild.toLowerCase();
     $balanceTier.context.pause = false;
@@ -104,7 +103,7 @@ query ($balanceTierAddress: Bytes!) {
         Enter a BalanceTier contract address below, or <span
           class="cursor-pointer underline"
           on:click={() => {
-            push("/balancetier/list");
+            push("/erc20balancetier/list");
           }}>browse all deployed BalanceTier contracts.</span
         >
       </span>
@@ -162,12 +161,12 @@ query ($balanceTierAddress: Bytes!) {
     <FormPanel>
       <Input
         bind:value={balanceTierAddress}
-        type="string"
+        type="address"
         placeholder="Contract address"
       />
       <Button
         on:click={() => {
-          push(`/balancetier/report/${balanceTierAddress}`);
+          push(`/erc20balancetier/report/${balanceTierAddress}`);
         }}
       >
         Load

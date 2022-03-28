@@ -7,6 +7,8 @@
   import Button from "../../components/Button.svelte";
   import BalanceTierFactoryArtifact from "abis/ERC20BalanceTierFactory.json";
   import { selectedNetwork } from "src/stores";
+  import NewAddress from "src/components/NewAddress.svelte";
+  import ContractDeploy from "src/components/ContractDeploy.svelte";
 
   let erc20Address,
     erc20AddressError,
@@ -26,9 +28,7 @@
     if (ethers.utils.isAddress(erc20Address)) {
       erc20AddressError = null;
       erc20Contract = new ethers.Contract(erc20Address, ReserveToken.abi);
-      console.log($signer);
       erc20Contract = erc20Contract.connect($signer);
-      console.log(erc20Contract);
       try {
         erc20name = await erc20Contract.name();
         erc20balance = await erc20Contract.balanceOf($signerAddress);
@@ -82,7 +82,7 @@
     </span>
   </div>
   <FormPanel heading="BalanceTier settings">
-    <Input type="text" placeholder="Token address" bind:value={erc20Address}>
+    <Input type="address" placeholder="Token address" bind:value={erc20Address}>
       <span slot="label">Choose an ERC20 token to check the balance of.</span>
       <span slot="description">
         {#if erc20AddressError}
@@ -112,29 +112,13 @@
       <Input type="number" placeholder="Tier 7" bind:value={tiers[6]} />
       <Input type="number" placeholder="Tier 8" bind:value={tiers[7]} />
     </div>
-
-    <Button shrink on:click={handleClick}>Deploy BalanceTier</Button>
-    <div class="mt-1 flex flex-col gap-y-2 text-blue-400">
-      {#if deployPromise}
-        {#await deployPromise}
-          <span>Deploying...</span>
-        {:then receipt}
-          <span>
-            New BalanceTier deployed at: <a
-              target="_blank"
-              href={`${$selectedNetwork.blockExplorer}/address/${balanceTierAddress}`}
-              >{balanceTierAddress}</a
-            >
-          </span>
-          <span>
-            <a
-              target="_blank"
-              class="underline"
-              href={`${$selectedNetwork.blockExplorer}/tx/${receipt.transactionHash}`}
-              >See transaction.</a
-            >
-          </span>
-        {/await}
+  </FormPanel>
+  <FormPanel>
+    <div class="mt-1 flex flex-col gap-y-2">
+      {#if !deployPromise}
+        <Button shrink on:click={handleClick}>Deploy BalanceTier</Button>
+      {:else}
+        <ContractDeploy {deployPromise} type="ERC20BalanceTier" />
       {/if}
     </div>
   </FormPanel>

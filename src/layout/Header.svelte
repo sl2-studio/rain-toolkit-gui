@@ -14,7 +14,10 @@
 <div
   class="sticky top-0 z-40 flex h-16 w-full flex-row items-center justify-between border-b border-gray-700 bg-gray-900 px-5"
 >
-  <span class="text-xl font-light text-gray-50">Rain UI Toolkit</span>
+  <div class="flex flex-row gap-x-3">
+    <img src="/assets/logo.svg" alt="Rain Logo" class="w-7" />
+    <span class="text-xl font-light text-gray-50">Rain UI Toolkit</span>
+  </div>
   <div class="flex flex-row items-center gap-x-4">
     {#if $signerAddress}
       <span class="text-gray-400">

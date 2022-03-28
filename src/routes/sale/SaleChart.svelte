@@ -40,10 +40,8 @@
 
   // mapping data from the subgraph query into a format for the chart
   saleBuysQuery.subscribe((query) => {
-    console.log(query);
     if (query?.data?.saleBuys.length) {
       const _data = query.data.saleBuys.map((buy) => {
-        console.log(buy);
         return {
           timestamp: buy.timestamp * 1000,
           price: (+formatUnits(
@@ -68,7 +66,6 @@
           y: formatUnits(BigNumber.from(buy.receipt.price), reserve.decimals),
         };
       });
-      console.log(_data);
       dataset = _dataset;
       data = _data;
     }

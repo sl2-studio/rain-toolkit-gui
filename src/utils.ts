@@ -172,7 +172,6 @@ export const getERC20 = async (erc20Address, signer, signerAddress) => {
     erc20Contract = new ethers.Contract(erc20Address, ReserveTokenArtifact.abi);
     erc20Contract = erc20Contract.connect(signer);
     try {
-      console.log(signer);
       erc20name = await erc20Contract.name();
       erc20symbol = await erc20Contract.symbol();
       erc20balance = await erc20Contract.balanceOf(signerAddress);
@@ -188,7 +187,6 @@ export const getERC20 = async (erc20Address, signer, signerAddress) => {
         erc20totalSupply,
       };
     } catch (error) {
-      console.log(error);
       erc20AddressError = "not a valid ERC20 token address";
     }
   } else {

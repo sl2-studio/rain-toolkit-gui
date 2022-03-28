@@ -39,7 +39,6 @@
         receipt = await tx.wait();
         return receipt;
       } catch (error) {
-        console.log(error);
         throw error;
       }
     } else {

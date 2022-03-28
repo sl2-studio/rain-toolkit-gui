@@ -25,7 +25,6 @@
 }`);
 
   query(gatedNFTs);
-  $: console.log($gatedNFTs);
 </script>
 
 {#if $gatedNFTs.fetching}

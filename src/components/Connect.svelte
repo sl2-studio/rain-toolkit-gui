@@ -4,7 +4,11 @@
   import { networks } from "src/constants";
   import { selectedNetwork } from "src/stores";
   import { getContext } from "svelte";
-  import { defaultEvmStores, chainId, signerAddress } from "svelte-ethers-store";
+  import {
+    defaultEvmStores,
+    chainId,
+    signerAddress,
+  } from "svelte-ethers-store";
   import Select from "./Select.svelte";
 
   const { close } = getContext("simple-modal");
@@ -41,8 +45,6 @@
       // handle other "switch" errors
     }
   };
-
-  $:console.log($signerAddress)
 </script>
 
 <div class="flex flex-col gap-y-4">

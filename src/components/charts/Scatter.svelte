@@ -19,7 +19,6 @@
 
   /** @type {Number} [strokeWidth=0] – The circle's stroke width. */
   export let strokeWidth = 1;
-  $: console.log($data);
 </script>
 
 <g class="scatter-group">

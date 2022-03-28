@@ -23,7 +23,7 @@
 </script>
 
 <FormPanel heading="Grant a role">
-  <Input type="text" bind:value={roleAddress}>
+  <Input type="address" bind:value={roleAddress}>
     <span slot="label">Address to grant the role to:</span>
   </Input>
   <Select items={roles} bind:value={selectedRole}>

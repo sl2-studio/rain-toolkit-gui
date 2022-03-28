@@ -14,9 +14,9 @@
     EmissionsERC20ConfigStruct,
   } from "./emissions";
   import { selectedNetwork } from "src/stores";
+  import ContractDeploy from "src/components/ContractDeploy.svelte";
 
   let deployPromise;
-  let emissionsAddress;
 
   let fields: any = {};
 
@@ -77,23 +77,12 @@
         vmStateConfig,
       };
 
-      console.log(emissionsConfig);
-
       tx = await emissionsFactory.createChildTyped(emissionsConfig);
     } else {
       return;
     }
 
     const receipt = (await tx.wait()) as ContractReceipt;
-
-    receipt.events.forEach((event) => {
-      if (event.event == "NewChild") {
-        emissionsAddress = ethers.utils.defaultAbiCoder.decode(
-          ["address", "address"],
-          event.data
-        )[1];
-      }
-    });
 
     return receipt;
   };
@@ -135,7 +124,7 @@
 
   <FormPanel heading="Tier">
     <Input
-      type="text"
+      type="address"
       placeholder="Name"
       bind:this={fields.tierAddress}
       bind:value={tierAddress}
@@ -184,32 +173,10 @@
     </Input>
   </FormPanel>
   <FormPanel>
-    <Button shrink on:click={handleClick}>Deploy EmissionsERC20</Button>
-    <div class="mt-1 flex flex-col gap-y-2 text-blue-400">
-      {#if deployPromise}
-        {#await deployPromise}
-          <span>Deploying...</span>
-        {:then receipt}
-          <span>
-            New EmissionsERC20 deployed at:
-            <a
-              target="_blank"
-              href={`${$selectedNetwork.blockExplorer}/address/${emissionsAddress}`}
-            >
-              {emissionsAddress}
-            </a>
-          </span>
-          <span>
-            <a
-              target="_blank"
-              class="underline"
-              href={`${$selectedNetwork.blockExplorer}/tx/${receipt.transactionHash}`}
-            >
-              See transaction.
-            </a>
-          </span>
-        {/await}
-      {/if}
-    </div>
+    {#if !deployPromise}
+      <Button shrink on:click={handleClick}>Deploy EmissionsERC20</Button>
+    {:else}
+      <ContractDeploy {deployPromise} type="EmissionsERC20" />
+    {/if}
   </FormPanel>
 </div>

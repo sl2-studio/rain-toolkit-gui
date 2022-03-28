@@ -44,8 +44,6 @@
     ["SaleBuy", "Buy"],
     ["SaleRefund", "Refund"],
   ]);
-
-  $: console.log($txQuery, checked);
 </script>
 
 <div class="flex w-full flex-col gap-y-4">

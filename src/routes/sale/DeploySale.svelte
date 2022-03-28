@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ContractDeploy from "components/ContractDeploy.svelte";
   import { ethers } from "ethers";
   import { concat, formatUnits, parseUnits } from "ethers/lib/utils";
   import { signer, signerAddress } from "svelte-ethers-store";
@@ -16,7 +17,7 @@
 
   // some default values for testing
   let recipient = "0xf6CF014a3e92f214a3332F0d379aD32bf0Fae929";
-  let reserve = "0x25a4dd4cd97ed462eb5228de47822e636ec3e31a";
+  let reserve = "";
   let startBlock = 24407548;
   let cooldownDuration = 100;
   let saleTimeout = 100;
@@ -27,7 +28,7 @@
   let initialSupply = 1000;
   let distributionEndForwardingAddress = ethers.constants.AddressZero;
   let walletCap = 10;
-  let tier = "0xC064055DFf6De32f44bB7cCB0ca59Cbd8434B2de";
+  let tier = "";
   let minimumStatus = 0;
   let raiseRange;
 
@@ -42,7 +43,7 @@
 
   const deploy = async () => {
     const { validationResult, fieldValues } = validateFields(fields);
-    console.log(fieldValues);
+    let receipt;
 
     // utility functions for converting to token amounts with the req decimals
     const staticPrice = parseUnits(
@@ -74,7 +75,7 @@
     ////////////////
 
     if (validationResult) {
-      sale = await saleDeploy(
+      return await saleDeploy(
         $signer,
         {
           canStartStateConfig: afterTimestampConfig(
@@ -113,6 +114,7 @@
       );
     }
   };
+
   const getReserveErc20 = async () => {
     if (fields.reserve.validate()) {
       reserveErc20 = await getERC20(reserve, $signer, $signerAddress);
@@ -122,8 +124,6 @@
   $: if (reserve && fields?.reserve) {
     getReserveErc20();
   }
-
-  $: console.log($signer, $signerAddress);
 </script>
 
 <div class="flex w-3/4 flex-col gap-y-4">
@@ -133,7 +133,7 @@
   </div>
   <FormPanel heading="Sale config">
     <Input
-      type="text"
+      type="address"
       bind:this={fields.recipient}
       bind:value={recipient}
       validator={defaultValidator}
@@ -142,7 +142,7 @@
     </Input>
 
     <Input
-      type="text"
+      type="address"
       bind:this={fields.reserve}
       bind:value={reserve}
       validator={defaultValidator}
@@ -247,7 +247,7 @@
     </Input>
 
     <Input
-      type="text"
+      type="address"
       bind:this={fields.distributionEndForwardingAddress}
       bind:value={distributionEndForwardingAddress}
       validator={defaultValidator}
@@ -261,7 +261,7 @@
     </Input>
 
     <Input
-      type="text"
+      type="address"
       bind:this={fields.tier}
       bind:value={tier}
       validator={defaultValidator}
@@ -283,18 +283,10 @@
   </FormPanel>
 
   <FormPanel>
-    <Button shrink on:click={handleClick}>Deploy Sale</Button>
-
-    {#if deployPromise}
-      <div class="flex flex-col gap-y-2 text-blue-300">
-        {#await deployPromise}
-          ...deploying
-        {:then}
-          deployed
-          <span>Sale contract: {sale.address}</span>
-          <!-- <span>RedeemableERC20 token address: {token.address}</span> -->
-        {/await}
-      </div>
+    {#if !deployPromise}
+      <Button shrink on:click={handleClick}>Deploy Sale</Button>
+    {:else}
+      <ContractDeploy {deployPromise} type="Sale" />
     {/if}
   </FormPanel>
 </div>

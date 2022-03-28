@@ -7,9 +7,9 @@
   import ERC20Artifact from "../../abis/ERC721.json";
   import ERC721BalanceTierFactoryArtifact from "../../abis/ERC721BalanceTierFactory.json";
   import { selectedNetwork } from "src/stores";
+  import ContractDeploy from "src/components/ContractDeploy.svelte";
 
-  let balanceTierAddress: string,
-    deployPromise: null | Promise<ContractReceipt | undefined>;
+  let deployPromise: null | Promise<ContractReceipt | undefined>;
   let erc721Address: string | undefined,
     erc721Contract: Contract | null,
     erc721AddressError: string | null,
@@ -17,7 +17,6 @@
     erc721Name: string,
     erc721Symbol: string;
   let tiers = [] as string[];
-  $: console.log(tiers);
 
   $: if (erc721Address) {
     getERC721();
@@ -27,16 +26,13 @@
     if (erc721Address && ethers.utils.isAddress(erc721Address)) {
       erc721AddressError = null;
       erc721Contract = new ethers.Contract(erc721Address, ERC20Artifact.abi);
-      console.log($signer);
       erc721Contract = erc721Contract.connect($signer);
-      console.log(erc721Contract);
       try {
         erc721Name = await erc721Contract.name();
       } catch {}
       try {
         erc721Balance = await erc721Contract.balanceOf($signerAddress);
       } catch (error) {
-        console.log(error);
         erc721AddressError = "not a valid ERC721 token address";
       }
     } else {
@@ -57,17 +53,9 @@
       let tx = await erc721BalanceTierFactory[
         "createChildTyped((address,uint256[8]))"
       ]([erc721Contract.address, parsedTiers]);
+
       const receipt = (await tx.wait()) as ContractReceipt;
-      if (receipt?.events) {
-        receipt.events.forEach((event) => {
-          if (event.event == "NewChild") {
-            balanceTierAddress = ethers.utils.defaultAbiCoder.decode(
-              ["address", "address"],
-              event.data
-            )[1];
-          }
-        });
-      }
+
       return receipt;
     }
   };
@@ -86,7 +74,11 @@
     </span>
   </div>
   <FormPanel heading="BalanceTier settings">
-    <Input type="text" placeholder="Token address" bind:value={erc721Address}>
+    <Input
+      type="address"
+      placeholder="Token address"
+      bind:value={erc721Address}
+    >
       <span slot="label">Choose an ERC721 token to check the balance of.</span>
       <span slot="description">
         {#if erc721AddressError}
@@ -113,33 +105,12 @@
       <Input type="number" placeholder="Tier 7" bind:value={tiers[6]} />
       <Input type="number" placeholder="Tier 8" bind:value={tiers[7]} />
     </div>
-
-    <Button shrink on:click={handleClick}>Deploy BalanceTier</Button>
-    <div class="mt-1 flex flex-col gap-y-2 text-blue-400">
-      {#if deployPromise}
-        {#await deployPromise}
-          <span>Deploying...</span>
-        {:then receipt}
-          <span>
-            New BalanceTier deployed at:
-            <a
-              target="_blank"
-              href={`${$selectedNetwork.blockExplorer}/address/${balanceTierAddress}`}
-            >
-              {balanceTierAddress}
-            </a>
-          </span>
-          <span>
-            <a
-              target="_blank"
-              class="underline"
-              href={`${$selectedNetwork.blockExplorer}/tx/${receipt?.transactionHash}`}
-            >
-              See transaction.
-            </a>
-          </span>
-        {/await}
-      {/if}
-    </div>
+  </FormPanel>
+  <FormPanel>
+    {#if !deployPromise}
+      <Button shrink on:click={handleClick}>Deploy BalanceTier</Button>
+    {:else}
+      <ContractDeploy {deployPromise} type="ERC721BalanceTier" />
+    {/if}
   </FormPanel>
 </div>

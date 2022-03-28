@@ -88,7 +88,6 @@ export type EmissionsERC20ConfigStruct = {
 export const createEmissionsSource = (
   config: EmissionsConfig
 ): StateConfigStruct => {
-  // console.log(config)
   const BN_ONE = BigNumber.from("1" + eighteenZeros);
 
   // We're using uints, so we need to scale reward per block up to get out of the decimal places, but a precision of 18 zeros is too much to fit within a uint32 (since we store block rewards per tier in a report-like format). Six zeros should be enough.
@@ -243,10 +242,6 @@ export const createEmissionsSource = (
     BN_ONE,
     BN_ONE_REWARD,
   ];
-
-  // console.log("source", SOURCE());
-  // console.log("constants", constants);
-  // console.log("source length", SOURCE().length);
 
   return {
     sources: [SOURCE(), FN()],

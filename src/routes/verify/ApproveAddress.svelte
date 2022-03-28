@@ -7,7 +7,6 @@
 
   const { open } = getContext("simple-modal");
   export let verifyContract: Contract;
-  console.log(verifyContract);
   type Evidence = {
     account: string;
     data: Uint8Array;
@@ -21,7 +20,6 @@
   const approve = async () => {
     const evidences: Evidence[] = lines.map((line) => {
       const splitLine = line.split("\t");
-      console.log(splitLine);
       return { account: splitLine[0], data: encoder.encode(splitLine[1]) };
     });
 

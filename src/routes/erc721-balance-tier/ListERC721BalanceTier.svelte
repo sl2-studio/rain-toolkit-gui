@@ -9,7 +9,7 @@
 
   const balanceTiers = operationStore(`
 query {
-  erc20BalanceTiers {
+  erc721BalanceTiers {
     id
     address
     deployBlock
@@ -19,7 +19,6 @@ query {
       id
       name
       symbol
-      decimals
     }
     tierValues
   }
@@ -37,10 +36,10 @@ query {
   >
 {:else}
   <div class="flex flex-col gap-y-3">
-    {#each $balanceTiers.data.erc20BalanceTiers as balanceTier}
+    {#each $balanceTiers.data.erc721BalanceTiers as balanceTier}
       <FormPanel>
         <div class="flex flex-col gap-y-2 mb-4">
-          <span class="text-white">BalanceTier details</span>
+          <span class="text-white">ERC721BalanceTier details</span>
           <div class="text-gray-400 flex flex-col">
             <span>Deployer: {balanceTier.deployer}</span>
             <span
@@ -52,14 +51,14 @@ query {
               Token tiers:
               {#each balanceTier.tierValues as tierValue}
                 {#if !BigNumber.from(tierValue).eq(ethers.constants.MaxInt256)}
-                  {formatUnits(tierValue, balanceTier.token.decimals)},
+                  {tierValue.toString()},
                 {/if}
               {/each}
             </span>
           </div>
         </div>
         <div class="flex flex-col gap-y-2 mb-4">
-          <span class="text-white">ERC20 details</span>
+          <span class="text-white">ERC721 details</span>
           <div class="text-gray-400 flex flex-col">
             <span>Name: {balanceTier.token.name}</span>
             <span>Symbol: {balanceTier.token.symbol}</span>
@@ -68,11 +67,8 @@ query {
         </div>
         <div class="flex flex-row gap-x-2">
           <Button
-            on:click={push(`/erc20balancetier/report/${balanceTier.address}`)}
+            on:click={push(`/erc721balancetier/report/${balanceTier.address}`)}
             >Report</Button
-          >
-          <Button on:click={push(`/gatednft/deploy/${balanceTier.address}`)}
-            >Gate an edition</Button
           >
         </div>
       </FormPanel>

@@ -10,12 +10,13 @@
   import { addressValidate } from "../../validation";
   import Select from "../../components/Select.svelte";
   import { selectedNetwork } from "src/stores";
+  import NewAddress from "src/components/NewAddress.svelte";
+  import ContractDeploy from "src/components/ContractDeploy.svelte";
 
   let tierContractOne: string,
     tierContractTwo: string,
     combineTierFactory,
-    deployPromise: any,
-    combineTierAddress: string;
+    deployPromise: any;
 
   const enum Opcode {
     END,
@@ -45,9 +46,6 @@
 
   let logicValue: { value: selectLteLogic; label: string },
     modeValue: { value: selectLteLogic; label: string };
-
-  $: console.log(logicValue, modeValue);
-  $: console.log(tierContractOne, tierContractTwo);
 
   const deployCombineTier = async () => {
     combineTierFactory = new ethers.Contract(
@@ -82,15 +80,6 @@
 
     const receipt = (await tx.wait()) as ContractReceipt;
 
-    receipt.events.forEach((event) => {
-      if (event.event == "NewChild") {
-        combineTierAddress = ethers.utils.defaultAbiCoder.decode(
-          ["address", "address"],
-          event.data
-        )[1];
-      }
-    });
-
     return receipt;
   };
 
@@ -108,7 +97,7 @@
   </div>
   <FormPanel heading="CombineTier settings">
     <Input
-      type="text"
+      type="address"
       placeholder="Tier address"
       bind:value={tierContractOne}
       validator={addressValidate}
@@ -117,7 +106,7 @@
     </Input>
 
     <Input
-      type="text"
+      type="address"
       placeholder="Tier address"
       bind:value={tierContractTwo}
       validator={addressValidate}
@@ -147,33 +136,12 @@
         Tiers specified.
       </span>
     </Select>
-
-    <Button shrink on:click={handleClick}>Deploy CombineTier</Button>
-    <div class="mt-1 flex flex-col gap-y-2 text-blue-400">
-      {#if deployPromise}
-        {#await deployPromise}
-          <span>Deploying...</span>
-        {:then receipt}
-          <span>
-            New CombineTier deployed at:
-            <a
-              target="_blank"
-              href={`${$selectedNetwork.blockExplorer}/address/${combineTierAddress}`}
-            >
-              {combineTierAddress}
-            </a>
-          </span>
-          <span>
-            <a
-              target="_blank"
-              class="underline"
-              href={`${$selectedNetwork.blockExplorer}/tx/${receipt.transactionHash}`}
-            >
-              See transaction.
-            </a>
-          </span>
-        {/await}
-      {/if}
-    </div>
+  </FormPanel>
+  <FormPanel>
+    {#if !deployPromise}
+      <Button shrink on:click={handleClick}>Deploy CombineTier</Button>
+    {:else}
+      <ContractDeploy {deployPromise} type="CombineTier" />
+    {/if}
   </FormPanel>
 </div>

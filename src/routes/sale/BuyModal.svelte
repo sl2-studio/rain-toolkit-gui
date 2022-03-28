@@ -69,7 +69,6 @@
   };
 
   const buy = async () => {
-    console.log(signer);
     const buyConfig = {
       feeRecipient: $signer._address, // should be set to platform fee recipient
       fee: fee,

@@ -14,7 +14,7 @@
         Check an ERC20BalanceTier Report
       </SidebarLink>
 
-      <SidebarLink url="/balancetier/list">
+      <SidebarLink url="/erc20balancetier/list">
         Browse deployed ERC20BalanceTiers
       </SidebarLink>
 

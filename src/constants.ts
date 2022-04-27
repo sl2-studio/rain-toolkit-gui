@@ -51,9 +51,11 @@ export const networks = [{
     EMISSIONS_FACTORY: "0x83b45E84dfd5f00a03c6C483B27C44A0C4E9903f",
     GATED_NFT_FACTORY: "0xD9AD3A87E4c1F604091c1A0E147c88B3A9E1B4ad",
     VERIFY_TIER_FACTORY: "0x007aB50f8c491AE54114139b9ada40aB3c6e4811",
-    VERIFY_FACTORY: "0x39e3c764e6185C6a3100D0dA1195D26519b42750"
+    VERIFY_FACTORY: "0x39e3c764e6185C6a3100D0dA1195D26519b42750",
+    ESCROW_ADDRESS: "0xbd9c8f56889f95aac8ddfbf3cf8a168151efd2aa"
   },
   blockExplorer: 'https://mumbai.polygonscan.com/',
   graphUrl: 'https://api.thegraph.com/subgraphs/name/beehive-innovation/rain-protocol-v2_1-mumbai'
+
 },
 ]

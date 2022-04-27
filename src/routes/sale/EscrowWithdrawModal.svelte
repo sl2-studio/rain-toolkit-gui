@@ -1,12 +1,9 @@
 <script lang="ts">
+  import { formatAddress } from "src/utils";
   import Button from "../../components/Button.svelte";
   import Steps from "../../components/steps/Steps.svelte";
   import Ring from "../../components/Ring.svelte";
-  import { ethers } from "ethers";
-  import { getContext } from "svelte";
   import { selectedNetwork } from "src/stores";
-
-  const { close } = getContext("simple-modal");
 
   enum TxStatus {
     None,
@@ -15,51 +12,70 @@
     Error,
   }
 
-  enum ApproveSteps {
-    Approve,
+  enum WithdrawSteps {
+    Confirm,
     Complete,
   }
 
-  export let signer, reserve, sale, saleData;
-
-  let activeStep = ApproveSteps.Approve,
+  export let data,
+    escrow,
+    errorMsg,
+    salesContract,
+    activeStep = WithdrawSteps.Confirm,
     txStatus = TxStatus.None,
-    txReceipt,
-    errorMsg;
+    txReceipt;
 
-  const approve = async () => {
+  const withdraw = async () => {
+    let tx;
     txStatus = TxStatus.AwaitingSignature;
-    const tx = await reserve.approve(saleData.id, ethers.constants.MaxUint256);
+    
+    try {
+      tx = await escrow.withdraw(salesContract.address, data.token.id, data.redeemableSupply);
+    } catch (error) {
+      errorMsg = error.data?.message || error?.message;
+      txStatus = TxStatus.Error;
+      return;
+    }
 
     txStatus = TxStatus.AwaitingConfirmation;
     txReceipt = await tx.wait();
 
-    activeStep = ApproveSteps.Complete;
     txStatus = TxStatus.None;
+    activeStep = WithdrawSteps.Complete;
+
+    return txReceipt;
   };
 </script>
 
 {#if txStatus == TxStatus.None}
   <div class="flex w-600 flex-col items-start gap-y-7">
-    <span class="text-xl font-bold">Approve</span>
-
+    <span class="text-xl font-bold">Withdraw</span>
     <Steps
-      steps={["Approve", "Complete"]}
+      steps={["Confirm", "Complete"]}
       {activeStep}
       fulfilledTextClass="text-gray-100"
       lineBorderClass="border-gray-400"
     />
+      <div class="grid grid-cols-2 gap-4 rounded-md border border-gray-600 p-4">
+        <span>Sale Address:</span>
+        <span>{formatAddress(salesContract.address)}</span>
 
-    {#if activeStep == ApproveSteps.Approve}
-      <span
-        >Approve the sale contract to spend your {saleData.token.symbol}</span
-      >
-      <Button on:click={approve}>Approve</Button>
+        <span>Token Address:</span>
+        <span>{formatAddress(data.token.id)}</span>
+        
+        <span>Total Supply:</span>
+        <span>{data.redeemableSupply}</span>
+        
+      </div>
+
+    {#if activeStep == WithdrawSteps.Confirm}
+
+      <span>Confirm your withdraw.</span>
+      <Button on:click={withdraw}>Confirm</Button>
     {/if}
 
-    {#if activeStep == ApproveSteps.Complete}
-      <span>Approval confirmed.</span>
-      <span>You can now purchase from this sale. </span>
+    {#if activeStep == WithdrawSteps.Complete}
+      <span>Withdraw confirmed!</span>
       <a
         class="text-blue-400 underline"
         target="_blank"
@@ -67,11 +83,6 @@
       >
         See transaction.
       </a>
-      <Button
-        on:click={() => {
-          close();
-        }}>Ok</Button
-      >
     {/if}
   </div>
 {/if}
@@ -82,14 +93,12 @@
     <span class="text-lg">Awaiting signature...</span>
   </div>
 {/if}
-
 {#if txStatus == TxStatus.AwaitingConfirmation}
   <div class="flex flex-col items-center gap-y-5 p-6">
     <Ring color="#fff" />
     <span class="text-lg">Transaction confirming...</span>
   </div>
 {/if}
-
 {#if txStatus == TxStatus.Error}
   <div class="flex flex-col items-center gap-y-5 p-6">
     <span class="text-lg">Something went wrong.</span>

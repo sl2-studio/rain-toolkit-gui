@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ContractDeploy from "components/ContractDeploy.svelte";
+  import ContractDeploy from "../../components/ContractDeploy.svelte";
   import { ethers } from "ethers";
   import { concat, formatUnits, parseUnits } from "ethers/lib/utils";
   import { signer, signerAddress } from "svelte-ethers-store";

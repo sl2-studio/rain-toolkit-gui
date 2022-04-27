@@ -10,6 +10,7 @@
     saleStatuses,
   } from "./sale";
   import dayjs from "dayjs";
+import TokenInfo from "./TokenInfo.svelte";
 
   export let saleContract;
 

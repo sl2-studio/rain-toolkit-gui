@@ -1,8 +1,8 @@
 <script lang="ts">
   import { formatUnits, parseUnits } from "ethers/lib/utils";
-  import Button from "components/Button.svelte";
-  import Steps from "components/steps/Steps.svelte";
-  import Ring from "components/Ring.svelte";
+  import Button from "../../components/Button.svelte";
+  import Steps from "../../components/steps/Steps.svelte";
+  import Ring from "../../components/Ring.svelte";
   import { BigNumber, ethers } from "ethers";
   import Input from "src/components/Input.svelte";
   import { selectedNetwork } from "src/stores";

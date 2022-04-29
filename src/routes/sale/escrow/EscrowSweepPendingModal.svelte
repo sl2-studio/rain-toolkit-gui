@@ -27,36 +27,9 @@
     txStatus = TxStatus.None,
     txReceipt;
 
-  console.log("data.iSaleAddress in sweep", data.iSaleAddress);
-  console.log("data.token.id in sweep", data.token.id);
-  console.log("data.depositorAddress in sweep", data.depositorAddress);
-
-  // const approve = async () => {
-  //   const rTKN = new ethers.Contract(
-  //     data.token.id,
-  //     ReserveTokenArtifact.abi,
-  //     $signer
-  //   );
-
-  //   let tx;
-  //   txStatus = TxStatus.AwaitingSignature;
-
-  //   try {
-  //     tx = await rTKN.approve(escrow.address, BigNumber.from(tokenData.totalSupply));
-  //   } catch (error) {
-  //     errorMsg = error.data?.message || error?.message;
-  //     txStatus = TxStatus.Error;
-  //     return;
-  //   }
-
-  //   txStatus = TxStatus.AwaitingConfirmation;
-  //   const txReceipt = await tx.wait();
-
-  //   txStatus = TxStatus.None;
-  //   activeStep = SweepingSteps.Confirm;
-
-  //   return txReceipt;
-  // };
+  // console.log("data.iSaleAddress in sweep", data.iSaleAddress);
+  // console.log("data.token.id in sweep", data.token.id);
+  // console.log("data.depositorAddress in sweep", data.depositorAddress);
 
   const sweep = async () => {
     let tx;

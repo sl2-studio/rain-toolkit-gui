@@ -4,11 +4,14 @@
   import { formatUnits } from "ethers/lib/utils";
   import { signerAddress } from "svelte-ethers-store";
   import { getContext } from "svelte";
-  import IconLibrary from "../../components/IconLibrary.svelte";
-  import { allPendingDepositQuery, myPendingDepositQuery } from "./escrow-queries";
+  import IconLibrary from "../../../components/IconLibrary.svelte";
+  import {
+    allPendingDepositQuery,
+    myPendingDepositQuery,
+  } from "./escrow-queries";
   import Switch from "src/components/Switch.svelte";
-  import { Contract } from "ethers";  
-  import { saleStatuses } from "./sale";
+  import { Contract } from "ethers";
+  import { saleStatuses } from "../sale";
   import EscrowSweepPendingModal from "./EscrowSweepPendingModal.svelte";
 
   const { open } = getContext("simple-modal");
@@ -24,10 +27,12 @@
   query(myPendingDepositQuery);
 
   // setting the query variables
-  $myPendingDepositQuery.variables.saleAddress = salesContract.address.toLowerCase();
+  $myPendingDepositQuery.variables.saleAddress =
+    salesContract.address.toLowerCase();
   $myPendingDepositQuery.variables.depositor = $signerAddress.toLowerCase();
 
-  $allPendingDepositQuery.variables.saleAddress = salesContract.address.toLowerCase();
+  $allPendingDepositQuery.variables.saleAddress =
+    salesContract.address.toLowerCase();
 
   // handling table refresh
   const refresh = () => {
@@ -37,14 +42,14 @@
   // aliases for convenience
   $: saleStatus =
     saleStatuses[
-      $txQuery?.data?.redeemableEscrowPendingDepositorTokens[0]?.iSale?.saleStatus
+      $txQuery?.data?.redeemableEscrowPendingDepositorTokens[0]?.iSale
+        ?.saleStatus
     ];
   $: token = $txQuery?.data?.redeemableEscrowPendingDepositorTokens[0]?.token;
-
 </script>
 
 <div class="flex w-full flex-col gap-y-4">
-  {console.log("txquery in pending deposit", txQuery)}
+  <!-- {console.log("txquery in pending deposit", txQuery)} -->
   <div class="flex flex-row justify-between">
     <span class="text-lg font-semibold">Escrow Pending Deposit History</span>
     <div class="flex flex-row items-center gap-x-4">
@@ -69,7 +74,8 @@
         <th class="text-gray-400 text-left pb-2 font-light">Depositor</th>
         <th class="text-gray-400 text-left pb-2 font-light">Token Address</th>
         <th class="text-gray-400 text-left pb-2 font-light">Symbol</th>
-        <th class="text-gray-400 text-left pb-2 font-light">Deposited Amount</th>
+        <th class="text-gray-400 text-left pb-2 font-light">Deposited Amount</th
+        >
       </tr>
       {#each $txQuery.data.redeemableEscrowPendingDepositorTokens as data}
         <tr>
@@ -82,10 +88,9 @@
           </td>
           <td class="py-2">
             {Number(
-              (+formatUnits(
-                data.totalDeposited,
-                data.token.decimals
-              )).toFixed(4)
+              (+formatUnits(data.totalDeposited, data.token.decimals)).toFixed(
+                4
+              )
             )}
             {data.token.symbol}
           </td>

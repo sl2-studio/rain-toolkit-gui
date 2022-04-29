@@ -14,12 +14,12 @@
   import { onMount } from "svelte";
   import TransactionsTable from "./TransactionsTable.svelte";
   import SaleChart from "./SaleChart.svelte";
-  import EscrowDeposit from "./RedeemableDeposit.svelte";
-  import EscrowDepositsTable from "./EscrowDepositsTable.svelte";
+  import EscrowDeposit from "./escrow/RedeemableDeposit.svelte";
+  import EscrowDepositsTable from "./escrow/EscrowDepositsTable.svelte";
   import { saleStatuses } from "./sale";
-  import { initEscrowContracts } from "./escrow";
-  import EscrowPendingDepositTable from "./EscrowPendingDepositTable.svelte";
-  import EscrowUndepositTable from "./EscrowUndepositTable.svelte";
+  import { initEscrowContracts } from "./escrow/escrow";
+  import EscrowPendingDepositTable from "./escrow/EscrowPendingDepositTable.svelte";
+  import EscrowUndepositTable from "./escrow/EscrowUndepositTable.svelte";
   import { networks } from "../../constants";
 
   export let params: {
@@ -113,7 +113,7 @@
   });
 </script>
 
-<div class="w-900 flex flex-col gap-y-4">
+<div class="flex w-900 flex-col gap-y-4">
   <div class="mb-2 flex flex-col gap-y-2">
     <span class="text-2xl">Purchase from a deployed Sale</span>
   </div>
@@ -213,19 +213,11 @@
     <EscrowDeposit {saleData} {sale} {escrow} />
     {#if saleStatus == "Success"}
       <FormPanel>
-        <EscrowDepositsTable
-          {saleData}
-          salesContract={sale}
-          {escrow}
-        />
+        <EscrowDepositsTable {saleData} salesContract={sale} {escrow} />
       </FormPanel>
     {:else if saleStatus == "Fail"}
       <FormPanel>
-        <EscrowUndepositTable
-          {saleData}
-          salesContract={sale}
-          {escrow}
-        />
+        <EscrowUndepositTable {saleData} salesContract={sale} {escrow} />
       </FormPanel>
     {/if}
 

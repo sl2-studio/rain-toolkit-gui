@@ -4,7 +4,7 @@
   import { formatUnits } from "ethers/lib/utils";
   import { signerAddress } from "svelte-ethers-store";
   import { getContext } from "svelte";
-  import IconLibrary from "../../components/IconLibrary.svelte";
+  import IconLibrary from "../../../components/IconLibrary.svelte";
   import { allDepositQuery, myDepositQuery } from "./escrow-queries";
   import Switch from "src/components/Switch.svelte";
   import EscrowWithdrawModal from "./EscrowWithdrawModal.svelte";
@@ -30,7 +30,6 @@
   const refresh = () => {
     $txQuery.reexecute();
   };
-
 </script>
 
 <div class="flex w-full flex-col gap-y-4">
@@ -60,8 +59,7 @@
         <th class="text-gray-400 text-left pb-2 font-light">Symbol</th>
         <th class="text-gray-400 text-left pb-2 font-light">Deposited</th>
         <th class="text-gray-400 text-left pb-2 font-light">Total Deposited</th>
-        <th class="text-gray-400 text-left pb-2 font-light">Remaining</th
->
+        <th class="text-gray-400 text-left pb-2 font-light">Remaining</th>
       </tr>
       <!-- {#each $txQuery.data.redeemableEscrowSupplyTokenDeposits as deposit}
         <tr class:expanded={isExpanded}>
@@ -188,7 +186,7 @@
                       open(EscrowWithdrawModal, {
                         escrow,
                         data,
-                        salesContract
+                        salesContract,
                       });
                     }}
                   >
@@ -261,7 +259,6 @@
     You haven't made any transactions.
   {/if}
 </div>
-
 
 <!-- {#each $txQuery.data.redeemableEscrowSupplyTokenDeposits as data}
         <tr>

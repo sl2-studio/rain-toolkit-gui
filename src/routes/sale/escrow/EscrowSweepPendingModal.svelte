@@ -1,12 +1,12 @@
 <script lang="ts">
   import { formatAddress } from "src/utils";
-  import Button from "../../components/Button.svelte";
-  import Steps from "../../components/steps/Steps.svelte";
-  import Ring from "../../components/Ring.svelte";
+  import Button from "../../../components/Button.svelte";
+  import Steps from "../../../components/steps/Steps.svelte";
+  import Ring from "../../../components/Ring.svelte";
   import { selectedNetwork } from "src/stores";
   import { signer } from "svelte-ethers-store";
   import { BigNumber, ethers } from "ethers";
-  import ReserveTokenArtifact from "../../abis/ReserveToken.json";
+  import ReserveTokenArtifact from "../../../abis/ReserveToken.json";
 
   enum TxStatus {
     None,
@@ -30,7 +30,6 @@
   console.log("data.iSaleAddress in sweep", data.iSaleAddress);
   console.log("data.token.id in sweep", data.token.id);
   console.log("data.depositorAddress in sweep", data.depositorAddress);
-
 
   // const approve = async () => {
   //   const rTKN = new ethers.Contract(
@@ -85,7 +84,7 @@
 </script>
 
 {#if txStatus == TxStatus.None}
-  <div class="w-600 flex flex-col items-start gap-y-7">
+  <div class="flex w-600 flex-col items-start gap-y-7">
     <span class="text-xl font-bold">Sweep Pending Deposit</span>
     <Steps
       steps={["Confirm", "Complete"]}

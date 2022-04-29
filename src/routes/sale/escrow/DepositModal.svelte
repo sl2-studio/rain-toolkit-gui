@@ -1,14 +1,14 @@
 <script lang="ts">
   import { signer } from "svelte-ethers-store";
   import { formatUnits, parseUnits } from "ethers/lib/utils";
-  import Button from "../../components/Button.svelte";
-  import Steps from "../../components/steps/Steps.svelte";
-  import Ring from "../../components/Ring.svelte";
+  import Button from "../../../components/Button.svelte";
+  import Steps from "../../../components/steps/Steps.svelte";
+  import Ring from "../../../components/Ring.svelte";
   import { ethers } from "ethers";
   import Input from "src/components/Input.svelte";
   import { selectedNetwork } from "src/stores";
-  import { saleStatuses } from "./sale";
-  import RedeemableERC20TokenArtifact from "../../abis/RedeemableERC20.json";
+  import { saleStatuses } from "../sale";
+  import RedeemableERC20TokenArtifact from "../../../abis/RedeemableERC20.json";
 
   enum TxStatus {
     None,
@@ -66,7 +66,7 @@
     priceConfirmed = PriceConfirmed.Confirmed;
 
     return {
-      _units
+      _units,
     };
   };
 
@@ -163,37 +163,34 @@
         <span slot="label">Enter the number of units to deposit:</span>
       </Input>
 
-      <Button on:click={approve}>
-        Approve Amount</Button
-      >
+      <Button on:click={approve}>Approve Amount</Button>
     {/if}
     {#if activeStep == DepositSteps.Confirm}
-    <span>Confirm your deposit.</span>
+      <span>Confirm your deposit.</span>
       <div class="flex flex-row gap-x-3">
         {#if calcPricePromise}
-        <div>
-          {#await calcPricePromise}
-            Getting price...
-          {:then result}
-            <div class="flex flex-row gap-x-3">
-              <span>Amount: {formatUnits(
-                result._units,
-                tokenDecimals
-              )}
-              {tokenSymbol}
-              <!-- {formatUnits(
+          <div>
+            {#await calcPricePromise}
+              Getting price...
+            {:then result}
+              <div class="flex flex-row gap-x-3">
+                <span
+                  >Amount: {formatUnits(result._units, tokenDecimals)}
+                  {tokenSymbol}
+                  <!-- {formatUnits(
                 result.subtotal,
                 saleData.reserve.decimals
               )}
               {saleData.reserve.symbol} -->
-            </span>
-            </div>
-          {/await}
-        </div>
-      {/if}
+                </span>
+              </div>
+            {/await}
+          </div>
+        {/if}
       </div>
-      
-      <Button disabled={!priceConfirmed}
+
+      <Button
+        disabled={!priceConfirmed}
         on:click={saleStatus == "Pending" || saleStatus == "Active"
           ? pendingDeposit
           : deposit}

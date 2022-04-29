@@ -1,8 +1,8 @@
 <script lang="ts">
   import { formatUnits, parseUnits } from "ethers/lib/utils";
-  import Button from "../../components/Button.svelte";
-  import Steps from "../../components/steps/Steps.svelte";
-  import Ring from "../../components/Ring.svelte";
+  import Button from "../../../components/Button.svelte";
+  import Steps from "../../../components/steps/Steps.svelte";
+  import Ring from "../../../components/Ring.svelte";
   import { selectedNetwork } from "src/stores";
   import Input from "src/components/Input.svelte";
 
@@ -30,11 +30,11 @@
     txStatus = TxStatus.None,
     txReceipt;
 
-    let priceConfirmed = PriceConfirmed.Pending,
+  let priceConfirmed = PriceConfirmed.Pending,
     units,
     calcPricePromise;
 
-    const calculatePrice = async (amount) => {
+  const calculatePrice = async (amount) => {
     priceConfirmed = PriceConfirmed.Pending;
     const one = parseUnits("1", data.token.decimals.toString());
     const _units = parseUnits(
@@ -47,16 +47,21 @@
     priceConfirmed = PriceConfirmed.Confirmed;
 
     return {
-      subtotal
+      subtotal,
     };
   };
 
   const unDeposit = async () => {
     let tx;
     txStatus = TxStatus.AwaitingSignature;
-    
+
     try {
-      tx = await escrow.undeposit(salesContract.address, data.token.id, data.redeemableSupply, units);
+      tx = await escrow.undeposit(
+        salesContract.address,
+        data.token.id,
+        data.redeemableSupply,
+        units
+      );
     } catch (error) {
       errorMsg = error.data?.message || error?.message;
       txStatus = TxStatus.Error;
@@ -84,33 +89,30 @@
     />
 
     {#if activeStep == UndepositSteps.Confirm}
-    <Input
-    type="number"
-    on:input={({ detail }) => {
-      calcPricePromise = calculatePrice(detail);
-    }}
-    debounce
-  >
-    <span slot="label">Enter the number of units to undeposit:</span>
-  </Input>
+      <Input
+        type="number"
+        on:input={({ detail }) => {
+          calcPricePromise = calculatePrice(detail);
+        }}
+        debounce
+      >
+        <span slot="label">Enter the number of units to undeposit:</span>
+      </Input>
 
-  {#if calcPricePromise}
-    <div>
-      {#await calcPricePromise}
-        Getting price...
-      {:then result}
-        <div class="flex flex-row gap-x-3">
-          <span
-            >Price: {formatUnits(
-              result.subtotal,
-              data.token.decimals
-            )}
-            {data.token.symbol}</span
-          >
+      {#if calcPricePromise}
+        <div>
+          {#await calcPricePromise}
+            Getting price...
+          {:then result}
+            <div class="flex flex-row gap-x-3">
+              <span
+                >Price: {formatUnits(result.subtotal, data.token.decimals)}
+                {data.token.symbol}</span
+              >
+            </div>
+          {/await}
         </div>
-      {/await}
-    </div>
-  {/if}
+      {/if}
       <span>Confirm your Undeposit.</span>
       <Button disabled={!priceConfirmed} on:click={unDeposit}>Confirm</Button>
     {/if}

@@ -1,8 +1,8 @@
 <script lang="ts">
   import { formatAddress } from "src/utils";
-  import Button from "../../components/Button.svelte";
-  import Steps from "../../components/steps/Steps.svelte";
-  import Ring from "../../components/Ring.svelte";
+  import Button from "../../../components/Button.svelte";
+  import Steps from "../../../components/steps/Steps.svelte";
+  import Ring from "../../../components/Ring.svelte";
   import { selectedNetwork } from "src/stores";
 
   enum TxStatus {
@@ -28,9 +28,13 @@
   const withdraw = async () => {
     let tx;
     txStatus = TxStatus.AwaitingSignature;
-    
+
     try {
-      tx = await escrow.withdraw(salesContract.address, data.token.id, data.redeemableSupply);
+      tx = await escrow.withdraw(
+        salesContract.address,
+        data.token.id,
+        data.redeemableSupply
+      );
     } catch (error) {
       errorMsg = error.data?.message || error?.message;
       txStatus = TxStatus.Error;
@@ -56,20 +60,18 @@
       fulfilledTextClass="text-gray-100"
       lineBorderClass="border-gray-400"
     />
-      <div class="grid grid-cols-2 gap-4 rounded-md border border-gray-600 p-4">
-        <span>Sale Address:</span>
-        <span>{formatAddress(salesContract.address)}</span>
+    <div class="grid grid-cols-2 gap-4 rounded-md border border-gray-600 p-4">
+      <span>Sale Address:</span>
+      <span>{formatAddress(salesContract.address)}</span>
 
-        <span>Token Address:</span>
-        <span>{formatAddress(data.token.id)}</span>
-        
-        <span>Total Supply:</span>
-        <span>{data.redeemableSupply}</span>
-        
-      </div>
+      <span>Token Address:</span>
+      <span>{formatAddress(data.token.id)}</span>
+
+      <span>Total Supply:</span>
+      <span>{data.redeemableSupply}</span>
+    </div>
 
     {#if activeStep == WithdrawSteps.Confirm}
-
       <span>Confirm your withdraw.</span>
       <Button on:click={withdraw}>Confirm</Button>
     {/if}

@@ -4,9 +4,12 @@
   import { createEventDispatcher, getContext } from "svelte";
   import IconLibrary from "./IconLibrary.svelte";
 
-  export let type: "text" | "number" | "address" = "text";
+  export let type: "text" | "number" | "range" | "address" = "text";
   export let value: string | number = "";
   export let placeholder = "";
+  export let min="";
+  export let max="";
+  export let disabled = false;
   export let validator = (value: any): any => null;
   export let debounce: boolean = false;
   export let debounceTime: number = 750;
@@ -77,8 +80,11 @@
       type={_type}
       {value}
       {placeholder}
+      {disabled}
       on:input={handleInput}
       on:blur={validate}
+      {min}
+      {max}
       class="w-full rounded-md border border-gray-500 bg-transparent p-2 font-light text-gray-200"
     />
     {#if type == "address"}

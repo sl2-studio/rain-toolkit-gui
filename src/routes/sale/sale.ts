@@ -99,15 +99,15 @@ export interface SaleTokenData {
 export type SaleParams = {
   inputValues: any;
   saleType: number;
-  maxCapType: number;
-  minCapType: number;
-  canEndType: number;
-  extraTimeDiscountType: number;
-  tierDiscountType: number;
-  tierDiscountActType: number; 
-  tierCapMulType: number;
-  tierCapMulActType: number;
-  creatorControlType: number;
+  maxCapType: 0 | 1;
+  minCapType: 0 | 1;
+  canEndType: 0 | 1;
+  extraTimeDiscountType: 0 | 1;
+  tierDiscountType: 0 | 1;
+  tierDiscountActType: 0 | 1;
+  tierCapMulType: 0 | 1;
+  tierCapMulActType: 0 | 1;
+  creatorControlType: 0 | 1;
 };
 
 export const initSaleContracts = (saleData: SaleTokenData, signer: Signer) => {

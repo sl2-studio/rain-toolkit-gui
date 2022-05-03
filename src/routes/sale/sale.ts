@@ -159,7 +159,9 @@ const saleStateConfigGenerator = (saleParams : SaleParams, deployerAddress: stri
     calculatePriceStateConfig: {
       sources,
       constants,
-      stackLength: ((sources[0].length +sources[1].length + sources[2].length) / 2) + 5,
+      stackLength: sources.length > 1 ? 
+        ((sources[0].length +sources[1].length + sources[2].length) / 2) + 5 :
+        (sources[0].length / 2) + 5,
       argumentsLength: 
         saleParams.tierDiscountType + saleParams.tierCapMulType + ((saleParams.tierDiscountActType + saleParams.tierCapMulActType) * 2)
     },

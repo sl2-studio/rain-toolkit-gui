@@ -99,15 +99,15 @@ export interface SaleTokenData {
 export type SaleParams = {
   inputValues: any;
   saleType: number;
-  maxCapType: number;
-  minCapType: number;
-  canEndType: number;
-  extraTimeDiscountType: number;
-  tierDiscountType: number;
-  tierDiscountActType: number;
-  tierCapMulType: number;
-  tierCapMulActType: number;
-  creatorControlType: number;
+  maxCapType: 0 | 1;
+  minCapType: 0 | 1;
+  canEndType: 0 | 1;
+  extraTimeDiscountType: 0 | 1;
+  tierDiscountType: 0 | 1;
+  tierDiscountActType: 0 | 1;
+  tierCapMulType: 0 | 1;
+  tierCapMulActType: 0 | 1;
+  creatorControlType: 0 | 1;
 };
 
 export const initSaleContracts = (saleData: SaleTokenData, signer: Signer) => {
@@ -143,6 +143,7 @@ export const saleDeploy = async (
 const saleStateConfigGenerator = (saleParams : SaleParams, deployerAddress: string) : SaleConfig => {   
   const constants = saleConstantsGenerator(saleParams);
   const sources = saleSourcesGenerator(saleParams, constants.length);
+  console.log(sources);
   return {
     canStartStateConfig: canStartEndConfigGenerator(
       saleParams.inputValues.startTimestamp,
@@ -159,9 +160,7 @@ const saleStateConfigGenerator = (saleParams : SaleParams, deployerAddress: stri
     calculatePriceStateConfig: {
       sources,
       constants,
-      stackLength: sources.length > 1 ? 
-        ((sources[0].length +sources[1].length + sources[2].length) / 2) + 5 :
-        (sources[0].length / 2) + 5,
+      stackLength: ((sources[0].length +sources[1].length + sources[2].length) / 2) + 5,
       argumentsLength: 
         saleParams.tierDiscountType + saleParams.tierCapMulType + ((saleParams.tierDiscountActType + saleParams.tierCapMulActType) * 2)
     },
@@ -561,7 +560,8 @@ function saleSourcesGenerator(saleParams: SaleParams, i: number) {
         tierDiscountSources(saleParams, i-2)[0],
         CAP_CONDITION_SOURCES(i-1),
       ]),
-      tierDiscountSources(saleParams, i-2)[1]
+      tierDiscountSources(saleParams, i-2)[1],
+      concat([]),
     ];
   }
   else if (saleParams.maxCapType && saleParams.minCapType) {
@@ -577,7 +577,7 @@ function saleSourcesGenerator(saleParams: SaleParams, i: number) {
       tierCapMulSources(saleParams, i-1)[1],
     ];  
   }
-  else return tierDiscountSources(saleParams, i);
+  else return [...tierDiscountSources(saleParams, i), concat([])];
 };
 
 

@@ -159,7 +159,7 @@ const saleStateConfigGenerator = (saleParams : SaleParams, deployerAddress: stri
     calculatePriceStateConfig: {
       sources,
       constants,
-      stackLength: ((sources[0].length +sources[1].length + sources[2].length) / 2) + 5,
+      stackLength: ((sources[0].length + sources[1].length + sources[2].length) / 2) + 5,
       argumentsLength: 
         saleParams.tierDiscountType + saleParams.tierCapMulType + ((saleParams.tierDiscountActType + saleParams.tierCapMulActType) * 2)
     },
@@ -559,7 +559,8 @@ function saleSourcesGenerator(saleParams: SaleParams, i: number) {
         tierDiscountSources(saleParams, i-2)[0],
         CAP_CONDITION_SOURCES(i-1),
       ]),
-      tierDiscountSources(saleParams, i-2)[1]
+      tierDiscountSources(saleParams, i-2)[1],
+      concat([]),
     ];
   }
   else if (saleParams.maxCapType && saleParams.minCapType) {
@@ -575,7 +576,7 @@ function saleSourcesGenerator(saleParams: SaleParams, i: number) {
       tierCapMulSources(saleParams, i-1)[1],
     ];  
   }
-  else return tierDiscountSources(saleParams, i);
+  else return [...tierDiscountSources(saleParams, i), concat([])];
 };
 
 

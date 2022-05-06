@@ -22,7 +22,7 @@
   let saleParams: SaleParams;
 
   // some default values for testing
-  let recipient = "0xf6CF014a3e92f214a3332F0d379aD32bf0Fae929";
+  let recipient = "0xa44ab31CB79Ca950f6f6618c8F6d75b6D85b8970";
   let reserve = "0x25a4Dd4cd97ED462EB5228de47822e636ec3E31A";
   let startBlock = 24407548;
   let cooldownDuration = 100;

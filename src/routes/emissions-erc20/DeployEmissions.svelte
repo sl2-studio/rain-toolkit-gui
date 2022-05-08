@@ -15,6 +15,7 @@
   } from "./emissions";
   import { selectedNetwork } from "src/stores";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
+import { parseUnits } from "ethers/lib/utils";
 
   let deployPromise;
 
@@ -25,12 +26,20 @@
   let erc20name = "EmissionsTKN";
   let erc20symbol = "eTKN";
 
-  let tierAddress = "0x4e2c8E95008645651dd4dA64E2f998f99f06a1Ed";
+  let tierAddress = "0x859834199ebd4d53750be5588ebb64ad841266aa";
 
   let brnzReward = 100;
   let silvReward = 200;
   let goldReward = 500;
   let platReward = 1000;
+  let brnzMaxReward = 200;
+  let silvMaxReward = 400;
+  let goldMaxReward = 1000;
+  let platMaxReward = 2000;
+  let incrementDuration = 1; // 1 month
+  let numberOfIncrements = 36;
+  let ownerAddress = "0xa44ab31CB79Ca950f6f6618c8F6d75b6D85b8970"; 
+  let initSupply = 1000;
 
   // @TODO write validators
   const defaultValidator = () => {
@@ -59,15 +68,23 @@
           goldReward: fieldValues.goldReward,
           platReward: fieldValues.platReward,
         },
+        maxMonthlyRewards: {
+          brnzReward: fieldValues.brnzMaxReward,
+          silvReward: fieldValues.silvMaxReward,
+          goldReward: fieldValues.goldMaxReward,
+          platReward: fieldValues.platMaxReward,
+        },
         tierAddress: fieldValues.tierAddress,
+        incrementDuration: fieldValues.incrementDuration,
+        numberOfIncrements: fieldValues.numberOfIncrements,
       });
 
       let erc20Config: ERC20ConfigStruct;
       erc20Config = {
         name: fieldValues.erc20name,
         symbol: fieldValues.erc20symbol,
-        distributor: $signerAddress,
-        initialSupply: 0,
+        distributor: fieldValues.ownerAddress,
+        initialSupply: parseUnits(fieldValues.initSupply.toString()),
       };
 
       let emissionsConfig: EmissionsERC20ConfigStruct;
@@ -132,6 +149,40 @@
     >
       <span slot="label">Tier contract to check reports against.</span>
     </Input>
+    <Input
+      type="number"
+      bind:this={fields.incrementDuration}
+      bind:value={incrementDuration}
+      validator={defaultValidator}
+    >
+    <span slot="label">Claim Period</span>
+      <span slot="description">The period of time to for each claim, default is 1 which means 1 month in ploygon, multiply that by 3 for mumbai testnet. For example 2 it means 15 days in polygon, so to get 15 days in mumbai it needs to be multiplied by 3, which is 6</span>
+    </Input>
+    <Input
+      type="number"
+      bind:this={fields.numberOfIncrements}
+      bind:value={numberOfIncrements}
+      validator={defaultValidator}
+    >
+      <span slot="label">Reward Increase Over This Span Of Time (months)</span>
+    </Input>
+    <Input
+    type="address"
+    placeholder="Name"
+    bind:this={fields.ownerAddress}
+    bind:value={ownerAddress}
+    validator={addressValidate}
+  >
+    <span slot="label">Address to mint eTKN for</span>
+  </Input>
+  <Input
+  type="number"
+  bind:this={fields.initSupply}
+  bind:value={initSupply}
+  validator={defaultValidator}
+>
+  <span slot="label">Amount of eTKN to mint</span>
+</Input>
   </FormPanel>
 
   <FormPanel heading="Monthly rewards for each tier status">
@@ -172,6 +223,45 @@
       <span slot="label">Platinum</span>
     </Input>
   </FormPanel>
+  <FormPanel heading="Max monthly rewards for each tier status">
+    <Input
+      type="number"
+      placeholder=""
+      bind:this={fields.brnzMaxReward}
+      bind:value={brnzMaxReward}
+      validator={defaultValidator}
+    >
+      <span slot="label">Bronze</span>
+    </Input>
+    <Input
+      type="number"
+      placeholder=""
+      bind:this={fields.silvMaxReward}
+      bind:value={silvMaxReward}
+      validator={defaultValidator}
+    >
+      <span slot="label">Silver</span>
+    </Input>
+    <Input
+      type="number"
+      placeholder=""
+      bind:this={fields.goldMaxReward}
+      bind:value={goldMaxReward}
+      validator={defaultValidator}
+    >
+      <span slot="label">Gold</span>
+    </Input>
+    <Input
+      type="number"
+      placeholder=""
+      bind:this={fields.platMaxReward}
+      bind:value={platMaxReward}
+      validator={defaultValidator}
+    >
+      <span slot="label">Platinum</span>
+    </Input>
+  </FormPanel>
+
   <FormPanel>
     {#if !deployPromise}
       <Button shrink on:click={handleClick}>Deploy EmissionsERC20</Button>

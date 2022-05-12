@@ -3,9 +3,10 @@
   import Button from "../../components/Button.svelte";
   import Steps from "../../components/steps/Steps.svelte";
   import Ring from "../../components/Ring.svelte";
-  import { BigNumber, ethers } from "ethers";
+  import { BigNumber, ethers, logger } from "ethers";
   import Input from "src/components/Input.svelte";
   import { selectedNetwork } from "src/stores";
+  import { BuyConfig } from "rain-sdk";
 
   enum TxStatus {
     None,
@@ -54,6 +55,7 @@
       saleData.token.decimals.toString()
     );
     units = _units;
+
     const price = await sale.calculatePrice(_units);
     const subtotal = price.mul(_units).div(one);
     fee = subtotal.div(BigNumber.from(100));
@@ -99,7 +101,6 @@
 {#if txStatus == TxStatus.None}
   <div class="flex w-600 flex-col items-start gap-y-7">
     <span class="text-xl font-bold">Buy</span>
-
     <Steps
       steps={["Confirm", "Complete"]}
       {activeStep}
@@ -124,18 +125,30 @@
           {:then result}
             <div class="flex flex-row gap-x-3">
               <span
-                >Price: {formatUnits(
-                  result.subtotal,
-                  saleData.reserve.decimals
+                >Price: {Number(
+                  (+formatUnits(
+                    result.subtotal,
+                    saleData.reserve.decimals
+                  )).toFixed(4)
+                )}
+
+                {saleData.reserve.symbol}</span
+              >
+              <span
+                >Fee: {Number(
+                  (+formatUnits(result.fee, saleData.reserve.decimals)).toFixed(
+                    4
+                  )
                 )}
                 {saleData.reserve.symbol}</span
               >
               <span
-                >Fee: {formatUnits(result.fee, saleData.reserve.decimals)}
-                {saleData.reserve.symbol}</span
-              >
-              <span
-                >Total: {formatUnits(result.total, saleData.reserve.decimals)}
+                >Total: {Number(
+                  (+formatUnits(
+                    result.total,
+                    saleData.reserve.decimals
+                  )).toFixed(4)
+                )}
                 {saleData.reserve.symbol}</span
               >
             </div>

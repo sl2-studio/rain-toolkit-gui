@@ -26,6 +26,7 @@
   import AddressLibrary from "./routes/address-library/AddressLibrary.svelte";
   import ListCombineTier from "./routes/combine-tier/ListCombineTier.svelte";
   import ListSale from "./routes/sale/ListSale.svelte";
+  import Footer from "./layout/Footer.svelte";
 
   let routes = {};
 
@@ -88,6 +89,7 @@
       {/if}
     </div>
   </main>
+  <Footer />
 </Modal>
 
 <style global lang="postcss">

@@ -8,10 +8,11 @@
   import ERC721BalanceTierFactoryArtifact from "../../abis/ERC721BalanceTierFactory.json";
   import { selectedNetwork } from "src/stores";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
+  import { ERC721BalanceTier, ERC721 } from "rain-sdk";
 
-  let deployPromise: null | Promise<ContractReceipt | undefined>;
+  let deployPromise;
   let erc721Address: string | undefined,
-    erc721Contract: Contract | null,
+    erc721Contract,
     erc721AddressError: string | null,
     erc721Balance: BigNumber,
     erc721Name: string,
@@ -25,8 +26,9 @@
   const getERC721 = async () => {
     if (erc721Address && ethers.utils.isAddress(erc721Address)) {
       erc721AddressError = null;
-      erc721Contract = new ethers.Contract(erc721Address, ERC20Artifact.abi);
-      erc721Contract = erc721Contract.connect($signer);
+
+      erc721Contract = new ERC721(erc721Address, $signer);
+
       try {
         erc721Name = await erc721Contract.name();
       } catch {}
@@ -45,18 +47,13 @@
       const parsedTiers = tiers.map((value) =>
         value ? BigNumber.from(value) : ethers.constants.MaxInt256
       );
-      const erc721BalanceTierFactory = new ethers.Contract(
-        $selectedNetwork.addresses.ERC721_BALANCE_TIER_FACTORY_ADDRESS,
-        ERC721BalanceTierFactoryArtifact.abi,
-        $signer
-      );
-      let tx = await erc721BalanceTierFactory[
-        "createChildTyped((address,uint256[8]))"
-      ]([erc721Contract.address, parsedTiers]);
 
-      const receipt = (await tx.wait()) as ContractReceipt;
+      let newERC721BalanceTier = await ERC721BalanceTier.deploy($signer, {
+        erc721: erc721Contract.address,
+        tierValues: parsedTiers,
+      });
 
-      return receipt;
+      return newERC721BalanceTier;
     }
   };
 

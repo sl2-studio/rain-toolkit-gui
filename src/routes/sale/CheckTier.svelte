@@ -3,6 +3,7 @@
   import { Writable } from "svelte/store";
   import ITierArtifact from "../../abis/ITier.json";
   import { tierReport } from "src/utils";
+  import { ERC20BalanceTier } from "rain-sdk";
 
   interface TierData {
     __typename: string;
@@ -12,6 +13,7 @@
   export let tierData: TierData;
   export let minimumStatus: number;
   export let againstBlock: number;
+  export let token;
   export let readableTiers: Array<string> = [
     "1",
     "2",
@@ -25,7 +27,7 @@
 
   let eligibleStatus;
 
-  const checkTier = async (tier: Contract, minimumStatus: number) => {
+  const checkTier = async (tier, minimumStatus: number) => {
     const report = await tier.report($signer.getAddress());
     const parsedReport = tierReport(report);
 
@@ -41,7 +43,8 @@
   };
 
   $: if ($signer && minimumStatus !== undefined && tierData?.id) {
-    const tier = new ethers.Contract(tierData.id, ITierArtifact.abi, $signer);
+    const tier = new ERC20BalanceTier(tierData.id, token.id, $signer);
+
     checkTier(tier, minimumStatus);
   }
 </script>

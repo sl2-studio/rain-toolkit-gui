@@ -1,72 +1,101 @@
 import { operationStore } from "@urql/svelte";
 
-let saleAddress, depositor
+let saleAddress, depositor, signerAddress
 
-export const myDepositQuery = operationStore(
-  `
-      query ($saleAddress: Bytes!, $depositor: Bytes!) {
-        redeemableEscrowSupplyTokenDeposits (where: {iSaleAddress: $saleAddress, depositorAddress: $depositor}, orderBy: totalDeposited, orderDirection: asc) {
-          id
-          escrowAddress
-          depositorAddress
-          iSale{
-            saleStatus
-          }
-          iSaleAddress
-          token {
-            id
-            name
-            symbol
-            decimals
-          }
-          deposits{
-            tokenAmount
-            depositorAddress
-          }
-          redeemableSupply
-          totalDeposited
-          totalRemaining
-        }
-      }
-    `,
-  {
-    saleAddress,
-    depositor,
-  },
-  {
-    requestPolicy: "network-only",
-  }
-);
+// export const myDepositQuery = operationStore(
+//   `
+//       query ($saleAddress: Bytes!, $depositor: Bytes!) {
+//         redeemableEscrowSupplyTokenDeposits (where: {iSaleAddress: $saleAddress, depositorAddress: $depositor}, orderBy: totalDeposited, orderDirection: asc) {
+//           id
+//           escrowAddress
+//           depositorAddress
+//           iSale{
+//             saleStatus
+//           }
+//           iSaleAddress
+//           token {
+//             id
+//             name
+//             symbol
+//             decimals
+//           }
+//           deposits{
+//             tokenAmount
+//             depositorAddress
+//           }
+//           redeemableSupply
+//           totalDeposited
+//           totalRemaining
+//         }
+//       }
+//     `,
+//   {
+//     saleAddress,
+//     depositor,
+//   },
+//   {
+//     requestPolicy: "network-only",
+//   }
+// );
+
+// export const allDepositQuery = operationStore(
+//   `
+//       query ($saleAddress: Bytes!) {
+//         redeemableEscrowSupplyTokenDeposits (where: {iSaleAddress: $saleAddress}, orderBy: totalDeposited, orderDirection: asc) {
+//           id
+//           escrowAddress
+//           iSale{
+//             saleStatus
+//           }
+//           iSaleAddress
+//           token {
+//             id
+//             name
+//             symbol
+//             decimals
+//           }
+//           deposits{
+//             tokenAmount
+//             depositorAddress
+//           }
+//           redeemableSupply
+//           totalDeposited
+//           totalRemaining
+
+//         }
+//       }
+//     `,
+//   {
+//     saleAddress
+//   },
+//   {
+//     requestPolicy: "network-only",
+//   }
+// );
 
 export const allDepositQuery = operationStore(
   `
-      query ($saleAddress: Bytes!) {
-        redeemableEscrowSupplyTokenDeposits (where: {iSaleAddress: $saleAddress}, orderBy: totalDeposited, orderDirection: asc) {
+      query ($signerAddress: Bytes!) {
+        redeemableEscrowSupplyTokenWithdrawers (where: {withdrawerAddress: $signerAddress}, orderBy: redeemableBalance, orderDirection: asc) {
           id
-          escrowAddress
-          iSale{
-            saleStatus
+          withdrawerAddress
+          totalWithdrawn
+          totalWithdrawnAgainst
+          redeemableBalance
+          claimable
+          deposit{
+            token {
+              id
+              name
+              symbol
+              decimals
+            }
           }
-          iSaleAddress
-          token {
-            id
-            name
-            symbol
-            decimals
-          }
-          deposits{
-            tokenAmount
-            depositorAddress
-          }
-          redeemableSupply
-          totalDeposited
-          totalRemaining
-          
         }
       }
     `,
   {
-    saleAddress
+    signerAddress
   },
   {
     requestPolicy: "network-only",

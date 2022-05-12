@@ -29,6 +29,7 @@ export type SaleConfig = {
   cooldownDuration: BigNumberish;
   minimumRaise: BigNumberish;
   dustSize: BigNumberish;
+  // saleTimeout: BigNumberish,
 };
 
 export type SaleRedeemableERC20Config = {

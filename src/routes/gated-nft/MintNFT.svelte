@@ -7,6 +7,7 @@
   import Input from "../../components/Input.svelte";
   import { push } from "svelte-spa-router";
   import { selectedNetwork } from "src/stores";
+  import { GatedNFT } from "rain-sdk";
 
   let gatedMinter,
     mintPromise,
@@ -22,11 +23,7 @@
 
   const initMinter = async () => {
     if (params.wild && ethers.utils.isAddress(params.wild)) {
-      gatedMinter = new ethers.Contract(
-        params.wild,
-        GatedNFTArtifact.abi,
-        $signer
-      );
+      gatedMinter = new GatedNFT(params.wild, $signer);
     }
   };
 

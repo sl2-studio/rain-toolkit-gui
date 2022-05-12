@@ -147,7 +147,8 @@ export const getAfterTimestampDate = (stateConfig) => {
 
 
 export const getAfterTimestamp = (stateConfig) => {
-  if (stateConfig.sources[0] === "0x050001000b00") {
+  // if (stateConfig.sources[0] === "0x050001000b00") {
+  if (stateConfig.sources[0] === "0x060001001f00") {
     return parseInt(stateConfig.constants[0]);
   }
 };

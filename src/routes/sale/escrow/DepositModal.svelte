@@ -9,6 +9,7 @@
   import { selectedNetwork } from "src/stores";
   import { saleStatuses } from "../sale";
   import RedeemableERC20TokenArtifact from "../../../abis/RedeemableERC20.json";
+  import { ERC20, RedeemableERC20ClaimEscrow } from "rain-sdk";
 
   enum TxStatus {
     None,
@@ -34,6 +35,7 @@
       symbol: string;
     };
     reserve: {
+      id: string;
       decimals: string;
       symbol: string;
     };
@@ -71,18 +73,13 @@
   };
 
   const approve = async () => {
-    const rTKN = new ethers.Contract(
-      tokenAddress,
-      RedeemableERC20TokenArtifact.abi,
-      $signer
-    );
+    const rTKN = new ERC20(tokenAddress, $signer);
 
     tokenDecimals = await rTKN.decimals();
     tokenSymbol = await rTKN.symbol();
 
     let tx;
     txStatus = TxStatus.AwaitingSignature;
-
     try {
       tx = await rTKN.approve(escrow.address, units);
     } catch (error) {
@@ -100,12 +97,12 @@
     return txReceipt;
   };
 
-  const deposit = async () => {
+  const Deposit = async () => {
     let tx;
     txStatus = TxStatus.AwaitingSignature;
 
     try {
-      tx = await escrow.deposit(sale.address, tokenAddress, units);
+      tx = await escrow.deposit(units);
     } catch (error) {
       errorMsg = error.data?.message || error?.message;
       txStatus = TxStatus.Error;
@@ -124,7 +121,7 @@
     txStatus = TxStatus.AwaitingSignature;
 
     try {
-      tx = await escrow.depositPending(sale.address, tokenAddress, units);
+      tx = await escrow.depositPending(units);
     } catch (error) {
       errorMsg = error.data?.message || error?.message;
       txStatus = TxStatus.Error;
@@ -193,7 +190,7 @@
         disabled={!priceConfirmed}
         on:click={saleStatus == "Pending" || saleStatus == "Active"
           ? pendingDeposit
-          : deposit}
+          : Deposit}
       >
         Deposit</Button
       >

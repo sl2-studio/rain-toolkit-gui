@@ -8,6 +8,7 @@
   import { SvelteComponent } from "svelte";
   import IconLibrary from "src/components/IconLibrary.svelte";
   import { copyToClipboard } from "src/utils";
+  import { ERC20 } from "rain-sdk";
 
   interface TokenData {
     id: string;
@@ -17,9 +18,9 @@
     totalSupply: string;
   }
 
-  export let tokenData: TokenData;
+  export let tokenData;
   export let signer: Writable<Signer> | undefined = undefined;
-  export let token: Contract | undefined = undefined;
+  export let token: undefined = undefined;
 
   let balancePromise: Promise<BigNumberish>;
   let tooltip: SvelteComponent;
@@ -29,9 +30,7 @@
   };
 
   $: if ($signer) {
-    token =
-      token ||
-      new ethers.Contract(tokenData.id, ReserveTokenArtifact.abi, $signer);
+    token = token || new ERC20(tokenData.id, $signer);
     balancePromise = checkBalance(token);
   }
 </script>

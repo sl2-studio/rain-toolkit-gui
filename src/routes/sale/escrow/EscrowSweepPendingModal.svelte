@@ -27,19 +27,11 @@
     txStatus = TxStatus.None,
     txReceipt;
 
-  // console.log("data.iSaleAddress in sweep", data.iSaleAddress);
-  // console.log("data.token.id in sweep", data.token.id);
-  // console.log("data.depositorAddress in sweep", data.depositorAddress);
-
   const sweep = async () => {
     let tx;
     txStatus = TxStatus.AwaitingSignature;
     try {
-      tx = await escrow.sweepPending(
-        data.iSaleAddress,
-        data.token.id,
-        data.depositorAddress
-      );
+      tx = await escrow.sweepPending(data.depositorAddress);
     } catch (error) {
       errorMsg = error.data?.message || error?.message;
       txStatus = TxStatus.Error;

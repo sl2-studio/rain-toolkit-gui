@@ -12,75 +12,56 @@
   import { selectedNetwork } from "src/stores";
   import NewAddress from "src/components/NewAddress.svelte";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
+  import { CombineTier, utils } from "rain-sdk";
 
   let tierContractOne: string,
     tierContractTwo: string,
     combineTierFactory,
     deployPromise: any;
 
-  const enum Opcode {
-    END,
-    VAL,
-    DUP,
-    ZIPMAP,
-    BLOCK_NUMBER,
-    BLOCK_TIMESTAMP,
-    REPORT,
-    NEVER,
-    ALWAYS,
-    DIFF,
-    UPDATE_BLOCKS_FOR_TIER_RANGE,
-    SELECT_LTE,
-    ACCOUNT,
-  }
-
   const logicOptions = [
-    { value: selectLteLogic.any, label: "Any" },
-    { value: selectLteLogic.every, label: "Every" },
-  ];
-  const modeOptions = [
-    { value: selectLteMode.min, label: "Min" },
-    { value: selectLteMode.max, label: "Max" },
-    { value: selectLteMode.first, label: "First" },
+    { value: utils.selectLteLogic.any, label: "Any" },
+    { value: utils.selectLteLogic.every, label: "Every" },
   ];
 
-  let logicValue: { value: selectLteLogic; label: string },
-    modeValue: { value: selectLteLogic; label: string };
+  const modeOptions = [
+    { value: utils.selectLteMode.min, label: "Min" },
+    { value: utils.selectLteMode.max, label: "Max" },
+    { value: utils.selectLteMode.first, label: "First" },
+  ];
+
+  let logicValue: { value: utils.selectLteLogic; label: string },
+    modeValue: { value: utils.selectLteLogic; label: string };
 
   const deployCombineTier = async () => {
-    combineTierFactory = new ethers.Contract(
-      $selectedNetwork.addresses.COMBINE_TIER_FACTORY_ADDRESS,
-      CombineTierFactoryArtifact.abi,
-      $signer
-    );
-
     // the tier contracts to combine
     const constants = [
       ethers.BigNumber.from(tierContractOne), // right report
       ethers.BigNumber.from(tierContractTwo), // left report
     ];
 
-    const source = concat([
-      op(Opcode.VAL, 1),
-      op(Opcode.ACCOUNT),
-      op(Opcode.REPORT),
-      op(Opcode.VAL, 0),
-      op(Opcode.ACCOUNT),
-      op(Opcode.REPORT),
-      op(Opcode.BLOCK_NUMBER),
-      op(Opcode.SELECT_LTE, selectLte(logicValue.value, modeValue.value, 2)),
+    const source = utils.concat([
+      utils.op(CombineTier.Opcodes.VAL, 1),
+      utils.op(CombineTier.Opcodes.ACCOUNT),
+      utils.op(CombineTier.Opcodes.REPORT),
+      utils.op(CombineTier.Opcodes.VAL, 0),
+      utils.op(CombineTier.Opcodes.ACCOUNT),
+      utils.op(CombineTier.Opcodes.REPORT),
+      utils.op(CombineTier.Opcodes.BLOCK_NUMBER),
+      utils.op(
+        CombineTier.Opcodes.SELECT_LTE,
+        utils.selectLte(logicValue.value, modeValue.value, 2)
+      ),
     ]);
 
-    const tx = await combineTierFactory.createChildTyped({
+    const newCombineTier = await CombineTier.deploy($signer, {
       sources: [source],
       constants,
       stackLength: 8,
       argumentsLength: 0,
     });
 
-    const receipt = (await tx.wait()) as ContractReceipt;
-
-    return receipt;
+    return newCombineTier;
   };
 
   const handleClick = () => {

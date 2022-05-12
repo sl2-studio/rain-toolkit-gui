@@ -11,6 +11,7 @@
   import { ethers } from "ethers";
   import { selectedNetwork } from "src/stores";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
+  import { Verify } from "rain-sdk";
 
   export const roles = [
     {
@@ -46,30 +47,43 @@
     verifyChild;
 
   const deployVerify = async () => {
-    const verifyFactory = new ethers.Contract(
-      $selectedNetwork.addresses.VERIFY_FACTORY,
-      VerifyFactoryArtifact.abi,
-      $signer
-    );
+    // const verifyFactory = new ethers.Contract(
+    //   $selectedNetwork.addresses.VERIFY_FACTORY,
+    //   VerifyFactoryArtifact.abi,
+    //   $signer
+    // );
     const { validationResult, fieldValues } = validateFields(verifyFields);
-    const tx = await verifyFactory.createChildTyped(fieldValues.adminAddress);
-    const receipt = await tx.wait();
-    verifyChild = getNewChildFromReceipt(receipt, verifyFactory);
-    return receipt;
+
+    const newVerify = await Verify.deploy($signer, fieldValues.adminAddress);
+
+    return newVerify;
+    // const tx = await verifyFactory.createChildTyped(fieldValues.adminAddress);
+    // const receipt = await tx.wait();
+    // verifyChild = getNewChildFromReceipt(receipt, verifyFactory);
+    // return receipt;
   };
 
   const deployVerifyTier = async () => {
-    const verifyTierFactory = new ethers.Contract(
-      $selectedNetwork.addresses.VERIFY_TIER_FACTORY,
-      VerifyTierFactoryArtifact.abi,
-      $signer
-    );
     const { validationResult, fieldValues } = validateFields(verifyTierFields);
-    const tx = await verifyTierFactory.createChildTyped(
+
+    const newVerifyTier = await Verify.deploy(
+      $signer,
       fieldValues.verifyAddress
     );
-    const receipt = await tx.wait();
-    return receipt;
+
+    return newVerifyTier;
+
+    //   const verifyTierFactory = new ethers.Contract(
+    //     $selectedNetwork.addresses.VERIFY_TIER_FACTORY,
+    //     VerifyTierFactoryArtifact.abi,
+    //     $signer
+    //   );
+    //   const { validationResult, fieldValues } = validateFields(verifyTierFields);
+    //   const tx = await verifyTierFactory.createChildTyped(
+    //     fieldValues.verifyAddress
+    //   );
+    //   const receipt = await tx.wait();
+    //   return receipt;
   };
 </script>
 

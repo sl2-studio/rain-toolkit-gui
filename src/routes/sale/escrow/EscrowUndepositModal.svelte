@@ -42,13 +42,16 @@
       data.token.decimals.toString()
     );
     units = _units;
-    const price = await salesContract.calculatePrice(_units);
-    const subtotal = price.mul(_units).div(one);
-    priceConfirmed = PriceConfirmed.Confirmed;
 
-    return {
-      subtotal,
-    };
+    if (units <= data.totalRemaining) {
+      const price = await salesContract.calculatePrice(_units);
+      const subtotal = price.mul(_units).div(one);
+      priceConfirmed = PriceConfirmed.Confirmed;
+
+      return { subtotal };
+    } else {
+      return false;
+    }
   };
 
   const unDeposit = async () => {
@@ -56,12 +59,7 @@
     txStatus = TxStatus.AwaitingSignature;
 
     try {
-      tx = await escrow.undeposit(
-        salesContract.address,
-        data.token.id,
-        data.redeemableSupply,
-        units
-      );
+      tx = await escrow.undeposit(data.redeemableSupply, units);
     } catch (error) {
       errorMsg = error.data?.message || error?.message;
       txStatus = TxStatus.Error;
@@ -104,12 +102,23 @@
           {#await calcPricePromise}
             Getting price...
           {:then result}
-            <div class="flex flex-row gap-x-3">
-              <span
-                >Price: {formatUnits(result.subtotal, data.token.decimals)}
-                {data.token.symbol}</span
-              >
-            </div>
+            {#if result == false}
+              <div class="flex flex-row gap-x-3">
+                <span>Amount exceeds the limit</span>
+              </div>
+            {:else}
+              <div class="flex flex-row gap-x-3">
+                <span
+                  >Price: {Number(
+                    (+formatUnits(
+                      result.subtotal,
+                      data.token.decimals
+                    )).toFixed(4)
+                  )}
+                  {data.token.symbol}</span
+                >
+              </div>
+            {/if}
           {/await}
         </div>
       {/if}

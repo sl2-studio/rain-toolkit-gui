@@ -9,6 +9,7 @@
   import { tierReport } from "../../utils";
   import { push } from "svelte-spa-router";
   import { operationStore, query } from "@urql/svelte";
+  import { ERC20BalanceTier, ERC20 } from "rain-sdk";
 
   export let params;
 
@@ -64,16 +65,13 @@ query ($balanceTierAddress: Bytes!) {
   }
 
   const initContracts = async () => {
-    balanceTierContract = new ethers.Contract(
+    balanceTierContract = new ERC20BalanceTier(
       _balanceTier.address,
-      BalanceTierAbi.abi,
-      $signer
-    );
-    erc20Contract = new ethers.Contract(
       _balanceTier.token.id,
-      ERC20Abi.abi,
       $signer
     );
+
+    erc20Contract = new ERC20(_balanceTier.token.id, $signer);
   };
 
   const report = async () => {

@@ -46,9 +46,22 @@ query {
             <span>Deployer: {sale.deployer}</span>
             <span>Deployed: {Date(sale.deployTimestamp).toLocaleString()}</span>
             <span>Sales Status: {sale.saleStatus}</span>
-            <span>Total Raised: {Number((+formatUnits(sale.totalRaised, sale.reserve.decimals)).toFixed(4))}</span>
+            <span
+              >Total Raised: {Number(
+                (+formatUnits(sale.totalRaised, sale.reserve.decimals)).toFixed(
+                  4
+                )
+              )}</span
+            >
             <span>Percent Raised: {(+sale.percentRaised).toFixed(4)}%</span>
-            <span>Available Units: {Number((+formatUnits(sale.unitsAvailable, sale.token.decimals)).toFixed(4))}</span>
+            <span
+              >Available Units: {Number(
+                (+formatUnits(
+                  sale.unitsAvailable,
+                  sale.token.decimals
+                )).toFixed(4)
+              )}</span
+            >
           </div>
         </div>
         <div class="flex flex-row gap-x-2">
@@ -60,5 +73,3 @@ query {
     {/each}
   </div>
 {/if}
-
-

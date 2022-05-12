@@ -15,6 +15,12 @@
   } from "./emissions";
   import { selectedNetwork } from "src/stores";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
+  import {
+    EmissionsERC20,
+    ERC20Config,
+    StateConfig,
+    EmissionsERC20DeployArgs,
+  } from "rain-sdk";
 
   let deployPromise;
 
@@ -38,20 +44,14 @@
   };
 
   const deployEmissions = async () => {
-    const emissionsFactory = new ethers.Contract(
-      $selectedNetwork.addresses.EMISSIONS_FACTORY,
-      EmissionsFactoryArtifact.abi,
-      $signer
-    );
-
     const { validationResult, fieldValues } = validateFields(fields);
 
     // GET THE SOURCE
 
-    let tx;
+    let newEmissionsERC20;
 
     if (validationResult) {
-      let vmStateConfig: StateConfigStruct;
+      let vmStateConfig: StateConfig;
       vmStateConfig = createEmissionsSource({
         monthlyRewards: {
           brnzReward: fieldValues.brnzReward,
@@ -62,7 +62,7 @@
         tierAddress: fieldValues.tierAddress,
       });
 
-      let erc20Config: ERC20ConfigStruct;
+      let erc20Config: ERC20Config;
       erc20Config = {
         name: fieldValues.erc20name,
         symbol: fieldValues.erc20symbol,
@@ -70,21 +70,19 @@
         initialSupply: 0,
       };
 
-      let emissionsConfig: EmissionsERC20ConfigStruct;
+      let emissionsConfig: EmissionsERC20DeployArgs;
       emissionsConfig = {
         allowDelegatedClaims: false,
         erc20Config,
         vmStateConfig,
       };
 
-      tx = await emissionsFactory.createChildTyped(emissionsConfig);
+      newEmissionsERC20 = await EmissionsERC20.deploy($signer, emissionsConfig);
     } else {
       return;
     }
 
-    const receipt = (await tx.wait()) as ContractReceipt;
-
-    return receipt;
+    return newEmissionsERC20;
   };
 
   const handleClick = () => {

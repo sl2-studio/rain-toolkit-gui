@@ -9,11 +9,13 @@
   import { getERC20, op, validateFields } from "../../utils";
   import { afterTimestampConfig, Opcode, saleDeploy } from "./sale";
   import { DatePicker, CalendarStyle } from "@beyonk/svelte-datepicker";
+  import { Sale, SaleConfig, SaleRedeemableERC20Config, VM } from "rain-sdk";
+  import { utils } from "rain-sdk";
 
   let fields: any = {};
   let deployPromise;
   let sale, token;
-  let reserveErc20;
+  let reserveErc20, newSale;
 
   // some default values for testing
   let recipient = "0xf6CF014a3e92f214a3332F0d379aD32bf0Fae929";
@@ -43,7 +45,6 @@
 
   const deploy = async () => {
     const { validationResult, fieldValues } = validateFields(fields);
-    let receipt;
 
     // utility functions for converting to token amounts with the req decimals
     const staticPrice = parseUnits(
@@ -58,65 +59,72 @@
     const constants = [staticPrice, walletCap, ethers.constants.MaxUint256];
 
     const sources = [
-      concat([
-        op(Opcode.CURRENT_BUY_UNITS),
-        op(Opcode.TOKEN_ADDRESS),
-        op(Opcode.SENDER),
-        op(Opcode.ERC20_BALANCE_OF),
-        op(Opcode.ADD, 2),
-        op(Opcode.VAL, 1),
-        op(Opcode.GREATER_THAN),
-        op(Opcode.VAL, 2),
-        op(Opcode.VAL, 0),
-        op(Opcode.EAGER_IF),
+      utils.concat([
+        utils.op(Sale.Opcodes.CURRENT_BUY_UNITS),
+        utils.op(Sale.Opcodes.TOKEN_ADDRESS),
+        utils.op(Sale.Opcodes.SENDER),
+        utils.op(Sale.Opcodes.IERC20_BALANCE_OF),
+        utils.op(Sale.Opcodes.ADD, 2),
+        utils.op(Sale.Opcodes.VAL, 1),
+        utils.op(Sale.Opcodes.GREATER_THAN),
+        utils.op(Sale.Opcodes.VAL, 2),
+        utils.op(Sale.Opcodes.VAL, 0),
+        utils.op(Sale.Opcodes.EAGER_IF),
       ]),
     ];
+    // const sources = VM.createVMSources([[Sale.Opcodes.VAL, 0]]);
 
     ////////////////
+    const saleConfig: SaleConfig = {
+      canStartStateConfig: Sale.afterTimestampConfig(
+        Math.floor(raiseRange?.[0].$d.getTime() / 1000)
+      ),
+      canEndStateConfig: Sale.afterTimestampConfig(
+        Math.floor(raiseRange?.[1].$d.getTime() / 1000)
+      ),
+      calculatePriceStateConfig: {
+        sources,
+        constants,
+        stackLength: 10,
+        argumentsLength: 0,
+      },
+      saleTimeout: 100, // newly added line
+      recipient: fieldValues.recipient,
+      reserve: fieldValues.reserve,
+      cooldownDuration: parseInt(fieldValues.cooldownDuration),
+      minimumRaise: parseUnits(
+        fieldValues.minimumRaise.toString(),
+        reserveErc20.erc20decimals
+      ),
+      dustSize: 0,
+    };
+
+    const saleRedeemableERC20Config: SaleRedeemableERC20Config = {
+      erc20Config: {
+        name: fieldValues.name,
+        symbol: fieldValues.symbol,
+        distributor: ethers.constants.AddressZero,
+        initialSupply: parseUnits(fieldValues.initialSupply.toString()),
+      },
+      tier: fieldValues.tier,
+      minimumTier: fieldValues.minimumStatus,
+      distributionEndForwardingAddress:
+        fieldValues.distributionEndForwardingAddress,
+    };
 
     if (validationResult) {
-      return await saleDeploy(
+      newSale = await Sale.deploy(
         $signer,
-        {
-          canStartStateConfig: afterTimestampConfig(
-            Math.floor(raiseRange?.[0].$d.getTime() / 1000)
-          ),
-          canEndStateConfig: afterTimestampConfig(
-            Math.floor(raiseRange?.[1].$d.getTime() / 1000)
-          ),
-          calculatePriceStateConfig: {
-            sources,
-            constants,
-            stackLength: 10,
-            argumentsLength: 0,
-          },
-          recipient: fieldValues.recipient,
-          reserve: fieldValues.reserve,
-          cooldownDuration: parseInt(fieldValues.cooldownDuration),
-          minimumRaise: parseUnits(
-            fieldValues.minimumRaise.toString(),
-            reserveErc20.erc20decimals
-          ),
-          dustSize: 0,
-        },
-        {
-          erc20Config: {
-            name: fieldValues.name,
-            symbol: fieldValues.symbol,
-            distributor: ethers.constants.AddressZero,
-            initialSupply: parseUnits(fieldValues.initialSupply.toString()),
-          },
-          tier: fieldValues.tier,
-          minimumTier: fieldValues.minimumStatus,
-          distributionEndForwardingAddress:
-            fieldValues.distributionEndForwardingAddress,
-        }
+        saleConfig,
+        saleRedeemableERC20Config
       );
+
+      return newSale;
     }
   };
 
   const getReserveErc20 = async () => {
-    if (fields.reserve.validate()) {
+    if (ethers.utils.isAddress(reserve)) {
       reserveErc20 = await getERC20(reserve, $signer, $signerAddress);
     }
   };

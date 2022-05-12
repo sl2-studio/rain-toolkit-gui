@@ -88,19 +88,21 @@
             {data.token.symbol}
           </td>
           <td class="py-2 text-right">
-            <span
-              class="underline cursor-pointer text-gray-400 mr-4"
-              on:click={() => {
-                open(EscrowUndepositModal, {
-                  escrow,
-                  data,
-                  salesContract,
-                  saleData,
-                });
-              }}
-            >
-              Undeposit
-            </span>
+            {#if data.totalRemaining != "0"}
+              <span
+                class="underline cursor-pointer text-gray-400 mr-4"
+                on:click={() => {
+                  open(EscrowUndepositModal, {
+                    escrow,
+                    data,
+                    salesContract,
+                    saleData,
+                  });
+                }}
+              >
+                Undeposit
+              </span>
+            {/if}
           </td>
         </tr>
 

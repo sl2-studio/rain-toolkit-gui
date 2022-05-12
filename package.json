@@ -45,6 +45,7 @@
     "d3-shape": "^3.1.0",
     "ethers": "^5.5.2",
     "postcss": "^7.0.39",
+    "rain-sdk": "0.0.2-alpha.1",
     "sirv-cli": "^1.0.0",
     "svelte-ethers-store": "^0.6.3",
     "svelte-loading-animation": "^0.0.1",

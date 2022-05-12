@@ -7,6 +7,7 @@
   import { BigNumber, ethers } from "ethers";
   import ReserveTokenArtifact from "../../abis/ReserveToken.json";
   import { selectedNetwork } from "src/stores";
+  import { ERC20 } from "rain-sdk";
 
   enum TxStatus {
     None,
@@ -32,14 +33,14 @@
     txReceipt;
 
   const receipt = transaction.receipt;
-  
+
   const approve = async () => {
-    const rTKN = new ethers.Contract(
-      token.id,
-      ReserveTokenArtifact.abi,
-      $signer
-    );
-    
+    const rTKN = new ERC20(token.id, $signer);
+    // const rTKN = new ethers.Contract(
+    //   token.id,
+    //   ReserveTokenArtifact.abi,
+    //   $signer
+    // );
 
     let tx;
     txStatus = TxStatus.AwaitingSignature;
@@ -49,7 +50,6 @@
         saleContract.address,
         BigNumber.from(receipt.units)
       );
-
     } catch (error) {
       errorMsg = error.data?.message || error?.message;
       txStatus = TxStatus.Error;

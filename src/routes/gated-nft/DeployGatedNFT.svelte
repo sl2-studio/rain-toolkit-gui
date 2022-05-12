@@ -21,33 +21,12 @@
   import { selectedNetwork } from "src/stores";
   import NewAddress from "src/components/NewAddress.svelte";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
-
-  type GatedNFTTokenConfig = {
-    name: string;
-    symbol: string;
-    description: string;
-    animationUrl: string;
-    animationHash: string;
-    imageUrl: string;
-    imageHash: string;
-  };
-
-  enum Transferrable {
-    NonTransferrable,
+  import {
+    GatedNFT,
+    GatedConfig,
+    GatedNFTDeployArguments,
     Transferrable,
-    TierGatedTransferrable,
-  }
-
-  type GatedNFTConfig = {
-    config_: GatedNFTTokenConfig;
-    tier_: string;
-    minimumStatus_: BigNumberish;
-    maxPerAddress_: BigNumberish;
-    transferrable_: Transferrable;
-    maxMintable_: BigNumberish;
-    royaltyRecipient_: string;
-    royaltyBPS_: BigNumberish;
-  };
+  } from "rain-sdk";
 
   const transferrableOptions = [
     {
@@ -75,12 +54,6 @@
   const zeroHash =
     "0x0000000000000000000000000000000000000000000000000000000000000000";
 
-  const gatedNftFactory = new ethers.Contract(
-    $selectedNetwork.addresses.GATED_NFT_FACTORY,
-    GatedNFTFactoryArtifact.abi,
-    $signer
-  );
-
   $: if (params.wild) {
     tierAddress = params.wild;
   }
@@ -101,7 +74,7 @@
         "0x0000000000000000000000000000000000000000000000000000000000000000";
       fieldValues.animationHash =
         "0x0000000000000000000000000000000000000000000000000000000000000000";
-      const tokenConfig: GatedNFTTokenConfig = {
+      const tokenConfig: GatedConfig = {
         name: fieldValues.name,
         symbol: fieldValues.symbol,
         description: fieldValues.description,
@@ -110,39 +83,20 @@
         imageUrl: fieldValues.imageUrl,
         imageHash: fieldValues.imageHash,
       };
-      const config: GatedNFTConfig = {
-        config_: tokenConfig,
-        tier_: fieldValues.tier,
-        minimumStatus_: fieldValues.minimumStatus,
-        maxPerAddress_: fieldValues.maxPerAddress,
-        transferrable_: fieldValues.transferrable.value,
-        maxMintable_: fieldValues.maxMintable,
-        royaltyRecipient_: fieldValues.royaltyRecipient,
-        royaltyBPS_: fieldValues.royaltyBPS,
+      const gatedConfig: GatedNFTDeployArguments = {
+        config: tokenConfig,
+        tier: fieldValues.tier,
+        minimumStatus: fieldValues.minimumStatus,
+        maxPerAddress: fieldValues.maxPerAddress,
+        transferrable: fieldValues.transferrable.value,
+        maxMintable: fieldValues.maxMintable,
+        royaltyRecipient: fieldValues.royaltyRecipient,
+        royaltyBPS: fieldValues.royaltyBPS,
       };
-      let tx = await gatedNftFactory.createChildTyped(
-        tokenConfig,
-        fieldValues.tier,
-        fieldValues.minimumStatus,
-        fieldValues.maxPerAddress,
-        fieldValues.transferrable.value,
-        fieldValues.maxMintable,
-        fieldValues.royaltyRecipient,
-        fieldValues.royaltyBPS
-      );
 
-      const receipt = await tx.wait();
+      let newGatedNFT = await GatedNFT.deploy($signer, gatedConfig);
 
-      receipt.events.forEach((event) => {
-        if (event.event == "NewChild") {
-          nftContract = ethers.utils.defaultAbiCoder.decode(
-            ["address", "address"],
-            event.data
-          )[1];
-        }
-      });
-
-      return receipt;
+      return newGatedNFT;
     }
   };
 

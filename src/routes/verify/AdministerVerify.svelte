@@ -10,6 +10,7 @@
   import { Tabs, TabList, TabPanel, Tab } from "src/components/tabs/tabs";
   import AccountsTable from "./AccountsTable.svelte";
   import ApproveAddress from "./ApproveAddress.svelte";
+  import { Verify } from "rain-sdk";
 
   export let params: {
     wild: string;
@@ -18,11 +19,12 @@
   let errorMsg, verifyAddressInput, verifyContract, selectedRole;
 
   const initContract = async (address) => {
-    verifyContract = new ethers.Contract(
-      address,
-      VerifyContractArtifact.abi,
-      $signer
-    );
+    verifyContract = new Verify(address, $signer);
+    // verifyContract = new ethers.Contract(
+    //   address,
+    //   VerifyContractArtifact.abi,
+    //   $signer
+    // );
   };
 
   $: if (ethers.utils.isAddress(params.wild)) {

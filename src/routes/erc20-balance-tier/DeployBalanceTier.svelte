@@ -9,6 +9,7 @@
   import { selectedNetwork } from "src/stores";
   import NewAddress from "src/components/NewAddress.svelte";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
+  import { ERC20BalanceTier, ERC20 } from "rain-sdk";
 
   let erc20Address,
     erc20AddressError,
@@ -27,8 +28,9 @@
   const getERC20 = async () => {
     if (ethers.utils.isAddress(erc20Address)) {
       erc20AddressError = null;
-      erc20Contract = new ethers.Contract(erc20Address, ReserveToken.abi);
-      erc20Contract = erc20Contract.connect($signer);
+
+      erc20Contract = new ERC20(erc20Address, $signer);
+
       try {
         erc20name = await erc20Contract.name();
         erc20balance = await erc20Contract.balanceOf($signerAddress);
@@ -42,30 +44,18 @@
   };
 
   const deployBalanceTier = async () => {
-    const balanceTierFactory = new ethers.Contract(
-      $selectedNetwork.addresses.BALANCE_TIER_FACTORY_ADDRESS,
-      BalanceTierFactoryArtifact.abi,
-      $signer
-    );
     const parsedTiers = tiers.map((value) =>
       value
         ? ethers.utils.parseUnits(value.toString(), erc20decimals)
         : ethers.constants.MaxInt256
     );
-    let tx = await balanceTierFactory.createChildTyped([
-      erc20Contract.address,
-      parsedTiers,
-    ]);
-    const receipt = await tx.wait();
-    receipt.events.forEach((event) => {
-      if (event.event == "NewChild") {
-        balanceTierAddress = ethers.utils.defaultAbiCoder.decode(
-          ["address", "address"],
-          event.data
-        )[1];
-      }
+
+    let newBalanceTier = await ERC20BalanceTier.deploy($signer, {
+      erc20: erc20Contract.address,
+      tierValues: parsedTiers,
     });
-    return receipt;
+
+    return newBalanceTier;
   };
 
   const handleClick = () => {

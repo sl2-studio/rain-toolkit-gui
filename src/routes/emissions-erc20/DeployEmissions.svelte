@@ -38,8 +38,9 @@ import { parseUnits } from "ethers/lib/utils";
   let platMaxReward = 2000;
   let incrementDuration = 1; // 1 month
   let numberOfIncrements = 36;
-  let ownerAddress = "0xa44ab31CB79Ca950f6f6618c8F6d75b6D85b8970"; 
-  let initSupply = 1000;
+  let ownerAddress = "0xf6CF014a3e92f214a3332F0d379aD32bf0Fae929"; 
+  let initSupply = 0;
+  let blockTime = 2.3;
 
   // @TODO write validators
   const defaultValidator = () => {
@@ -77,6 +78,7 @@ import { parseUnits } from "ethers/lib/utils";
         tierAddress: fieldValues.tierAddress,
         incrementDuration: fieldValues.incrementDuration,
         numberOfIncrements: fieldValues.numberOfIncrements,
+        blockTime: fieldValues.blockTime,
       });
 
       let erc20Config: ERC20ConfigStruct;
@@ -149,6 +151,15 @@ import { parseUnits } from "ethers/lib/utils";
     >
       <span slot="label">Tier contract to check reports against.</span>
     </Input>
+    <Input
+    type="number"
+    bind:this={fields.blockTime}
+    bind:value={blockTime}
+    validator={defaultValidator}
+  >
+    <span slot="label">Block Time</span>
+    <span slot="description">Time it takes for each block to be mined, e.g for Polygon it is 2.3s per block (in seconds)</span>
+  </Input>
     <Input
       type="number"
       bind:this={fields.incrementDuration}

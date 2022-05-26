@@ -95,6 +95,7 @@ type EmissionsConfig = {
   tierAddress: string;
   incrementDuration: number;
   numberOfIncrements : number;
+  blockTime: number;
 };
 
 export type ERC20ConfigStruct = {
@@ -126,7 +127,7 @@ export const createEmissionsSource = (
   const BN_ONE_REWARD = BigNumber.from("1" + sixZeros);
 
   // 2 seconds per block
-  const BLOCKS_PER_YEAR = 43200 * 365.25;
+  const BLOCKS_PER_YEAR = (86400 / config.blockTime) * 365.25;
 
   const BLOCKS_PER_MONTH = Math.floor((BLOCKS_PER_YEAR / 12) / config.incrementDuration);
 

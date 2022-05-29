@@ -8,7 +8,7 @@
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
   import Buy from "./Buy.svelte";
-  import { initSaleContracts } from "./sale";
+  // import { initSaleContracts } from "./sale";
   import SaleProgress from "./SaleProgress.svelte";
   import CheckTier from "./CheckTier.svelte";
   import { onMount } from "svelte";
@@ -20,7 +20,6 @@
   import { initEscrowContracts } from "./escrow/escrow";
   import EscrowPendingDepositTable from "./escrow/EscrowPendingDepositTable.svelte";
   import EscrowUndepositTable from "./escrow/EscrowUndepositTable.svelte";
-  import { networks } from "../../constants";
   import { Sale, ERC20, RedeemableERC20ClaimEscrow } from "rain-sdk";
 
   export let params: {

@@ -140,8 +140,8 @@
                     4
                   )
                 )}
-                {saleData.reserve.symbol}</span
-              >
+                <!-- {saleData.reserve.symbol} -->
+              </span>
               <span
                 >Total: {Number(
                   (+formatUnits(

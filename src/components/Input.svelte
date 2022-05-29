@@ -12,6 +12,11 @@
   export let debounceTime: number = 750;
   let error: string;
   let timer;
+  //--------- newly added --------
+  export let min = "";
+  export let max = "";
+  export let disabled = false;
+  //------------------------------
 
   $: _type = type == "address" ? "text" : type;
 
@@ -79,6 +84,9 @@
       {placeholder}
       on:input={handleInput}
       on:blur={validate}
+      {disabled}
+      {min}
+      {max}
       class="w-full rounded-md border border-gray-500 bg-transparent p-2 font-light text-gray-200"
     />
     {#if type == "address"}

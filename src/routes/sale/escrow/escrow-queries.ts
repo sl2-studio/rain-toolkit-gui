@@ -75,8 +75,8 @@ let saleAddress, depositor, signerAddress
 
 export const allDepositQuery = operationStore(
   `
-      query ($signerAddress: Bytes!) {
-        redeemableEscrowSupplyTokenWithdrawers (where: {withdrawerAddress: $signerAddress}, orderBy: redeemableBalance, orderDirection: asc) {
+      query ($saleAddress: Bytes!) {
+        redeemableEscrowSupplyTokenWithdrawers (where: {iSaleAddress: $saleAddress}, orderBy: redeemableBalance, orderDirection: asc) {
           id
           withdrawerAddress
           totalWithdrawn
@@ -95,6 +95,36 @@ export const allDepositQuery = operationStore(
       }
     `,
   {
+    saleAddress
+  },
+  {
+    requestPolicy: "network-only",
+  }
+);
+
+export const myDepositQuery = operationStore(
+  `
+      query ($saleAddress: Bytes!, $signerAddress: Bytes!) {
+        redeemableEscrowSupplyTokenWithdrawers (where: {iSaleAddress: $saleAddress, withdrawerAddress: $signerAddress}, orderBy: redeemableBalance, orderDirection: asc) {
+          id
+          withdrawerAddress
+          totalWithdrawn
+          totalWithdrawnAgainst
+          redeemableBalance
+          claimable
+          deposit{
+            token {
+              id
+              name
+              symbol
+              decimals
+            }
+          }
+        }
+      }
+    `,
+  {
+    saleAddress,
     signerAddress
   },
   {

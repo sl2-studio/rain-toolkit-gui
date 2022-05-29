@@ -5,7 +5,7 @@
   import { signerAddress } from "svelte-ethers-store";
   import { getContext } from "svelte";
   import IconLibrary from "../../../components/IconLibrary.svelte";
-  import { allDepositQuery } from "./escrow-queries";
+  import { allDepositQuery, myDepositQuery } from "./escrow-queries";
   import Switch from "src/components/Switch.svelte";
   import EscrowWithdrawModal from "./EscrowWithdrawModal.svelte";
   import { Contract } from "ethers";
@@ -19,13 +19,13 @@
   $: txQuery = allDepositQuery;
   // init the queries
   query(allDepositQuery);
-  // query(myDepositQuery);
+  query(myDepositQuery);
 
   // setting the query variables
-  // $myDepositQuery.variables.saleAddress = salesContract.address.toLowerCase();
-  // $myDepositQuery.variables.depositor = $signerAddress.toLowerCase();
+  $myDepositQuery.variables.saleAddress = salesContract.address.toLowerCase();
+  $myDepositQuery.variables.signerAddress = $signerAddress.toLowerCase();
 
-  $allDepositQuery.variables.signerAddress = $signerAddress.toLowerCase();
+  $allDepositQuery.variables.saleAddress = salesContract.address.toLowerCase();
 
   // handling table refresh
   const refresh = () => {
@@ -35,14 +35,13 @@
 
 <div class="flex w-full flex-col gap-y-4">
   <div class="flex flex-row justify-between">
-    {console.log("deposit", txQuery)}
     <span class="text-lg font-semibold">Escrow Deposit History</span>
     <div class="flex flex-row items-center gap-x-4">
-      <!-- <span class="text-sm"
+      <span class="text-sm"
         >Showing {#if !checked}only mine{:else}all transactions{/if}</span
-      > -->
-      <span class="text-sm">all transactions</span>
-      <!-- <Switch bind:checked /> -->
+      >
+      <!-- <span class="text-sm">all transactions</span> -->
+      <Switch bind:checked />
       <span
         class:animate-spin={$txQuery.fetching}
         class="flex flex-col justify-center"

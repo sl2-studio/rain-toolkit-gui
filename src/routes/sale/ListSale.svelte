@@ -43,6 +43,7 @@ query {
         <div class="flex flex-col gap-y-2 mb-4">
           <span class="text-white">Sale details</span>
           <div class="text-gray-400 flex flex-col">
+            <span>Sale: {sale.id}</span>
             <span>Deployer: {sale.deployer}</span>
             <span>Deployed: {Date(sale.deployTimestamp).toLocaleString()}</span>
             <span>Sales Status: {sale.saleStatus}</span>

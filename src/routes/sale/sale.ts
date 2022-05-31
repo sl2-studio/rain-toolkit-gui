@@ -90,6 +90,7 @@ export type SaleParams = {
 
 export const getAfterTimestampDate = (stateConfig, i) => {
   if (stateConfig.sources[0] ===
+    "0x010107001d00060001001f0001021c00" ||
     "0x050001000b00" ||
     "0x050001000b000600010109000c02" ||
     "0x050001000b00230001020a000c02050001010b000d02" ||
@@ -102,6 +103,7 @@ export const getAfterTimestampDate = (stateConfig, i) => {
 
 export const getAfterTimestamp = (stateConfig, i) => {
   if (stateConfig.sources[0] ===
+    "0x010107001d00060001001f0001021c00" ||
     "0x050001000b00" ||
     "0x050001000b000600010109000c02" ||
     "0x050001000b00230001020a000c02050001010b000d02" ||

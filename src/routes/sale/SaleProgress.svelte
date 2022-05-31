@@ -1,6 +1,6 @@
 <script lang="ts">
   import { operationStore, query } from "@urql/svelte";
-  import { formatUnits } from "ethers/lib/utils";
+  import { formatUnits, parseUnits } from "ethers/lib/utils";
   import { onDestroy } from "svelte";
   import ProgressBar from "components/ProgressBar.svelte";
   import { timeString } from "src/utils";
@@ -92,7 +92,16 @@ query ($saleAddress: Bytes!) {
   // update the time elapse/remaining
   const getTime = () => {
     const now = Math.floor(Date.now() / 1000);
-    const end = getAfterTimestampDate(sale.canEndStateConfig).getTime() / 1000;
+    const end =
+      (sale.canEndStateConfig.sources[0] ===
+        "0x050001000b00230001020a000c02050001010b000d02" ||
+        sale.canEndStateConfig.sources[0] ===
+          "0x050001000b00230001020a000c02050001010b000d020600010309000c02") &&
+      Number(+formatUnits(sale.totalRaised, sale.reserve.decimals)) >=
+        Number(+formatUnits(sale.canEndStateConfig.constants[2]))
+        ? getAfterTimestampDate(sale.canEndStateConfig, 1).getTime() / 1000
+        : getAfterTimestampDate(sale.canEndStateConfig, 0).getTime() / 1000;
+
     if (sale?.saleStatus == 1) {
       const start = parseInt(sale.startEvent.timestamp);
       timeRemaining =
@@ -109,6 +118,19 @@ query ($saleAddress: Bytes!) {
 </script>
 
 {#if sale}
+  {#if sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d02" || sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d020600010309000c02"}
+    <div class="mb-2 flex flex-col gap-y-2">
+      <span class="text-xl"
+        ><span class="text-gray-400">Sale Duration Mode:</span> Extra Time</span
+      >
+    </div>
+  {:else}
+    <div class="mb-2 flex flex-col gap-y-2">
+      <span class="text-xl"
+        ><span class="text-gray-400">Sale Duration Mode:</span> Normal</span
+      >
+    </div>
+  {/if}
   <div class="grid w-full grid-cols-2 items-start">
     <table class="table-auto">
       <tr>
@@ -151,18 +173,40 @@ query ($saleAddress: Bytes!) {
         <td class="text-gray-400">Could start:</td>
         <td
           >{dayjs
-            .unix(getAfterTimestamp(sale.canStartStateConfig))
-            .format("MMM D h:mm:ssa")}</td
-        >
+            .unix(getAfterTimestamp(sale.canStartStateConfig, 0))
+            .format("MMM D h:mm:ssa")}
+          {#if sale.canStartStateConfig.sources[0] === "0x050001000b000600010109000c02"}
+            <span class="text-small text-gray-400">(Only by the creator)</span>
+          {/if}
+        </td>
       </tr>
-      <tr>
-        <td class="text-gray-400">Can end:</td>
-        <td
-          >{dayjs
-            .unix(getAfterTimestamp(sale.canEndStateConfig))
-            .format("MMM D h:mm:ssa")}</td
-        >
-      </tr>
+      {#if (sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d02" || sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d020600010309000c02") && Number(+formatUnits(sale.totalRaised, sale.reserve.decimals)) >= Number(+formatUnits(sale.canEndStateConfig.constants[2]))}
+        <tr>
+          <td class="text-gray-400">Can end:</td>
+          <td
+            >{dayjs
+              .unix(getAfterTimestamp(sale.canEndStateConfig, 1))
+              .format("MMM D h:mm:ssa")}
+            {#if sale.canStartStateConfig.sources[0] === "0x050001000b000600010109000c02"}
+              <span class="text-small text-gray-400">(Only by the creator)</span
+              >
+            {/if}
+          </td>
+        </tr>
+      {:else}
+        <tr>
+          <td class="text-gray-400">Can end:</td>
+          <td
+            >{dayjs
+              .unix(getAfterTimestamp(sale.canEndStateConfig, 0))
+              .format("MMM D h:mm:ssa")}
+            {#if sale.canStartStateConfig.sources[0] === "0x050001000b000600010109000c02"}
+              <span class="text-gray-400 text-small">(Only by the creator)</span
+              >
+            {/if}
+          </td>
+        </tr>
+      {/if}
       {#if !(sale?.saleStatus == 0)}
         <tr>
           <td class="text-gray-400">Started:</td>
@@ -172,10 +216,17 @@ query ($saleAddress: Bytes!) {
         </tr>
       {/if}
       {#if sale?.saleStatus == 1}
-        <tr>
-          <td class="text-gray-400">Time remaining:</td>
-          <td>{timeRemaining}</td>
-        </tr>
+        {#if (sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d02" || sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d020600010309000c02") && Number(+formatUnits(sale.totalRaised, sale.reserve.decimals)) >= Number(+formatUnits(sale.canEndStateConfig.constants[2]))}
+          <tr>
+            <td class="text-gray-400">Time remaining (Extra Time):</td>
+            <td>{timeRemaining}</td>
+          </tr>
+        {:else}
+          <tr>
+            <td class="text-gray-400">Time remaining:</td>
+            <td>{timeRemaining}</td>
+          </tr>
+        {/if}
         <tr>
           <td class="text-gray-400">Time elapsed:</td>
           <td>{timeElapsed}</td>
@@ -183,6 +234,17 @@ query ($saleAddress: Bytes!) {
       {/if}
     </table>
   </div>
+  {#if (sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d02" || sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d020600010309000c02") && Number(+formatUnits(sale.totalRaised, sale.reserve.decimals)) >= Number(+formatUnits(sale.canEndStateConfig.constants[2]))}
+    <span style="font-size:medium"
+      >*The threshold of {Number(
+        +formatUnits(sale.canEndStateConfig.constants[2])
+      )}
+      {sale.reserve.symbol} has been reached and raise can now continue for
+      {(getAfterTimestamp(sale.canEndStateConfig, 1) -
+        getAfterTimestamp(sale.canEndStateConfig, 0)) /
+        60} more minutes in extra time
+    </span>
+  {/if}
   {#if sale?.saleStatus == 1}
     <ProgressBar color="blue" total={100} progress={sale.percentRaised} />
   {/if}

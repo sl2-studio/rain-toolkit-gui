@@ -27,7 +27,6 @@
   import ListCombineTier from "./routes/combine-tier/ListCombineTier.svelte";
   import ListSale from "./routes/sale/ListSale.svelte";
   import Footer from "./layout/Footer.svelte";
-  // import Connect from "./WalletConnect.svelte";
 
   let routes = {};
 
@@ -87,7 +86,6 @@
         </Client>
       {:else}
         Connect your wallet to get started.
-        <!-- <Connect /> -->
       {/if}
     </div>
   </main>

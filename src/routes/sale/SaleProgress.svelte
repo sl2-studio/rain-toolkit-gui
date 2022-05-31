@@ -118,6 +118,7 @@ query ($saleAddress: Bytes!) {
 </script>
 
 {#if sale}
+  {console.log("sale", sale)}
   {#if sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d02" || sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d020600010309000c02"}
     <div class="mb-2 flex flex-col gap-y-2">
       <span class="text-xl"

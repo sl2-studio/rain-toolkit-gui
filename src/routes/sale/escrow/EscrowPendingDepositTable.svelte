@@ -105,7 +105,7 @@
                   });
                 }}
               >
-                Sweeping
+                Sweep
               </span>
             {/if}
           </td>

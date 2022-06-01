@@ -9,9 +9,6 @@ import css from "rollup-plugin-css-only";
 import json from "@rollup/plugin-json";
 import replace from "@rollup/plugin-replace";
 import alias from "@rollup/plugin-alias";
-// import NodePolyfills from "rollup-plugin-polyfill-node";
-// import builtins from 'rollup-plugin-node-builtins';
-// import polyfill from 'rollup-plugin-node-polyfills'
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -48,18 +45,6 @@ export default {
     name: "app",
     file: "public/build/bundle.js",
   },
-  // resolve: {
-  //   alias: {
-  //     stream: require.resolve('stream-browserify/'),
-  //     http: require.resolve('stream-http/'),
-  //     https: require.resolve('https-browserify/'),
-  //     os: require.resolve('os-browserify/'),
-  //     buffer: require.resolve('buffer/'),
-  //     url: require.resolve('url/'),
-  //     util: require.resolve('util/'),
-  //     // events: require.resolve(''),
-  //   }
-  // },
   plugins: [
     svelte({
       preprocess: sveltePreprocess({
@@ -89,19 +74,12 @@ export default {
     // some cases you'll need additional configuration -
     // consult the documentation for details:
     // https://github.com/rollup/plugins/tree/master/packages/commonjs
-    // pollyfill(),
+
     resolve({
       browser: true,
       dedupe: ["svelte", "svelte/transition", "svelte/interal"],
     }),
     commonjs(),
-    // builtins(),
-    // polyfill(),
-    // NodePolyfills(
-    //   {
-    //     process: true
-    //   }
-    // ),
     production
       ? replace({ "process.env.NODE_ENV": JSON.stringify("production") })
       : replace({ "process.env.NODE_ENV": JSON.stringify("development") }),
@@ -124,11 +102,5 @@ export default {
   ],
   watch: {
     clearScreen: false,
-  },
-  // alias({
-  //     /** browserify for web3 components */
-  //     stream: 'stream-browserify',
-  //     http: 'http-browserify',
-  //     https: require.resolve('http-browserify'),
-  // }
+  }
 };

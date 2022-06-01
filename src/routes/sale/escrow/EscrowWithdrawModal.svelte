@@ -31,7 +31,7 @@
     txStatus = TxStatus.AwaitingSignature;
 
     try {
-      tx = await escrow.withdraw(data.claimable);
+      tx = await escrow.withdraw(data.deposit.redeemableSupply);
     } catch (error) {
       errorMsg = error.data?.message || error?.message;
       txStatus = TxStatus.Error;
@@ -50,11 +50,6 @@
 
 {#if txStatus == TxStatus.None}
   <div class="flex w-600 flex-col items-start gap-y-7">
-    {console.log("saleData", saleData)}
-    {console.log("SalesContract", salesContract)}
-    {console.log("escrow", escrow)}
-    {console.log("data", data)}
-
     <span class="text-xl font-bold">Withdraw</span>
     <Steps
       steps={["Confirm", "Complete"]}
@@ -70,7 +65,7 @@
       <span>{formatAddress(data.deposit.token.id)}</span>
 
       <span>Total Supply:</span>
-      <span>{data.claimable}</span>
+      <span>{data.deposit.redeemableSupply}</span>
     </div>
 
     {#if activeStep == WithdrawSteps.Confirm}

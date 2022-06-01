@@ -84,6 +84,7 @@ export const allDepositQuery = operationStore(
           redeemableBalance
           claimable
           deposit{
+            redeemableSupply
             token {
               id
               name

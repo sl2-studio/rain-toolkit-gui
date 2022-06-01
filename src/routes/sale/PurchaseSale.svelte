@@ -224,7 +224,12 @@
         <EscrowDeposit {saleData} {sale} {escrow} />
         {#if saleStatus == "Success"}
           <FormPanel>
-            <EscrowDepositsTable {saleData} salesContract={sale} {escrow} />
+            <EscrowDepositsTable
+              {saleData}
+              salesContract={sale}
+              {token}
+              {escrow}
+            />
           </FormPanel>
         {:else if saleStatus == "Fail"}
           <FormPanel>

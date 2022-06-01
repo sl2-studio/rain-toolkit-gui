@@ -11,8 +11,6 @@
   let contractAddress;
 
   deployPromise.then((receipt) => {
-    console.log("receipt", receipt);
-
     contractAddress = receipt.address;
   });
 </script>

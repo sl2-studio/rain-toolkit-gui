@@ -9,10 +9,13 @@
   import Switch from "src/components/Switch.svelte";
   import EscrowWithdrawModal from "./EscrowWithdrawModal.svelte";
   import { Contract } from "ethers";
+  import { dataset_dev, onMount } from "svelte/internal";
+  import DepositModal from "./DepositModal.svelte";
 
   const { open } = getContext("simple-modal");
-  export let salesContract, saleData, escrow: Contract;
+  export let salesContract, saleData, token, escrow: Contract;
   let checked = true;
+  let signerBalance, decimals;
 
   // $: txQuery = checked ? allDepositQuery : myDepositQuery;
 
@@ -30,12 +33,23 @@
   // handling table refresh
   const refresh = () => {
     $txQuery.reexecute();
+    tokenDetails();
   };
+
+  const tokenDetails = async () => {
+    signerBalance = await token.balanceOf($signerAddress.toLowerCase());
+    decimals = await token.decimals();
+  };
+
+  onMount(() => {
+    tokenDetails();
+  });
 </script>
 
 <div class="flex w-full flex-col gap-y-4">
   <div class="flex flex-row justify-between">
     <span class="text-lg font-semibold">Escrow Deposit History</span>
+
     <div class="flex flex-row items-center gap-x-4">
       <span class="text-sm"
         >Showing {#if !checked}only mine{:else}all transactions{/if}</span
@@ -58,13 +72,13 @@
       <tr class="border-b border-gray-600 uppercase text-sm">
         <th class="text-gray-400 text-left pb-2 font-light">Depositor</th>
         <th class="text-gray-400 text-left pb-2 font-light">Token Address</th>
-        <th class="text-gray-400 text-left pb-2 font-light">Total Withdrawn</th>
         <th class="text-gray-400 text-left pb-2 font-light"
           >Claimable Balance</th
         >
         <th class="text-gray-400 text-left pb-2 font-light"
-          >redeemable Balance</th
+          >Redeemable Balance</th
         >
+        <th class="text-gray-400 text-left pb-2 font-light">Total Withdrawn</th>
         <!-- <th class="text-gray-400 text-left pb-2 font-light">Remaining</th> -->
       </tr>
       {#each $txQuery.data.redeemableEscrowSupplyTokenWithdrawers as data}
@@ -79,15 +93,6 @@
           <td class="py-2">
             {Number(
               (+formatUnits(
-                data.totalWithdrawn,
-                data.deposit.token.decimals
-              )).toFixed(4)
-            )}
-            {data.deposit.token.symbol}
-          </td>
-          <td class="py-2">
-            {Number(
-              (+formatUnits(
                 data.claimable,
                 data.deposit.token.decimals
               )).toFixed(4)
@@ -97,14 +102,25 @@
           <td class="py-2">
             {Number(
               (+formatUnits(
-                data.redeemableBalance,
+                data.deposit.redeemableSupply,
+                data.deposit.token.decimals
+              )).toFixed(4)
+            )}
+            {data.deposit.token.symbol}
+          </td>
+          <td class="py-2">
+            {Number(
+              (+formatUnits(
+                data.totalWithdrawn,
                 data.deposit.token.decimals
               )).toFixed(4)
             )}
             {data.deposit.token.symbol}
           </td>
           <td class="py-2 text-right">
-            {#if data.claimable > "0"}
+            <!-- $signerAddress.toLowerCase() === data.withdrawerAddress -->
+
+            {#if formatUnits(signerBalance, decimals) !== "0.0" && data.deposit.totalRemaining !== "0"}
               <span
                 class="underline cursor-pointer text-gray-400 mr-4"
                 on:click={() => {

@@ -56,8 +56,6 @@
     "svelte-material-ui": "^6.0.0-beta.15",
     "svelte-select": "^4.4.7",
     "svelte-spa-router": "^3.2.0",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17",
-    "web3-react": "^5.0.5",
-    "web3modal": "^1.9.7"
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17"
   }
 }

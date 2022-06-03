@@ -4,7 +4,7 @@
   import { createEventDispatcher, getContext } from "svelte";
   import IconLibrary from "./IconLibrary.svelte";
 
-  export let type: "text" | "number" | "address" = "text";
+  export let type: "text" | "number" | "range" | "address" = "text";
   export let value: string | number = "";
   export let placeholder = "";
   export let validator = (value: any): any => null;

@@ -51,44 +51,44 @@
   let tierCapMulAddress = "0x859834199ebd4d53750be5588ebb64ad841266aa";
 
   let discountTier1 = 5,
-    discountTier2 = 10,
-    discountTier3 = 15,
-    discountTier4 = 20,
-    discountTier5 = 25,
-    discountTier6 = 30,
-    discountTier7 = 35,
-    discountTier8 = 40;
+      discountTier2 = 10,
+      discountTier3 = 15,
+      discountTier4 = 20,
+      discountTier5 = 25,
+      discountTier6 = 30,
+      discountTier7 = 35,
+      discountTier8 = 40;
 
   let capMulTier1 = 1,
-    capMulTier2 = 1,
-    capMulTier3 = 1,
-    capMulTier4 = 1.2,
-    capMulTier5 = 1.5,
-    capMulTier6 = 2.5,
-    capMulTier7 = 3,
-    capMulTier8 = 6;
+      capMulTier2 = 1,
+      capMulTier3 = 1,
+      capMulTier4 = 1.2,
+      capMulTier5 = 1.5,
+      capMulTier6 = 2.5,
+      capMulTier7 = 3,
+      capMulTier8 = 6;
 
   let discountActTier1 = 5,
-    discountActTier2 = 3,
-    discountActTier3 = 2,
-    discountActTier4 = 1,
-    discountActTier5 = 0.5,
-    discountActTier6 = 0.25,
-    discountActTier7 = 0.125,
-    discountActTier8 = 0.0625;
+      discountActTier2 = 3,
+      discountActTier3 = 2,
+      discountActTier4 = 1,
+      discountActTier5 = 0.5,
+      discountActTier6 = 0.25,
+      discountActTier7 = 0.125,
+      discountActTier8 = 0.0625;
 
   let capMulActTier1 = 5,
-    capMulActTier2 = 3,
-    capMulActTier3 = 2,
-    capMulActTier4 = 1,
-    capMulActTier5 = 0.5,
-    capMulActTier6 = 0.25,
-    capMulActTier7 = 0.125,
-    capMulActTier8 = 0.0625;
+      capMulActTier2 = 3,
+      capMulActTier3 = 2,
+      capMulActTier4 = 1,
+      capMulActTier5 = 0.5,
+      capMulActTier6 = 0.25,
+      capMulActTier7 = 0.125,
+      capMulActTier8 = 0.0625;
 
   const saleOptions = [
     { value: selectSale.fixedPrice, label: "Fixed Price" },
-    { value: selectSale.vFLO, label: "vFLO" },
+    { value: selectSale.vLBP, label: "vLBP" },
     { value: selectSale.increasingPrice, label: "Increasing Price" },
   ];
 
@@ -115,24 +115,22 @@
   const deploy = async () => {
     const { validationResult, fieldValues } = validateFields(fields);
     let receipt;
-    fieldValues.startTimestamp = Math.floor(
-      raiseRange?.[0].$d.getTime() / 1000
-    );
+    fieldValues.startTimestamp = Math.floor(raiseRange?.[0].$d.getTime() / 1000);
     fieldValues.endTimestamp = Math.floor(raiseRange?.[1].$d.getTime() / 1000);
     fieldValues.reserveErc20 = reserveErc20;
 
     saleParams = {
       inputValues: fieldValues,
       saleType: saleType.value,
-      maxCapType: Number(maxCapCheck),
-      minCapType: Number(minCapCheck),
-      canEndType: Number(canEndCheck),
-      extraTimeDiscountType: Number(extraTimeDiscountCheck),
-      tierDiscountType: Number(tierDiscountCheck),
-      tierDiscountActType: Number(tierDiscountActCheck),
-      tierCapMulType: Number(tierCapMulCheck),
-      tierCapMulActType: Number(tierCapMulActCheck),
-      creatorControlType: Number(creatorControlCheck),
+      maxCapType: maxCapCheck ? 1 : 0,
+      minCapType: minCapCheck ? 1 : 0,
+      canEndType: canEndCheck ? 1 : 0,
+      extraTimeDiscountType: extraTimeDiscountCheck ? 1 : 0,
+      tierDiscountType: tierDiscountCheck ? 1 : 0,
+      tierDiscountActType: tierDiscountActCheck ? 1 : 0,
+      tierCapMulType: tierCapMulCheck ? 1 : 0,
+      tierCapMulActType: tierCapMulActCheck ? 1 : 0,
+      creatorControlType: creatorControlCheck ? 1 : 0,
     };
 
     if (validationResult) {

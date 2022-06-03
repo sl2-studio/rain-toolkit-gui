@@ -3,7 +3,13 @@
 
   import { createEventDispatcher, getContext } from "svelte";
   import IconLibrary from "./IconLibrary.svelte";
+  import { writable } from "svelte/store";
+  import Modal, { bind } from "svelte-simple-modal/src/Modal.svelte";
 
+  const modal2 = writable(null);
+  const showModal = () => modal2.set(bind(AddressLibrary, { onSelectAddress }));
+
+  export let from: string | undefined = undefined;
   export let type: "text" | "number" | "range" | "address" = "text";
   export let value: string | number = "";
   export let placeholder = "";
@@ -90,9 +96,25 @@
       class="w-full rounded-md border border-gray-500 bg-transparent p-2 font-light text-gray-200"
     />
     {#if type == "address"}
-      <span class="flex-shrink cursor-pointer" on:click={openLibrary}
-        ><IconLibrary icon="library" inline /></span
-      >
+      {#if from == "depositModal"}
+        <Modal
+          show={$modal2}
+          styleContent={{ color: "rgba(249, 250, 251, 1)" }}
+          styleWindow={{
+            backgroundColor: "rgba(17, 24, 39, 1) !important",
+            width: "fit-content",
+          }}
+          closeButton={false}
+        >
+          <span class="flex-shrink cursor-pointer" on:click={showModal}
+            ><IconLibrary icon="library" inline /></span
+          >
+        </Modal>
+      {:else}
+        <span class="flex-shrink cursor-pointer" on:click={openLibrary}
+          ><IconLibrary icon="library" inline /></span
+        >
+      {/if}
     {/if}
   </div>
   {#if error}

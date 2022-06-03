@@ -15,18 +15,17 @@
   const { open } = getContext("simple-modal");
   export let salesContract, saleData, token, escrow: Contract;
   let checked = true;
-  let signerBalance, decimals;
+  let signerBalance, decimals, symbol;
 
-  // $: txQuery = checked ? allDepositQuery : myDepositQuery;
+  $: txQuery = checked ? allDepositQuery : myDepositQuery;
 
-  $: txQuery = allDepositQuery;
   // init the queries
   query(allDepositQuery);
   query(myDepositQuery);
 
   // setting the query variables
   $myDepositQuery.variables.saleAddress = salesContract.address.toLowerCase();
-  $myDepositQuery.variables.signerAddress = $signerAddress.toLowerCase();
+  $myDepositQuery.variables.depositor = $signerAddress.toLowerCase();
 
   $allDepositQuery.variables.saleAddress = salesContract.address.toLowerCase();
 
@@ -39,6 +38,7 @@
   const tokenDetails = async () => {
     signerBalance = await token.balanceOf($signerAddress.toLowerCase());
     decimals = await token.decimals();
+    symbol = await token.symbol();
   };
 
   onMount(() => {
@@ -75,9 +75,7 @@
         <th class="text-gray-400 text-left pb-2 font-light"
           >Claimable Balance</th
         >
-        <th class="text-gray-400 text-left pb-2 font-light"
-          >Redeemable Balance</th
-        >
+        <th class="text-gray-400 text-left pb-2 font-light">rTKN Supply</th>
         <th class="text-gray-400 text-left pb-2 font-light">Total Withdrawn</th>
         <!-- <th class="text-gray-400 text-left pb-2 font-light">Remaining</th> -->
       </tr>
@@ -106,7 +104,7 @@
                 data.deposit.token.decimals
               )).toFixed(4)
             )}
-            {data.deposit.token.symbol}
+            {symbol}
           </td>
           <td class="py-2">
             {Number(
@@ -118,9 +116,7 @@
             {data.deposit.token.symbol}
           </td>
           <td class="py-2 text-right">
-            <!-- $signerAddress.toLowerCase() === data.withdrawerAddress -->
-
-            {#if formatUnits(signerBalance, decimals) !== "0.0" && data.deposit.totalRemaining !== "0"}
+            {#if formatUnits(signerBalance, decimals) !== "0.0" && data.deposit.totalRemaining !== "0" && data.withdrawerAddress === $signerAddress.toLowerCase()}
               <span
                 class="underline cursor-pointer text-gray-400 mr-4"
                 on:click={() => {

@@ -149,7 +149,7 @@
     />
 
     {#if activeStep == DepositSteps.Approve}
-      <Input type="address" bind:value={tokenAddress}>
+      <Input type="address" bind:value={tokenAddress} from="depositModal">
         <span slot="label">Enter token:</span>
       </Input>
       <Input

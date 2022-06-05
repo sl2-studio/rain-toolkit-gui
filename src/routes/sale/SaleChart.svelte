@@ -94,7 +94,7 @@
           ticks={4}
           formatTick={(d) => `${d} ${reserve.symbol}`}
         />
-        <Line stroke="rgba(59, 130, 246" />
+        <Line stroke="rgba(59, 130, 246)" />
         <Scatter />
       </Svg>
 

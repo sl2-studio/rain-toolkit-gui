@@ -3,7 +3,7 @@
   import { signerAddress } from "svelte-ethers-store";
   import Connect from "../components/Connect.svelte";
   import User from "../components/User.svelte";
-  // import Connect from "../WalletConnect.svelte";
+  import WalletConnect from "../WalletConnect.svelte";
 
   const { open } = getContext("simple-modal");
 
@@ -25,10 +25,11 @@
         <User address={$signerAddress} />
       </span>
     {:else}
-      <button
+      <!-- <button
         class="rounded-md border-none bg-gray-700 px-4 py-2 text-gray-200"
         on:click={handleConnect}>Connect</button
-      >
+      > -->
+      <WalletConnect />
     {/if}
   </div>
 </div>

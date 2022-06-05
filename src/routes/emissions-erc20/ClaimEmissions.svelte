@@ -9,6 +9,7 @@
   import TokenInfo from "../sale/TokenInfo.svelte";
   import { initEmissions } from "./emissions";
   import { EmissionsERC20, ERC20 } from "rain-sdk";
+import { getERC20 } from "src/utils";
 
   export let params: {
     wild: string;
@@ -26,7 +27,8 @@
   const initContract = async () => {
     if (ethers.utils.isAddress(params.wild || "")) {
       emissionsContract = new EmissionsERC20(params.wild, $signer);
-      token = new ERC20(params.wild, $signer);
+      token = await getERC20(params.wild, $signer, $signerAddress);
+      
     } else if (params.wild) {
       errorMsg = "Not a valid contract address";
     }

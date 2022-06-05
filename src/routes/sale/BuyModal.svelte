@@ -3,10 +3,10 @@
   import Button from "../../components/Button.svelte";
   import Steps from "../../components/steps/Steps.svelte";
   import Ring from "../../components/Ring.svelte";
-  import { BigNumber, ethers, logger } from "ethers";
+  import { BigNumber, ethers } from "ethers";
   import Input from "src/components/Input.svelte";
   import { selectedNetwork } from "src/stores";
-  import { BuyConfig } from "rain-sdk";
+
 
   enum TxStatus {
     None,
@@ -72,7 +72,7 @@
 
   const buy = async () => {
     const buyConfig = {
-      feeRecipient: $signer._address, // should be set to platform fee recipient
+      feeRecipient: await $signer.getAddress(), // should be set to platform fee recipient
       fee: fee,
       minimumUnits: units,
       desiredUnits: units,

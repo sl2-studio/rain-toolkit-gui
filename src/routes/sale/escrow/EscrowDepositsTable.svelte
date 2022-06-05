@@ -75,7 +75,7 @@
         <th class="text-gray-400 text-left pb-2 font-light"
           >Claimable Balance</th
         >
-        <th class="text-gray-400 text-left pb-2 font-light">rTKN Supply</th>
+        <th class="text-gray-400 text-left pb-2 font-light">Raise Token Supply</th>
         <th class="text-gray-400 text-left pb-2 font-light">Total Withdrawn</th>
         <!-- <th class="text-gray-400 text-left pb-2 font-light">Remaining</th> -->
       </tr>

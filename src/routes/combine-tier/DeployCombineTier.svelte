@@ -1,12 +1,12 @@
 <script lang="ts" type="module">
   import { signer } from "svelte-ethers-store";
   import Button from "../../components/Button.svelte";
-  import CombineTierFactoryArtifact from "../../abis/CombineTierFactory.json";
+  //import CombineTierFactoryArtifact from "../../abis/CombineTierFactory.json";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
   import { concat } from "ethers/lib/utils";
   import { op, selectLte, selectLteLogic, selectLteMode } from "../../utils";
-  import { ContractReceipt, ethers } from "ethers";
+  import { ContractReceipt, ethers, BigNumber } from "ethers";
   import { addressValidate } from "../../validation";
   import Select from "../../components/Select.svelte";
   import { selectedNetwork } from "src/stores";
@@ -16,41 +16,40 @@
 
   let tierContractOne: string,
     tierContractTwo: string,
-    combineTierFactory,
     deployPromise: any;
 
   const logicOptions = [
-    { value: utils.selectLteLogic.any, label: "Any" },
-    { value: utils.selectLteLogic.every, label: "Every" },
+    { value: selectLteLogic.any, label: "Any" },
+    { value: selectLteLogic.every, label: "Every" },
   ];
 
   const modeOptions = [
-    { value: utils.selectLteMode.min, label: "Min" },
-    { value: utils.selectLteMode.max, label: "Max" },
-    { value: utils.selectLteMode.first, label: "First" },
+    { value: selectLteMode.min, label: "Min" },
+    { value: selectLteMode.max, label: "Max" },
+    { value: selectLteMode.first, label: "First" },
   ];
 
-  let logicValue: { value: utils.selectLteLogic; label: string },
-    modeValue: { value: utils.selectLteLogic; label: string };
+  let logicValue: { value: selectLteLogic; label: string },
+    modeValue: { value: selectLteLogic; label: string };
 
   const deployCombineTier = async () => {
     // the tier contracts to combine
     const constants = [
-      ethers.BigNumber.from(tierContractOne), // right report
-      ethers.BigNumber.from(tierContractTwo), // left report
+      BigNumber.from(tierContractOne), // right report
+      BigNumber.from(tierContractTwo), // left report
     ];
 
     const source = utils.concat([
-      utils.op(CombineTier.Opcodes.VAL, 1),
-      utils.op(CombineTier.Opcodes.ACCOUNT),
-      utils.op(CombineTier.Opcodes.REPORT),
-      utils.op(CombineTier.Opcodes.VAL, 0),
-      utils.op(CombineTier.Opcodes.ACCOUNT),
-      utils.op(CombineTier.Opcodes.REPORT),
-      utils.op(CombineTier.Opcodes.BLOCK_NUMBER),
-      utils.op(
+      op(CombineTier.Opcodes.VAL, 1),
+      op(CombineTier.Opcodes.ACCOUNT),
+      op(CombineTier.Opcodes.REPORT),
+      op(CombineTier.Opcodes.VAL, 0),
+      op(CombineTier.Opcodes.ACCOUNT),
+      op(CombineTier.Opcodes.REPORT),
+      op(CombineTier.Opcodes.BLOCK_NUMBER),
+      op(
         CombineTier.Opcodes.SELECT_LTE,
-        utils.selectLte(logicValue.value, modeValue.value, 2)
+          selectLte(logicValue.value, modeValue.value, 2)
       ),
     ]);
 

@@ -6,12 +6,12 @@
   import Input from "src/components/Input.svelte";
   import { getNewChildFromReceipt, validateFields } from "src/utils";
   import { defaultValidator } from "../gated-nft/minter-validation";
-  import VerifyFactoryArtifact from "abis/VerifyFactory.json";
-  import VerifyTierFactoryArtifact from "abis/VerifyTierFactory.json";
+  // import VerifyFactoryArtifact from "abis/VerifyFactory.json";
+  // import VerifyTierFactoryArtifact from "abis/VerifyTierFactory.json";
   import { ethers } from "ethers";
   import { selectedNetwork } from "src/stores";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
-  import { Verify } from "rain-sdk";
+  import { Verify, VerifyTier } from "rain-sdk";
 
   export const roles = [
     {
@@ -54,7 +54,8 @@
     // );
     const { validationResult, fieldValues } = validateFields(verifyFields);
 
-    const newVerify = await Verify.deploy($signer, fieldValues.adminAddress);
+    const newVerify = await Verify.deploy($signer, {admin: fieldValues.adminAddress});
+    verifyChild = newVerify.address;
 
     return newVerify;
     // const tx = await verifyFactory.createChildTyped(fieldValues.adminAddress);
@@ -66,7 +67,7 @@
   const deployVerifyTier = async () => {
     const { validationResult, fieldValues } = validateFields(verifyTierFields);
 
-    const newVerifyTier = await Verify.deploy(
+    const newVerifyTier = await VerifyTier.deploy(
       $signer,
       fieldValues.verifyAddress
     );

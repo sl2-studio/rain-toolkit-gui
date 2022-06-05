@@ -1,5 +1,7 @@
 import { BigNumber, BigNumberish, ethers, BytesLike, Signer } from "ethers";
 import { concat } from "ethers/lib/utils";
+import EmissionsERC20Artifact from "../../abis/EmissionsERC20.json";
+import { EmissionsERC20 } from "rain-sdk";
 import {
   arg,
   callSize,
@@ -12,36 +14,10 @@ import {
   selectLteMode,
   tierRange,
 } from "../../utils";
-import EmissionsERC20Artifact from "../../abis/EmissionsERC20.json";
 
 export const eighteenZeros = "000000000000000000";
 export const sixZeros = "000000";
 
-const enum Opcode {
-  SKIP,
-  VAL,
-  DUP,
-  ZIPMAP,
-  BLOCK_NUMBER,
-  BLOCK_TIMESTAMP,
-  THIS_ADDRESS,
-  ADD,
-  SUB,
-  MUL,
-  DIV,
-  MOD,
-  EXP,
-  MIN,
-  MAX,
-  REPORT,
-  NEVER,
-  ALWAYS,
-  SATURATING_DIFF,
-  UPDATE_BLOCKS_FOR_TIER_RANGE,
-  SELECT_LTE,
-  CLAIMANT_ACCOUNT,
-  CONSTRUCTION_BLOCK_NUMBER,
-}
 
 enum Tier {
   ZERO,
@@ -132,18 +108,18 @@ export const createEmissionsSource = (
 
   // BEGIN global constants
 
-  const valTierAddress = op(Opcode.VAL, 0);
-  const valBaseRewardPerTier = op(Opcode.VAL, 1);
-  const valBlocksPerYear = op(Opcode.VAL, 2);
-  const valBNOne = op(Opcode.VAL, 3);
-  const valBNOneReward = op(Opcode.VAL, 4);
+  const valTierAddress = op(EmissionsERC20.Opcodes.VAL, 0);
+  const valBaseRewardPerTier = op(EmissionsERC20.Opcodes.VAL, 1);
+  const valBlocksPerYear = op(EmissionsERC20.Opcodes.VAL, 2);
+  const valBNOne = op(EmissionsERC20.Opcodes.VAL, 3);
+  const valBNOneReward = op(EmissionsERC20.Opcodes.VAL, 4);
 
   // END global constants
 
   // BEGIN zipmap args
 
-  const valDuration = op(Opcode.VAL, arg(0));
-  const valBaseReward = op(Opcode.VAL, arg(1));
+  const valDuration = op(EmissionsERC20.Opcodes.VAL, arg(0));
+  const valBaseReward = op(EmissionsERC20.Opcodes.VAL, arg(1));
 
   // END zipmap args
 
@@ -153,7 +129,7 @@ export const createEmissionsSource = (
     concat([
       valDuration,
       valBaseReward,
-      op(Opcode.MUL, 2),
+      op(EmissionsERC20.Opcodes.MUL, 2),
     ]);
 
   // prettier-ignore
@@ -162,10 +138,10 @@ export const createEmissionsSource = (
       valBNOne,
       valDuration,
       valBNOne,
-      op(Opcode.MUL, 2),
+      op(EmissionsERC20.Opcodes.MUL, 2),
       valBlocksPerYear,
-      op(Opcode.DIV, 2),
-      op(Opcode.MIN, 2),
+      op(EmissionsERC20.Opcodes.DIV, 2),
+      op(EmissionsERC20.Opcodes.MIN, 2),
     ]);
 
   // prettier-ignore
@@ -173,7 +149,7 @@ export const createEmissionsSource = (
     concat([
       PROGRESS(),
       valBNOne,
-      op(Opcode.ADD, 2),
+      op(EmissionsERC20.Opcodes.ADD, 2),
     ]);
 
   // prettier-ignore
@@ -181,18 +157,18 @@ export const createEmissionsSource = (
     concat([
       REWARD(),
       MULTIPLIER(),
-      op(Opcode.MUL, 2),
+      op(EmissionsERC20.Opcodes.MUL, 2),
       valBNOneReward, // scale EACH tier result down by reward per block scaler
-      op(Opcode.DIV, 2),
+      op(EmissionsERC20.Opcodes.DIV, 2),
     ]);
 
   // prettier-ignore
   const CURRENT_BLOCK_AS_REPORT = () =>
     concat([
-      op(Opcode.NEVER),
-      op(Opcode.BLOCK_NUMBER),
+      op(EmissionsERC20.Opcodes.NEVER),
+      op(EmissionsERC20.Opcodes.BLOCK_NUMBER),
       op(
-        Opcode.UPDATE_BLOCKS_FOR_TIER_RANGE,
+        EmissionsERC20.Opcodes.UPDATE_BLOCKS_FOR_TIER_RANGE,
         tierRange(Tier.ZERO, Tier.EIGHT)
       ),
     ]);
@@ -200,17 +176,17 @@ export const createEmissionsSource = (
   // prettier-ignore
   const LAST_CLAIM_REPORT = () =>
     concat([
-      op(Opcode.THIS_ADDRESS),
-      op(Opcode.CLAIMANT_ACCOUNT),
-      op(Opcode.REPORT),
+      op(EmissionsERC20.Opcodes.THIS_ADDRESS),
+      op(EmissionsERC20.Opcodes.CLAIMANT_ACCOUNT),
+      op(EmissionsERC20.Opcodes.REPORT),
     ]);
 
   // prettier-ignore
   const TIER_REPORT = () =>
     concat([
       valTierAddress,
-      op(Opcode.CLAIMANT_ACCOUNT),
-      op(Opcode.REPORT),
+      op(EmissionsERC20.Opcodes.CLAIMANT_ACCOUNT),
+      op(EmissionsERC20.Opcodes.REPORT),
     ]);
 
   // prettier-ignore
@@ -219,9 +195,9 @@ export const createEmissionsSource = (
       CURRENT_BLOCK_AS_REPORT(),
       TIER_REPORT(),
       LAST_CLAIM_REPORT(),
-      op(Opcode.BLOCK_NUMBER),
-      op(Opcode.SELECT_LTE, selectLte(selectLteLogic.any, selectLteMode.max, 2)),
-      op(Opcode.SATURATING_DIFF),
+      op(EmissionsERC20.Opcodes.BLOCK_NUMBER),
+      op(EmissionsERC20.Opcodes.SELECT_LTE, selectLte(selectLteLogic.any, selectLteMode.max, 2)),
+      op(EmissionsERC20.Opcodes.SATURATING_DIFF),
     ]);
 
   // prettier-ignore
@@ -229,8 +205,8 @@ export const createEmissionsSource = (
     concat([
       TIERWISE_DIFF(),
       valBaseRewardPerTier,
-      op(Opcode.ZIPMAP, callSize(1, 3, 1)),
-      op(Opcode.ADD, 8),
+      op(EmissionsERC20.Opcodes.ZIPMAP, callSize(1, 3, 1)),
+      op(EmissionsERC20.Opcodes.ADD, 8),
     ]);
 
   // END Source snippets

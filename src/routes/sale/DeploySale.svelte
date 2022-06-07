@@ -117,15 +117,15 @@
     saleParams = {
       inputValues: fieldValues,
       saleType: saleType.value,
-      maxCapType: maxCapCheck ? 1 : 0,
-      minCapType: minCapCheck ? 1 : 0,
-      canEndType: canEndCheck ? 1 : 0,
-      extraTimeDiscountType: extraTimeDiscountCheck ? 1 : 0,
-      tierDiscountType: tierDiscountCheck ? 1 : 0,
-      tierDiscountActType: tierDiscountActCheck ? 1 : 0,
-      tierCapMulType: tierCapMulCheck ? 1 : 0,
-      tierCapMulActType: tierCapMulActCheck ? 1 : 0,
-      creatorControlType: creatorControlCheck ? 1 : 0,
+      maxCapMode: maxCapCheck,
+      minCapMode: minCapCheck,
+      canEndMode: canEndCheck,
+      extraTimeDiscountMode: extraTimeDiscountCheck,
+      tierDiscountMode: tierDiscountCheck,
+      tierDiscountActMode: tierDiscountActCheck,
+      tierCapMulMode: tierCapMulCheck,
+      tierCapMulActMode: tierCapMulActCheck,
+      creatorControlMode: creatorControlCheck,
     };
 
     if (validationResult) {

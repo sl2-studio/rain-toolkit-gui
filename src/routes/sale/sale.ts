@@ -19,15 +19,15 @@ export enum selectSale {
 export type SaleParams = {
   inputValues: any;
   saleType: number;
-  maxCapType: 0 | 1;
-  minCapType: 0 | 1;
-  canEndType: 0 | 1;
-  extraTimeDiscountType: 0 | 1;
-  tierDiscountType: 0 | 1;
-  tierDiscountActType: 0 | 1;
-  tierCapMulType: 0 | 1;
-  tierCapMulActType: 0 | 1;
-  creatorControlType: 0 | 1;
+  maxCapMode: boolean;
+  minCapMode: boolean;
+  canEndMode: boolean;
+  extraTimeDiscountMode: boolean;
+  tierDiscountMode: boolean;
+  tierDiscountActMode: boolean;
+  tierCapMulMode: boolean;
+  tierCapMulActMode: boolean;
+  creatorControlMode: boolean;
 };
 
 export const getAfterTimestampDate = (stateConfig, i) => {
@@ -62,24 +62,24 @@ function canEndConfig(config: SaleParams, deployerAddress: string) {
 
   const _saleTime_ = new SaleDurationInTimestamp(config.inputValues.endTimestamp)
 
-  if (config.extraTimeDiscountType) {
+  if (config.extraTimeDiscountMode) {
     _saleTime_.applyExtraTime(
       config.inputValues.extraTime,
       config.inputValues.extraTimeAmount
     )
-    if (config.creatorControlType) {
+    if (config.creatorControlMode) {
       _saleTime_.applyOwnership(deployerAddress)
     }
   } 
   else {
-    if (config.creatorControlType && config.canEndType) {
+    if (config.creatorControlMode && config.canEndMode) {
       _saleTime_.applyExtraTime(
         config.inputValues.extraTime,
         config.inputValues.extraTimeAmount
       )
       .applyOwnership(deployerAddress)
     }
-    if (!config.creatorControlType && config.canEndType) {
+    if (!config.creatorControlMode && config.canEndMode) {
       _saleTime_.applyExtraTime(
         config.inputValues.extraTime,
         config.inputValues.extraTimeAmount
@@ -127,7 +127,7 @@ function calculatePriceConfig(config: SaleParams) {
   const _sale_: PriceCurve = saleSelector();
 
   //if extra time discount is enabled
-  if (config.extraTimeDiscountType) {
+  if (config.extraTimeDiscountMode) {
     _sale_.applyExtraTimeDiscount(
       config.inputValues.endTimestamp,
       config.inputValues.extraTimeDiscountThreshold,
@@ -136,9 +136,9 @@ function calculatePriceConfig(config: SaleParams) {
   }
 
   //if tier Discount is enabled
-  if (config.tierDiscountType) {
+  if (config.tierDiscountMode) {
     //if tierActivation is enabled
-    if (config.tierDiscountActType) {
+    if (config.tierDiscountActMode) {
       _sale_.applyTierDiscount(
         config.inputValues.tierDiscountAddress,
         [
@@ -181,11 +181,11 @@ function calculatePriceConfig(config: SaleParams) {
   }
 
   //if both Min and Max Cap Per Wallet are enabled
-  if (config.maxCapType && config.minCapType) {
+  if (config.maxCapMode && config.minCapMode) {
     //if Max cap tier Multiplier is enabled
-    if (config.tierCapMulType) {
+    if (config.tierCapMulMode) {
       //if tierActivation is enabled
-      if (config.tierCapMulActType) {
+      if (config.tierCapMulActMode) {
         _sale_.applyWalletCap(
           2, 
           {
@@ -250,11 +250,11 @@ function calculatePriceConfig(config: SaleParams) {
   }
 
   //if only Max cap per wallet is enabled
-  if (config.maxCapType && !config.minCapType) {
+  if (config.maxCapMode && !config.minCapMode) {
     //if tier Multiplier is enabled
-    if (config.tierCapMulType) {
+    if (config.tierCapMulMode) {
       //if tierActivation is enabled
-      if (config.tierCapMulActType) {
+      if (config.tierCapMulActMode) {
         _sale_.applyWalletCap(
           1, 
           {
@@ -314,7 +314,7 @@ function calculatePriceConfig(config: SaleParams) {
   }
 
   //if only Min Cap Per Wallet is enabled
-  if (!config.maxCapType && config.minCapType) {
+  if (!config.maxCapMode && config.minCapMode) {
     _sale_.applyWalletCap(
       0,
       { minWalletCap: config.inputValues.minWalletCap }
@@ -334,7 +334,7 @@ export const saleDeploy = async (
   const newSale = Sale.deploy(
     deployer,
     {
-      canStartStateConfig: config.creatorControlType 
+      canStartStateConfig: config.creatorControlMode 
         ? new SaleDurationInTimestamp(config.inputValues.startTimestamp).applyOwnership(deployerAddress)
         : new SaleDurationInTimestamp(config.inputValues.startTimestamp),
       canEndStateConfig: canEndConfig(config, deployerAddress),

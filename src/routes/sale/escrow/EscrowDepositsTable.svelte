@@ -14,7 +14,7 @@
   const { open } = getContext("simple-modal");
   export let salesContract, saleData, token;
   let checked = true;
-  let signerBalance, decimals, symbol, tokenData;
+  let signerBalance, decimals, symbol;
 
   $: txQuery = checked ? allDepositQuery : myDepositQuery;
 
@@ -38,10 +38,6 @@
     signerBalance = await token.balanceOf($signerAddress.toLowerCase());
     decimals = await token.decimals();
     symbol = await token.symbol();
-  };
-
-  const getTokenData = async (tokenAddress) => {
-    tokenData = await getERC20(tokenAddress, $signer, $signerAddress);
   };
 
   onMount(() => {
@@ -116,7 +112,7 @@
             {data.deposit.token.symbol}
           </td>
           <td class="py-2 text-right">
-            {#if formatUnits(signerBalance, decimals) !== "0.0" && data.deposit.totalRemaining !== "0" && data.withdrawerAddress === $signerAddress.toLowerCase()}
+            {#if formatUnits(signerBalance, decimals) !== "0.0" && data.deposit.totalRemaining !== "0"}
               <span
                 class="underline cursor-pointer text-gray-400 mr-4"
                 on:click={() => {

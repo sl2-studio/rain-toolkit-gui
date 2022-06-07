@@ -341,7 +341,7 @@ const constants1 = [
   BN_ONE_REWARD,
   config.numberOfIncrements,
   1,
-  10,
+  "10",
   2
 ];
 
@@ -433,7 +433,7 @@ const sources1 = [
     op(Opcode.VAL, 3),
     op(Opcode.DIV, 2),
     op(Opcode.VAL, 7),
-    op(Opcode.SATURATING_SUB, 0),
+    op(Opcode.SATURATING_SUB, 2),
     op(Opcode.VAL, arg(1)),
     op(Opcode.VAL, 3),
     op(Opcode.DIV, 2),
@@ -465,7 +465,7 @@ const sources1 = [
     sources: sources1,
     constants: constants1,
     argumentsLength: 4,
-    stackLength: ((sources1[0].length + sources1[1].length) / 2) + 20,
+    stackLength: ((sources1[0].length + sources1[1].length) / 2) + 25,
   };
 };
 

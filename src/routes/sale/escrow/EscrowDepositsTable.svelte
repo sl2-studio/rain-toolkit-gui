@@ -2,20 +2,20 @@
   import { formatAddress } from "src/utils";
   import { query } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
-  import { signerAddress } from "svelte-ethers-store";
+  import { signer, signerAddress } from "svelte-ethers-store";
   import { getContext } from "svelte";
   import IconLibrary from "../../../components/IconLibrary.svelte";
   import { allDepositQuery, myDepositQuery } from "./escrow-queries";
   import Switch from "src/components/Switch.svelte";
   import EscrowWithdrawModal from "./EscrowWithdrawModal.svelte";
-  import { Contract } from "ethers";
+  import { getERC20 } from "src/utils";
   import { dataset_dev, onMount } from "svelte/internal";
   import DepositModal from "./DepositModal.svelte";
 
   const { open } = getContext("simple-modal");
-  export let salesContract, saleData, token, escrow: Contract;
+  export let salesContract, saleData, token;
   let checked = true;
-  let signerBalance, decimals, symbol;
+  let signerBalance, decimals, symbol, tokenData;
 
   $: txQuery = checked ? allDepositQuery : myDepositQuery;
 
@@ -39,6 +39,10 @@
     signerBalance = await token.balanceOf($signerAddress.toLowerCase());
     decimals = await token.decimals();
     symbol = await token.symbol();
+  };
+
+  const getTokenData = async (tokenAddress) => {
+    tokenData = await getERC20(tokenAddress, $signer, $signerAddress);
   };
 
   onMount(() => {
@@ -75,9 +79,10 @@
         <th class="text-gray-400 text-left pb-2 font-light"
           >Claimable Balance</th
         >
-        <th class="text-gray-400 text-left pb-2 font-light">Raise Token Supply</th>
+        <th class="text-gray-400 text-left pb-2 font-light"
+          >Raise Token Supply</th
+        >
         <th class="text-gray-400 text-left pb-2 font-light">Total Withdrawn</th>
-        <!-- <th class="text-gray-400 text-left pb-2 font-light">Remaining</th> -->
       </tr>
       {#each $txQuery.data.redeemableEscrowSupplyTokenWithdrawers as data}
         <tr>
@@ -85,9 +90,6 @@
           <td>
             {formatAddress(data.deposit.token.id)}
           </td>
-          <!-- <td>
-            {data.deposit.token.symbol}
-          </td> -->
           <td class="py-2">
             {Number(
               (+formatUnits(
@@ -121,7 +123,6 @@
                 class="underline cursor-pointer text-gray-400 mr-4"
                 on:click={() => {
                   open(EscrowWithdrawModal, {
-                    escrow,
                     data,
                     salesContract,
                     saleData,

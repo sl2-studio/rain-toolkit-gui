@@ -5,8 +5,9 @@
   import Ring from "../../../components/Ring.svelte";
   import { selectedNetwork } from "src/stores";
   import { signer } from "svelte-ethers-store";
-  import { BigNumber, ethers } from "ethers";
-  import ReserveTokenArtifact from "../../../abis/ReserveToken.json";
+  // import { BigNumber, ethers } from "ethers";
+  // import ReserveTokenArtifact from "../../../abis/ReserveToken.json";
+  import { RedeemableERC20ClaimEscrow } from "rain-sdk";
 
   enum TxStatus {
     None,
@@ -20,8 +21,8 @@
     Complete,
   }
 
-  export let escrow,
-    data,
+  export let data,
+    salesContract,
     errorMsg,
     activeStep = SweepingSteps.Confirm,
     txStatus = TxStatus.None,
@@ -30,8 +31,15 @@
   const sweep = async () => {
     let tx;
     txStatus = TxStatus.AwaitingSignature;
+
+    let redeemableEscrow = await RedeemableERC20ClaimEscrow.get(
+      salesContract.address,
+      data.token.id,
+      $signer
+    );
+
     try {
-      tx = await escrow.sweepPending(data.depositorAddress);
+      tx = await redeemableEscrow.sweepPending(data.depositorAddress);
     } catch (error) {
       errorMsg = error.data?.message || error?.message;
       txStatus = TxStatus.Error;

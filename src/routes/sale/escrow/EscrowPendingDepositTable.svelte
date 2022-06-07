@@ -16,7 +16,7 @@
 
   const { open } = getContext("simple-modal");
 
-  export let salesContract, escrow: Contract;
+  export let salesContract;
 
   let checked = true;
 
@@ -49,7 +49,6 @@
 </script>
 
 <div class="flex w-full flex-col gap-y-4">
-  <!-- {console.log("txquery in pending deposit", txQuery)} -->
   <div class="flex flex-row justify-between">
     <span class="text-lg font-semibold">Escrow Pending Deposit History</span>
     <div class="flex flex-row items-center gap-x-4">
@@ -100,8 +99,8 @@
                 class="underline cursor-pointer text-gray-400 mr-4"
                 on:click={() => {
                   open(EscrowSweepPendingModal, {
-                    escrow,
                     data,
+                    salesContract,
                   });
                 }}
               >

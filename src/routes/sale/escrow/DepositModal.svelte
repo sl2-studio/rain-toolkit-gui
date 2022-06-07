@@ -8,7 +8,7 @@
   import Input from "src/components/Input.svelte";
   import { selectedNetwork } from "src/stores";
   import { saleStatuses } from "../sale";
-  import RedeemableERC20TokenArtifact from "../../../abis/RedeemableERC20.json";
+  // import RedeemableERC20TokenArtifact from "../../../abis/RedeemableERC20.json";
   import { ERC20, RedeemableERC20ClaimEscrow } from "rain-sdk";
 
   enum TxStatus {
@@ -42,12 +42,13 @@
     saleStatus: string;
   }
 
-  export let sale, saleData: SaleData, escrow;
+  export let sale, saleData: SaleData;
 
   // console.log("log", escrow);
 
   let tokenAddress: string = "0x25a4Dd4cd97ED462EB5228de47822e636ec3E31A",
     units,
+    redeemableEscrow,
     tokenDecimals,
     tokenSymbol,
     activeStep = DepositSteps.Approve,
@@ -80,10 +81,16 @@
     tokenDecimals = await rTKN.decimals();
     tokenSymbol = await rTKN.symbol();
 
+    redeemableEscrow = await RedeemableERC20ClaimEscrow.get(
+      sale.address,
+      tokenAddress,
+      $signer
+    );
+
     let tx;
     txStatus = TxStatus.AwaitingSignature;
     try {
-      tx = await rTKN.approve(escrow.address, units);
+      tx = await rTKN.approve(redeemableEscrow.address, units);
     } catch (error) {
       errorMsg = error.data?.message || error?.message;
       txStatus = TxStatus.Error;
@@ -104,7 +111,7 @@
     txStatus = TxStatus.AwaitingSignature;
 
     try {
-      tx = await escrow.deposit(units);
+      tx = await redeemableEscrow.deposit(units);
     } catch (error) {
       errorMsg = error.data?.message || error?.message;
       txStatus = TxStatus.Error;
@@ -123,7 +130,7 @@
     txStatus = TxStatus.AwaitingSignature;
 
     try {
-      tx = await escrow.depositPending(units);
+      tx = await redeemableEscrow.depositPending(units);
     } catch (error) {
       errorMsg = error.data?.message || error?.message;
       txStatus = TxStatus.Error;

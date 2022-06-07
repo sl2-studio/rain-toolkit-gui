@@ -17,7 +17,6 @@
   import EscrowDeposit from "./escrow/RedeemableDeposit.svelte";
   import EscrowDepositsTable from "./escrow/EscrowDepositsTable.svelte";
   import { saleStatuses } from "./sale";
-  import { initEscrowContracts } from "./escrow/escrow";
   import EscrowPendingDepositTable from "./escrow/EscrowPendingDepositTable.svelte";
   import EscrowUndepositTable from "./escrow/EscrowUndepositTable.svelte";
   import { Sale, ERC20, RedeemableERC20ClaimEscrow } from "rain-sdk";
@@ -26,7 +25,7 @@
     wild: string;
   };
 
-  let sale, reserve, token, escrowContract;
+  let sale, reserve, token;
   let errorMsg, saleAddress, saleAddressInput, latestBlock;
   let startPromise, endPromise;
 
@@ -68,13 +67,13 @@
     }
   );
 
-  const initEscrowsContracts = () => {
-    escrowContract = RedeemableERC20ClaimEscrow.get(
-      $saleQuery.data.sale.id,
-      $saleQuery.data.sale.reserve.id,
-      $signer
-    );
-  };
+  // const initEscrowsContracts = () => {
+  //   escrowContract = RedeemableERC20ClaimEscrow.get(
+  //     $saleQuery.data.sale.id,
+  //     $saleQuery.data.sale.reserve.id,
+  //     $signer
+  //   );
+  // };
 
   const initContracts = () => {
     sale = new Sale($saleQuery.data.sale.id, $signer);
@@ -91,7 +90,7 @@
 
   $: if (!$saleQuery.fetching && $saleQuery.data?.sale) {
     initContracts();
-    initEscrowsContracts();
+    // initEscrowsContracts();
   }
 
   $: saleData = $saleQuery.data?.sale;
@@ -218,29 +217,19 @@
     <FormPanel>
       <TransactionsTable saleContract={sale} />
     </FormPanel>
-
-    {#if escrowContract}
-      {#await escrowContract then escrow}
-        <EscrowDeposit {saleData} {sale} {escrow} />
-        {#if saleStatus == "Success"}
-          <FormPanel>
-            <EscrowDepositsTable
-              {saleData}
-              salesContract={sale}
-              {token}
-              {escrow}
-            />
-          </FormPanel>
-        {:else if saleStatus == "Fail"}
-          <FormPanel>
-            <EscrowUndepositTable {saleData} salesContract={sale} {escrow} />
-          </FormPanel>
-        {/if}
-
-        <FormPanel>
-          <EscrowPendingDepositTable salesContract={sale} {escrow} />
-        </FormPanel>
-      {/await}
+    <EscrowDeposit {saleData} {sale} />
+    {#if saleStatus == "Success"}
+      <FormPanel>
+        <EscrowDepositsTable {saleData} salesContract={sale} {token} />
+      </FormPanel>
+    {:else if saleStatus == "Fail"}
+      <FormPanel>
+        <EscrowUndepositTable {saleData} salesContract={sale} />
+      </FormPanel>
     {/if}
+
+    <FormPanel>
+      <EscrowPendingDepositTable salesContract={sale} />
+    </FormPanel>
   {/if}
 </div>

@@ -11,7 +11,7 @@
   import { Contract } from "ethers";
 
   const { open } = getContext("simple-modal");
-  export let salesContract, saleData, escrow: Contract;
+  export let salesContract, saleData;
 
   let checked = true;
 
@@ -60,7 +60,9 @@
         <th class="text-gray-400 text-left pb-2 font-light">Token Address</th>
         <th class="text-gray-400 text-left pb-2 font-light">Symbol</th>
         <th class="text-gray-400 text-left pb-2 font-light">Total Deposited</th>
-        <th class="text-gray-400 text-left pb-2 font-light">Remaining</th>
+        <th class="text-gray-400 text-left pb-2 font-light"
+          >Remaining Undeposit</th
+        >
       </tr>
       {#each $txQuery.data.redeemableEscrowSupplyTokenDepositors as data}
         <tr>
@@ -93,7 +95,6 @@
                 class="underline cursor-pointer text-gray-400 mr-4"
                 on:click={() => {
                   open(EscrowUndepositModal, {
-                    escrow,
                     data,
                     salesContract,
                     saleData,
@@ -105,120 +106,6 @@
             {/if}
           </td>
         </tr>
-
-        <!-- {#if data.deposits.length > 1}
-          {#each data.deposits as undeposit}
-            <tr>
-              <td>
-                {formatAddress(undeposit.depositorAddress)}
-              </td>
-              <td>
-                {formatAddress(data.token.id)}
-              </td>
-              <td>
-                {data.token.symbol}
-              </td>
-              <td class="py-2">
-                {Number(
-                  (+formatUnits(
-                    undeposit.tokenAmount,
-                    data.token.decimals
-                  )).toFixed(4)
-                )}
-                {data.token.symbol}
-              </td>
-              <td class="py-2">
-                {Number(
-                  (+formatUnits(
-                    data.totalDeposited,
-                    data.token.decimals
-                  )).toFixed(4)
-                )}
-                {data.token.symbol}
-              </td>
-              <td class="py-2">
-                {Number(
-                  (+formatUnits(
-                    data.totalRemaining,
-                    data.token.decimals
-                  )).toFixed(4)
-                )}
-                {data.token.symbol}
-              </td>
-              <td class="py-2 text-right">
-                {#if undeposit.depositorAddress == $signerAddress.toLowerCase()}
-                  <span
-                    class="underline cursor-pointer text-gray-400 mr-4"
-                    on:click={() => {
-                      open(EscrowUndepositModal, {
-                        escrow,
-                        data,
-                        salesContract
-                      });
-                    }}
-                  >
-                    Undeposit
-                  </span>
-                {/if}
-              </td>
-            </tr>
-          {/each}
-        {:else}
-          <tr>
-            <td>
-              {formatAddress(data.deposits[0].depositorAddress)}
-            </td>
-            <td>
-              {formatAddress(data.token.id)}
-            </td>
-            <td>
-              {data.token.symbol}
-            </td>
-            <td class="py-2">
-              {Number(
-                (+formatUnits(
-                  data.deposits[0].tokenAmount,
-                  data.token.decimals
-                )).toFixed(4)
-              )}
-              {data.token.symbol}
-            </td>
-            <td class="py-2">
-              {Number(
-                (+formatUnits(
-                  data.totalDeposited,
-                  data.token.decimals
-                )).toFixed(4)
-              )}
-              {data.token.symbol}
-            </td>
-            <td class="py-2">
-              {Number(
-                (+formatUnits(
-                  data.totalRemaining,
-                  data.token.decimals
-                )).toFixed(4)
-              )}
-              {data.token.symbol}
-            </td>
-            <td class="py-2 text-right">
-              {#if data.deposits[0].depositorAddress == $signerAddress.toLowerCase()}
-                <span
-                  class="underline cursor-pointer text-gray-400 mr-4"
-                  on:click={() => {
-                    open(EscrowUndepositModal, {
-                      escrow,
-                      data,
-                      salesContract,
-                    });
-                  }}
-                >
-                  Undeposit
-                </span>
-              {/if}
-            </td>
-          </tr>
-        {/if} -->
       {/each}
     </table>
   {:else}

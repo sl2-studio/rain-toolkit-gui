@@ -9,13 +9,12 @@
 
   export let saleData;
   export let sale: Contract;
-  export let escrow: Contract;
 </script>
 
 <FormPanel heading="Deposit Escrow">
   <Button
     on:click={() => {
-      open(DepositModal, { sale, saleData, escrow });
+      open(DepositModal, { sale, saleData });
     }}>Deposit</Button
   >
 </FormPanel>

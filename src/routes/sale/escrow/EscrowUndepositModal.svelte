@@ -5,6 +5,8 @@
   import Ring from "../../../components/Ring.svelte";
   import { selectedNetwork } from "src/stores";
   import Input from "src/components/Input.svelte";
+  import { RedeemableERC20ClaimEscrow } from "rain-sdk";
+  import { signer } from "svelte-ethers-store";
 
   enum TxStatus {
     None,
@@ -22,8 +24,7 @@
     Complete,
   }
 
-  export let escrow,
-    data,
+  export let data,
     salesContract,
     errorMsg,
     activeStep = UndepositSteps.Confirm,
@@ -36,19 +37,16 @@
 
   const calculatePrice = async (amount) => {
     priceConfirmed = PriceConfirmed.Pending;
-    const one = parseUnits("1", data.token.decimals.toString());
-    const _units = parseUnits(
-      amount.toString(),
-      data.token.decimals.toString()
-    );
-    units = _units;
-
     if (units <= data.totalRemaining) {
-      const price = await salesContract.calculatePrice(_units);
-      const subtotal = price.mul(_units).div(one);
+      const one = parseUnits("1", data.token.decimals.toString());
+      const _units = parseUnits(
+        amount.toString(),
+        data.token.decimals.toString()
+      );
+      units = _units;
       priceConfirmed = PriceConfirmed.Confirmed;
 
-      return { subtotal };
+      return { _units };
     } else {
       return false;
     }
@@ -58,8 +56,14 @@
     let tx;
     txStatus = TxStatus.AwaitingSignature;
 
+    let redeemableEscrow = await RedeemableERC20ClaimEscrow.get(
+      salesContract.address,
+      data.token.id,
+      $signer
+    );
+
     try {
-      tx = await escrow.undeposit(data.redeemableSupply, units);
+      tx = await redeemableEscrow.undeposit(data.redeemableSupply, units);
     } catch (error) {
       errorMsg = error.data?.message || error?.message;
       txStatus = TxStatus.Error;
@@ -110,10 +114,9 @@
               <div class="flex flex-row gap-x-3">
                 <span
                   >Price: {Number(
-                    (+formatUnits(
-                      result.subtotal,
-                      data.token.decimals
-                    )).toFixed(4)
+                    (+formatUnits(result._units, data.token.decimals)).toFixed(
+                      4
+                    )
                   )}
                   {data.token.symbol}</span
                 >

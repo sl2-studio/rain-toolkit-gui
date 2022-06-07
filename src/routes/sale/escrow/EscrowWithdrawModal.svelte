@@ -4,6 +4,8 @@
   import Steps from "../../../components/steps/Steps.svelte";
   import Ring from "../../../components/Ring.svelte";
   import { selectedNetwork } from "src/stores";
+  import { RedeemableERC20ClaimEscrow } from "rain-sdk";
+  import { signer } from "svelte-ethers-store";
 
   enum TxStatus {
     None,
@@ -19,7 +21,6 @@
 
   export let data,
     saleData,
-    escrow,
     errorMsg,
     salesContract,
     activeStep = WithdrawSteps.Confirm,
@@ -30,8 +31,14 @@
     let tx;
     txStatus = TxStatus.AwaitingSignature;
 
+    let redeemableEscrow = await RedeemableERC20ClaimEscrow.get(
+      salesContract.address,
+      data.deposit.token.id,
+      $signer
+    );
+
     try {
-      tx = await escrow.withdraw(data.deposit.redeemableSupply);
+      tx = await redeemableEscrow.withdraw(data.deposit.redeemableSupply);
     } catch (error) {
       errorMsg = error.data?.message || error?.message;
       txStatus = TxStatus.Error;

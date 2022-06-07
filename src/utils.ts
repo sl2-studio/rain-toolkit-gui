@@ -1,7 +1,6 @@
-import { BigNumber, Contract, ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import type { BytesLike } from "ethers";
 import { concat, Hexable, hexlify, zeroPad } from "ethers/lib/utils";
-import ReserveTokenArtifact from "./abis/ReserveToken.json";
 import { ERC20 } from "rain-sdk";
 
 export const getNewChildFromReceipt = (receipt, parentContract) => {
@@ -171,8 +170,6 @@ export const getERC20 = async (erc20Address, signer, signerAddress) => {
   if (ethers.utils.isAddress(erc20Address)) {
     erc20AddressError = null;
     erc20Contract = new ERC20(erc20Address, signer);
-    // erc20Contract = new ethers.Contract(erc20Address, ReserveTokenArtifact.abi);
-    // erc20Contract = erc20Contract.connect(signer);
     try {
       erc20name = await erc20Contract.name();
       erc20symbol = await erc20Contract.symbol();

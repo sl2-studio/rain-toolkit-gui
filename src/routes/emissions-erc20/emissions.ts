@@ -1,11 +1,9 @@
-import { BigNumber, BigNumberish, ethers, BytesLike, Signer } from "ethers";
+import { BigNumber, BigNumberish, ethers, BytesLike } from "ethers";
 import { concat } from "ethers/lib/utils";
-import EmissionsERC20Artifact from "../../abis/EmissionsERC20.json";
-import { EmissionsERC20 } from "rain-sdk";
+import { EmissionsERC20, Tier, StateConfig } from "rain-sdk";
 import {
   arg,
   callSize,
-  getERC20,
   op,
   paddedUInt256,
   paddedUInt32,
@@ -19,18 +17,6 @@ export const eighteenZeros = "000000000000000000";
 export const sixZeros = "000000";
 
 
-enum Tier {
-  ZERO,
-  ONE, // bronze
-  TWO, // silver
-  THREE, // gold
-  FOUR, // platinum
-  FIVE,
-  SIX,
-  SEVEN,
-  EIGHT,
-}
-
 type EmissionsConfig = {
   monthlyRewards: {
     brnzReward: number;
@@ -41,32 +27,14 @@ type EmissionsConfig = {
   tierAddress: string;
 };
 
-export type ERC20ConfigStruct = {
-  name: string;
-  symbol: string;
-  distributor: string;
-  initialSupply: BigNumberish;
-};
-
-export type StateConfigStruct = {
-  sources: BytesLike[];
-  constants: BigNumberish[];
-  stackLength: BigNumberish;
-  argumentsLength: BigNumberish;
-};
-
-export type EmissionsERC20ConfigStruct = {
-  allowDelegatedClaims: boolean;
-  erc20Config: ERC20ConfigStruct;
-  vmStateConfig: StateConfigStruct;
-};
-
 export const createEmissionsSource = (
   config: EmissionsConfig
-): StateConfigStruct => {
+): StateConfig => {
   const BN_ONE = BigNumber.from("1" + eighteenZeros);
 
-  // We're using uints, so we need to scale reward per block up to get out of the decimal places, but a precision of 18 zeros is too much to fit within a uint32 (since we store block rewards per tier in a report-like format). Six zeros should be enough.
+  // We're using uints, so we need to scale reward per block up to get out of the decimal places, 
+  // but a precision of 18 zeros is too much to fit within a uint32 (since we store block rewards 
+  // per tier in a report-like format). Six zeros should be enough.
   const BN_ONE_REWARD = BigNumber.from("1" + sixZeros);
 
   // 2 seconds per block
@@ -225,14 +193,4 @@ export const createEmissionsSource = (
     argumentsLength: 2,
     stackLength: SOURCE().length / 2,
   };
-};
-
-export const initEmissions = async (signer: Signer, address: string, signerAddress: string) => {
-  const emissionsContract = new ethers.Contract(
-    address,
-    EmissionsERC20Artifact.abi,
-    signer
-  );
-  const token = await getERC20(address, signer, signerAddress);
-  return [emissionsContract, token];
 };

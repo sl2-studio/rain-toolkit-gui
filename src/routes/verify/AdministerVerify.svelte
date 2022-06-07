@@ -5,7 +5,6 @@
   import FormPanel from "src/components/FormPanel.svelte";
   import Input from "src/components/Input.svelte";
   import { push } from "svelte-spa-router";
-  import VerifyContractArtifact from "abis/Verify.json";
   import AdministerRolesTab from "./AdministerRolesTab.svelte";
   import { Tabs, TabList, TabPanel, Tab } from "src/components/tabs/tabs";
   import AccountsTable from "./AccountsTable.svelte";
@@ -20,11 +19,6 @@
 
   const initContract = async (address) => {
     verifyContract = new Verify(address, $signer);
-    // verifyContract = new ethers.Contract(
-    //   address,
-    //   VerifyContractArtifact.abi,
-    //   $signer
-    // );
   };
 
   $: if (ethers.utils.isAddress(params.wild)) {

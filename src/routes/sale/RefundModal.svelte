@@ -4,8 +4,7 @@
   import Button from "../../components/Button.svelte";
   import Steps from "../../components/steps/Steps.svelte";
   import Ring from "../../components/Ring.svelte";
-  import { BigNumber, ethers } from "ethers";
-  import ReserveTokenArtifact from "../../abis/ReserveToken.json";
+  import { BigNumber } from "ethers";
   import { selectedNetwork } from "src/stores";
   import { ERC20 } from "rain-sdk";
 
@@ -36,11 +35,6 @@
 
   const approve = async () => {
     const rTKN = new ERC20(token.id, $signer);
-    // const rTKN = new ethers.Contract(
-    //   token.id,
-    //   ReserveTokenArtifact.abi,
-    //   $signer
-    // );
 
     let tx;
     txStatus = TxStatus.AwaitingSignature;

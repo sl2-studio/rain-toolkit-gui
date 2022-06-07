@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { Contract, ethers, Signer } from "ethers";
+  import { Signer } from "ethers";
   import { Writable } from "svelte/store";
-  import ITierArtifact from "../../abis/ITier.json";
   import { tierReport } from "src/utils";
   import { ERC20BalanceTier } from "rain-sdk";
 

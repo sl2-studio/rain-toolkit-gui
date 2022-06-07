@@ -1,12 +1,9 @@
 <script lang="ts">
   import { signer, signerAddress } from "svelte-ethers-store";
   import Input from "../../components/Input.svelte";
-  import { BigNumber, Contract, ContractReceipt, ethers } from "ethers";
+  import { BigNumber, ethers } from "ethers";
   import FormPanel from "../../components/FormPanel.svelte";
   import Button from "../../components/Button.svelte";
-  import ERC20Artifact from "../../abis/ERC721.json";
-  import ERC721BalanceTierFactoryArtifact from "../../abis/ERC721BalanceTierFactory.json";
-  import { selectedNetwork } from "src/stores";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
   import { ERC721BalanceTier, ERC721 } from "rain-sdk";
 

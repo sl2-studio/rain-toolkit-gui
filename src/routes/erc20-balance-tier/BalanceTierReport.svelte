@@ -2,8 +2,6 @@
   import { signer, signerAddress } from "svelte-ethers-store";
   import { ethers } from "ethers";
   import FormPanel from "../../components/FormPanel.svelte";
-  import BalanceTierAbi from "../../abis/ERC20BalanceTier.json";
-  import ERC20Abi from "../../abis/ReserveToken.json";
   import Input from "../../components/Input.svelte";
   import Button from "../../components/Button.svelte";
   import { tierReport } from "../../utils";

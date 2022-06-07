@@ -1,12 +1,7 @@
 <script lang="ts">
   import ContractDeploy from "components/ContractDeploy.svelte";
   import { ethers } from "ethers";
-  import {
-    concat,
-    defaultAbiCoder,
-    formatUnits,
-    parseUnits,
-  } from "ethers/lib/utils";
+  import { formatUnits } from "ethers/lib/utils";
   import { signer, signerAddress } from "svelte-ethers-store";
   import Select from "../../components/Select.svelte";
   import Button from "../../components/Button.svelte";

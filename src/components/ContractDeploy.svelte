@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { Contract, ContractReceipt } from "ethers";
-  import { ethers } from "ethers";
+  import { Contract } from "ethers";
   import { selectedNetwork } from "src/stores";
   import NewAddress from "./NewAddress.svelte";
   import Ring from "./Ring.svelte";

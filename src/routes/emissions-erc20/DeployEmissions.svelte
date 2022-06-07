@@ -4,16 +4,8 @@
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
   import { validateFields } from "../../utils";
-  import { ContractReceipt, ethers } from "ethers";
-  import EmissionsFactoryArtifact from "../../abis/EmissionsERC20Factory.json";
   import { addressValidate } from "../../validation";
-  import {
-    createEmissionsSource,
-    StateConfigStruct,
-    ERC20ConfigStruct,
-    EmissionsERC20ConfigStruct,
-  } from "./emissions";
-  import { selectedNetwork } from "src/stores";
+  import { createEmissionsSource } from "./emissions";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
   import {
     EmissionsERC20,

@@ -1,7 +1,6 @@
 <script lang="ts">
   import { signer, signerAddress } from "svelte-ethers-store";
-  import { BigNumber, BigNumberish, Contract, ethers } from "ethers";
-  import GatedNFTFactoryArtifact from "../../abis/GatedNFTFactory.json";
+  import { BigNumber } from "ethers";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
   import Button from "../../components/Button.svelte";
@@ -18,14 +17,11 @@
   } from "./minter-validation";
   import Select from "../../components/Select.svelte";
   import { addressValidate } from "../../validation";
-  import { selectedNetwork } from "src/stores";
-  import NewAddress from "src/components/NewAddress.svelte";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
   import {
     GatedNFT,
     GatedConfig,
     GatedNFTDeployArguments,
-    Transferrable,
   } from "rain-sdk";
 
   const transferrableOptions = [

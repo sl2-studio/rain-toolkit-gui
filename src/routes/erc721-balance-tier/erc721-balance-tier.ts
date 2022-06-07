@@ -1,8 +1,6 @@
-import { ethers } from "ethers";
-import ERC721BalanceTierAbi from "../../abis/ERC721BalanceTier.json";
-import ERC721Abi from "../../abis/ERC721.json";
-import { signer } from "svelte-ethers-store";
+import { signer, signerAddress } from "svelte-ethers-store";
 import { get } from "svelte/store";
+import { ERC721BalanceTier } from "rain-sdk";
 
 export const init721BalanceTier = async (address: string) => {
   let balanceTierContract,
@@ -13,11 +11,10 @@ export const init721BalanceTier = async (address: string) => {
     erc721Symbol,
     erc721Address;
 
+  // @TODO remove the signerAddress for these calls once SDK updated
   // setting up the balance tier contract
-  const _balanceTierContract = new ethers.Contract(
-    address,
-    ERC721BalanceTierAbi.abi
-  );
+  const _balanceTierContract = new ERC721BalanceTier(address, signerAddress, signer);
+
   balanceTierContract = _balanceTierContract.connect(get(signer));
   try {
     tierValues = await balanceTierContract.tierValues();
@@ -27,7 +24,7 @@ export const init721BalanceTier = async (address: string) => {
   }
   // setting up the erc20 contract
   const _erc721address = await balanceTierContract.erc721();
-  const _erc721contract = new ethers.Contract(_erc721address, ERC721Abi.abi);
+  const _erc721contract = new ERC721BalanceTier(_erc721address, signerAddress, signer);
   erc721Contract = _erc721contract.connect(get(signer));
   erc721Name = await erc721Contract.name();
   erc721Address = erc721Contract.address;

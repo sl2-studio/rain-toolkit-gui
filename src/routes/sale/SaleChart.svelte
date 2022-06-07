@@ -4,7 +4,7 @@
   import { BigNumber, Contract } from "ethers";
   import { saleBuysQuery } from "./sale-queries";
   import { LayerCake, Svg, Html } from "layercake";
-  import { formatUnits, parseUnits } from "ethers/src.ts/utils";
+  import { formatUnits } from "ethers/src.ts/utils";
   import AxisX from "src/components/charts/AxisX.svelte";
   import AxisY from "src/components/charts/AxisY.svelte";
   import Line from "src/components/charts/Line.svelte";

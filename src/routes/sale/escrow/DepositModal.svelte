@@ -4,11 +4,9 @@
   import Button from "../../../components/Button.svelte";
   import Steps from "../../../components/steps/Steps.svelte";
   import Ring from "../../../components/Ring.svelte";
-  import { ethers } from "ethers";
   import Input from "src/components/Input.svelte";
   import { selectedNetwork } from "src/stores";
   import { saleStatuses } from "../sale";
-  // import RedeemableERC20TokenArtifact from "../../../abis/RedeemableERC20.json";
   import { ERC20, RedeemableERC20ClaimEscrow } from "rain-sdk";
 
   enum TxStatus {

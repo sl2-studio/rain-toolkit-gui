@@ -1,6 +1,4 @@
 <script>
-  import { ethers } from "ethers";
-
   import { networks } from "src/constants";
   import { selectedNetwork } from "src/stores";
   import { getContext } from "svelte";

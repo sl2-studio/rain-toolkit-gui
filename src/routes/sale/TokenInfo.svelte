@@ -1,6 +1,5 @@
 <script lang="ts">
   import DisplayAddress from "./../../components/DisplayAddress.svelte";
-  // import ReserveTokenArtifact from "abis/ReserveToken.json";
   import { BigNumberish, Contract, ethers, Signer } from "ethers";
   import { formatUnits } from "ethers/lib/utils";
   import { Writable } from "svelte/store";

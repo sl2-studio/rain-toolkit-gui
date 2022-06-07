@@ -5,8 +5,6 @@
   import Ring from "../../../components/Ring.svelte";
   import { selectedNetwork } from "src/stores";
   import { signer } from "svelte-ethers-store";
-  // import { BigNumber, ethers } from "ethers";
-  // import ReserveTokenArtifact from "../../../abis/ReserveToken.json";
   import { RedeemableERC20ClaimEscrow } from "rain-sdk";
 
   enum TxStatus {

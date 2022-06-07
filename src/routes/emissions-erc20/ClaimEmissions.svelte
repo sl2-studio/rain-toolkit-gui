@@ -1,14 +1,13 @@
 <script lang="ts">
-  import { BigNumber, ethers } from "ethers";
-  import { formatUnits, parseUnits } from "ethers/lib/utils";
+  import { ethers } from "ethers";
+  import { formatUnits } from "ethers/lib/utils";
   import { signer, signerAddress } from "svelte-ethers-store";
   import { push } from "svelte-spa-router";
   import Button from "../../components/Button.svelte";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
   import TokenInfo from "../sale/TokenInfo.svelte";
-  import { initEmissions } from "./emissions";
-  import { EmissionsERC20, ERC20 } from "rain-sdk";
+  import { EmissionsERC20 } from "rain-sdk";
 import { getERC20 } from "src/utils";
 
   export let params: {

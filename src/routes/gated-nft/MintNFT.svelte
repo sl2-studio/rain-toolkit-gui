@@ -1,7 +1,6 @@
 <script lang="ts">
   import { signer, signerAddress } from "svelte-ethers-store";
   import { ethers } from "ethers";
-  import GatedNFTArtifact from "../../abis/GatedNFT.json";
   import Button from "../../components/Button.svelte";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";

@@ -2,13 +2,12 @@
   import { formatAddress } from "src/utils";
   import { query } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
-  import { signer, signerAddress } from "svelte-ethers-store";
+  import { signerAddress } from "svelte-ethers-store";
   import { getContext } from "svelte";
   import IconLibrary from "../../../components/IconLibrary.svelte";
   import { allDepositQuery, myDepositQuery } from "./escrow-queries";
   import Switch from "src/components/Switch.svelte";
   import EscrowWithdrawModal from "./EscrowWithdrawModal.svelte";
-  import { getERC20 } from "src/utils";
   import { onMount } from "svelte/internal";
 
   const { open } = getContext("simple-modal");
@@ -112,7 +111,11 @@
             {data.deposit.token.symbol}
           </td>
           <td class="py-2 text-right">
-            {#if formatUnits(signerBalance, decimals) !== "0.0" && data.deposit.totalRemaining !== "0"}
+            {#if 
+              formatUnits(signerBalance, decimals) !== "0.0" && 
+              data.deposit.totalRemaining !== "0" &&
+              data.withdrawerAddress === $signerAddress.toLowerCase()
+            }
               <span
                 class="underline cursor-pointer text-gray-400 mr-4"
                 on:click={() => {

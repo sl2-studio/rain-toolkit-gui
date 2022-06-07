@@ -1,6 +1,6 @@
 <script lang="ts">
   import { operationStore, query } from "@urql/svelte";
-  import { formatUnits, parseUnits } from "ethers/lib/utils";
+  import { formatUnits } from "ethers/lib/utils";
   import { onDestroy } from "svelte";
   import ProgressBar from "components/ProgressBar.svelte";
   import { timeString } from "src/utils";

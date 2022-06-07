@@ -8,7 +8,6 @@
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
   import Buy from "./Buy.svelte";
-  // import { initSaleContracts } from "./sale";
   import SaleProgress from "./SaleProgress.svelte";
   import CheckTier from "./CheckTier.svelte";
   import { onMount } from "svelte";

@@ -1,19 +1,17 @@
 <script lang="ts" type="module">
   import { signer } from "svelte-ethers-store";
   import Button from "../../components/Button.svelte";
-  //import CombineTierFactoryArtifact from "../../abis/CombineTierFactory.json";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
   import { concat } from "ethers/lib/utils";
   import { op, selectLte, selectLteLogic, selectLteMode } from "../../utils";
-  import { ContractReceipt, ethers, BigNumber } from "ethers";
+  import { BigNumber } from "ethers";
   import { addressValidate } from "../../validation";
   import Select from "../../components/Select.svelte";
-  import { selectedNetwork } from "src/stores";
-  import NewAddress from "src/components/NewAddress.svelte";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
-  import { CombineTier, utils } from "rain-sdk";
+  import { CombineTier } from "rain-sdk";
 
+  
   let tierContractOne: string,
     tierContractTwo: string,
     deployPromise: any;
@@ -39,22 +37,24 @@
       BigNumber.from(tierContractTwo), // left report
     ];
 
-    const source = utils.concat([
-      op(CombineTier.Opcodes.VAL, 1),
-      op(CombineTier.Opcodes.ACCOUNT),
-      op(CombineTier.Opcodes.REPORT),
-      op(CombineTier.Opcodes.VAL, 0),
-      op(CombineTier.Opcodes.ACCOUNT),
-      op(CombineTier.Opcodes.REPORT),
-      op(CombineTier.Opcodes.BLOCK_NUMBER),
-      op(
-        CombineTier.Opcodes.SELECT_LTE,
-          selectLte(logicValue.value, modeValue.value, 2)
-      ),
-    ]);
+    const sources = [
+      concat([
+        op(CombineTier.Opcodes.VAL, 1),
+        op(CombineTier.Opcodes.ACCOUNT),
+        op(CombineTier.Opcodes.REPORT),
+        op(CombineTier.Opcodes.VAL, 0),
+        op(CombineTier.Opcodes.ACCOUNT),
+        op(CombineTier.Opcodes.REPORT),
+        op(CombineTier.Opcodes.BLOCK_NUMBER),
+        op(
+          CombineTier.Opcodes.SELECT_LTE,
+            selectLte(logicValue.value, modeValue.value, 2)
+        ),
+      ])
+    ];
 
     const newCombineTier = await CombineTier.deploy($signer, {
-      sources: [source],
+      sources,
       constants,
       stackLength: 8,
       argumentsLength: 0,

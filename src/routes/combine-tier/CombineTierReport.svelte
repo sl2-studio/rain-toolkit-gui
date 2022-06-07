@@ -1,12 +1,11 @@
 <script lang="ts">
   import { signer, signerAddress } from "svelte-ethers-store";
-  import { Contract, ethers } from "ethers";
+  import { ethers } from "ethers";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
   import Button from "../../components/Button.svelte";
   import { tierReport } from "../../utils";
   import { push } from "svelte-spa-router";
-  import CombineTierArtifact from "../../abis/CombineTier.json";
   import { CombineTier } from "rain-sdk";
 
   export let params: { wild: string },

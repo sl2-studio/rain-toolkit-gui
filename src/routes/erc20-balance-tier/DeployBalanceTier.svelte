@@ -1,13 +1,9 @@
 <script lang="ts">
   import { signer, signerAddress } from "svelte-ethers-store";
   import Input from "../../components/Input.svelte";
-  import ReserveToken from "../../abis/ReserveToken.json";
-  import { Contract, ethers } from "ethers";
+  import { ethers } from "ethers";
   import FormPanel from "../../components/FormPanel.svelte";
   import Button from "../../components/Button.svelte";
-  import BalanceTierFactoryArtifact from "abis/ERC20BalanceTierFactory.json";
-  import { selectedNetwork } from "src/stores";
-  import NewAddress from "src/components/NewAddress.svelte";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
   import { ERC20BalanceTier, ERC20 } from "rain-sdk";
 
@@ -18,7 +14,7 @@
     erc20symbol,
     erc20balance,
     erc20decimals;
-  let balanceTierAddress, deployPromise;
+  let  deployPromise;
   let tiers = [];
 
   $: if (erc20Address) {

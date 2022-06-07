@@ -6,7 +6,6 @@
   import Button from "../../components/Button.svelte";
   import { tierReport } from "../../utils";
   import { push } from "svelte-spa-router";
-  import { init721BalanceTier } from "./erc721-balance-tier";
   import { operationStore, query } from "@urql/svelte";
   import { ERC721BalanceTier, ERC721 } from "rain-sdk";
 

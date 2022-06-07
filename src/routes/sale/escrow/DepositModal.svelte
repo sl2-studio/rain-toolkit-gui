@@ -44,8 +44,6 @@
 
   export let sale, saleData: SaleData;
 
-  // console.log("log", escrow);
-
   let tokenAddress: string = "0x25a4Dd4cd97ED462EB5228de47822e636ec3E31A",
     units,
     redeemableEscrow,
@@ -183,11 +181,6 @@
                 <span
                   >Amount: {formatUnits(result._units, tokenDecimals)}
                   {tokenSymbol}
-                  <!-- {formatUnits(
-                result.subtotal,
-                saleData.reserve.decimals
-              )}
-              {saleData.reserve.symbol} -->
                 </span>
               </div>
             {/await}

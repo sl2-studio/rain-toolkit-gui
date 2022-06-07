@@ -8,7 +8,6 @@
   import { allUndepositQuery, myUndepositQuery } from "./escrow-queries";
   import Switch from "src/components/Switch.svelte";
   import EscrowUndepositModal from "./EscrowUndepositModal.svelte";
-  import { Contract } from "ethers";
 
   const { open } = getContext("simple-modal");
   export let salesContract, saleData;

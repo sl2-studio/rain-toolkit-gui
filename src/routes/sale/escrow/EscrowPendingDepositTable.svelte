@@ -10,7 +10,6 @@
     myPendingDepositQuery,
   } from "./escrow-queries";
   import Switch from "src/components/Switch.svelte";
-  import { Contract } from "ethers";
   import { saleStatuses } from "../sale";
   import EscrowSweepPendingModal from "./EscrowSweepPendingModal.svelte";
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { BigNumber, Contract, ethers, Signer } from "ethers";
+  import { Contract } from "ethers";
   import Button from "../../../components/Button.svelte";
   import FormPanel from "../../../components/FormPanel.svelte";
   import { getContext } from "svelte";

@@ -19,7 +19,7 @@
   import { saleStatuses } from "./sale";
   import EscrowPendingDepositTable from "./escrow/EscrowPendingDepositTable.svelte";
   import EscrowUndepositTable from "./escrow/EscrowUndepositTable.svelte";
-  import { Sale, ERC20, RedeemableERC20ClaimEscrow } from "rain-sdk";
+  import { Sale, ERC20 } from "rain-sdk";
 
   export let params: {
     wild: string;
@@ -67,14 +67,6 @@
     }
   );
 
-  // const initEscrowsContracts = () => {
-  //   escrowContract = RedeemableERC20ClaimEscrow.get(
-  //     $saleQuery.data.sale.id,
-  //     $saleQuery.data.sale.reserve.id,
-  //     $signer
-  //   );
-  // };
-
   const initContracts = () => {
     sale = new Sale($saleQuery.data.sale.id, $signer);
     reserve = new ERC20($saleQuery.data.sale.reserve.id, $signer);
@@ -90,7 +82,6 @@
 
   $: if (!$saleQuery.fetching && $saleQuery.data?.sale) {
     initContracts();
-    // initEscrowsContracts();
   }
 
   $: saleData = $saleQuery.data?.sale;

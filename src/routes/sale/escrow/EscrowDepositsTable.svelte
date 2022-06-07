@@ -9,8 +9,7 @@
   import Switch from "src/components/Switch.svelte";
   import EscrowWithdrawModal from "./EscrowWithdrawModal.svelte";
   import { getERC20 } from "src/utils";
-  import { dataset_dev, onMount } from "svelte/internal";
-  import DepositModal from "./DepositModal.svelte";
+  import { onMount } from "svelte/internal";
 
   const { open } = getContext("simple-modal");
   export let salesContract, saleData, token;
@@ -58,7 +57,6 @@
       <span class="text-sm"
         >Showing {#if !checked}only mine{:else}all transactions{/if}</span
       >
-      <!-- <span class="text-sm">all transactions</span> -->
       <Switch bind:checked />
       <span
         class:animate-spin={$txQuery.fetching}

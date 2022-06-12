@@ -49,7 +49,7 @@
 
 {#if minimumStatus !== 0}
   <div>
-    This raise is gated by a Tier contract.
+    This raise is gated by a {tierData.__typename}.
   </div>
   <div>
     You must have been at least tier {readableTiers[minimumStatus - 1]} at block

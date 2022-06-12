@@ -3,13 +3,11 @@
   import Button from "../../components/Button.svelte";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
-  import { concat } from "ethers/lib/utils";
-  import { op, selectLte, selectLteLogic, selectLteMode } from "../../utils";
-  import { BigNumber } from "ethers";
   import { addressValidate } from "../../validation";
   import Select from "../../components/Select.svelte";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
-  import { CombineTier } from "rain-sdk";
+  import { CombineTierGenerator, CombineTier } from "rain-sdk";
+  import { selectLteLogic, selectLteMode } from "../../utils";
 
   
   let tierContractOne: string,
@@ -28,37 +26,17 @@
   ];
 
   let logicValue: { value: selectLteLogic; label: string },
-    modeValue: { value: selectLteLogic; label: string };
+    modeValue: { value: selectLteMode; label: string };
 
   const deployCombineTier = async () => {
-    // the tier contracts to combine
-    const constants = [
-      BigNumber.from(tierContractOne), // right report
-      BigNumber.from(tierContractTwo), // left report
-    ];
 
-    const sources = [
-      concat([
-        op(CombineTier.Opcodes.VAL, 1),
-        op(CombineTier.Opcodes.ACCOUNT),
-        op(CombineTier.Opcodes.REPORT),
-        op(CombineTier.Opcodes.VAL, 0),
-        op(CombineTier.Opcodes.ACCOUNT),
-        op(CombineTier.Opcodes.REPORT),
-        op(CombineTier.Opcodes.BLOCK_NUMBER),
-        op(
-          CombineTier.Opcodes.SELECT_LTE,
-            selectLte(logicValue.value, modeValue.value, 2)
-        ),
-      ])
-    ];
-
-    const newCombineTier = await CombineTier.deploy($signer, {
-      sources,
-      constants,
-      stackLength: 8,
-      argumentsLength: 0,
-    });
+    const combineTierConfig = new CombineTierGenerator(tierContractOne)
+      .combine(
+        tierContractTwo,
+        logicValue.value,
+        modeValue.value
+      );
+    const newCombineTier = await CombineTier.deploy($signer, combineTierConfig);
 
     return newCombineTier;
   };

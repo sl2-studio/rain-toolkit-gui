@@ -192,7 +192,6 @@
         minimumStatus={parseInt(saleData?.token.minimumTier)}
         tierData={saleData?.token.tier}
         againstBlock={latestBlock}
-        token={saleData?.token}
       />
     </FormPanel>
     <div class="grid grid-cols-2 gap-4">

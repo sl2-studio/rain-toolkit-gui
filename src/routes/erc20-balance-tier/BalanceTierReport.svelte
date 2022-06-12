@@ -65,8 +65,8 @@ query ($balanceTierAddress: Bytes!) {
   const initContracts = async () => {
     balanceTierContract = new ERC20BalanceTier(
       _balanceTier.address,
-      _balanceTier.token.id,
-      $signer
+      $signer,
+      _balanceTier.token.id
     );
 
     erc20Contract = new ERC20(_balanceTier.token.id, $signer);

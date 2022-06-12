@@ -69,8 +69,8 @@
     if (ethers.utils.isAddress(params.wild)) {
       balanceTierContract = new ERC721BalanceTier(
         _balanceTier.address,
+        $signer,
         _balanceTier.token.id,
-        $signer
       );
       try {
         tierValues = await balanceTierContract.tierValues();

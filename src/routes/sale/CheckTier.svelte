@@ -2,7 +2,7 @@
   import { Signer } from "ethers";
   import { Writable } from "svelte/store";
   import { tierReport } from "src/utils";
-  import { ERC20BalanceTier } from "rain-sdk";
+  import { ITier } from "rain-sdk";
 
   interface TierData {
     __typename: string;
@@ -12,7 +12,6 @@
   export let tierData: TierData;
   export let minimumStatus: number;
   export let againstBlock: number;
-  export let token;
   export let readableTiers: Array<string> = [
     "1",
     "2",
@@ -42,7 +41,7 @@
   };
 
   $: if ($signer && minimumStatus !== undefined && tierData?.id) {
-    const tier = new ERC20BalanceTier(tierData.id, token.id, $signer);
+    const tier = new ITier(tierData.id, $signer);
 
     checkTier(tier, minimumStatus);
   }
@@ -50,7 +49,7 @@
 
 {#if minimumStatus !== 0}
   <div>
-    This raise is gated by a {tierData.__typename}.
+    This raise is gated by a Tier contract.
   </div>
   <div>
     You must have been at least tier {readableTiers[minimumStatus - 1]} at block

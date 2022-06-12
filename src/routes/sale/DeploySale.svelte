@@ -11,6 +11,7 @@
   import { getERC20, validateFields } from "../../utils";
   import { saleDeploy, SaleParams, selectSale } from "./sale";
   import { DatePicker, CalendarStyle } from "@beyonk/svelte-datepicker";
+  import SaleSmallSimulationChart from "./SaleSmallSimulationChart.svelte";
 
   let fields: any = {};
   let deployPromise;
@@ -98,6 +99,15 @@
   let tierCapMulActCheck = false;
   let creatorControlCheck = false;
 
+  $: saleVals = {
+    startTimestamp: Math.floor(raiseRange?.[0].$d.getTime() / 1000),
+    endTimestamp: Math.floor(raiseRange?.[1].$d.getTime() / 1000),
+    startPrice,
+    endPrice,
+    minimumRaise,
+    initialSupply,
+  }
+
   // @TODO write validators
   const defaultValidator = () => {
     return true;
@@ -153,6 +163,19 @@
     else document.getElementById("capMax").style.display = "none";
   }
 </script>
+
+
+{#if saleVals && saleType}
+  <span class="sticky">
+    <FormPanel>
+      <SaleSmallSimulationChart
+        saleType={saleType.value}
+        {saleVals}
+        {reserveErc20}
+      />
+    </FormPanel>
+  </span>
+{/if}
 
 <div class="flex w-3/4 flex-col gap-y-4">
   <div class="mb-2 flex flex-col gap-y-2">
@@ -1052,4 +1075,12 @@
   .m-top {
     margin-top: 15px;
   }
+  
+  span.sticky {
+    margin-top: 52px;
+    float: right;
+    position: sticky;
+    top: 90px;
+    padding: 5px;
+}
 </style>

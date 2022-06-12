@@ -85,7 +85,7 @@ $: {
       data: any
     ) => {
       state.stack.push(parseUnits(
-        saleVals.initialSupply.toString(), reserveErc20?.erc20decimals
+        saleVals.initialSupply.toString()
       ))
     };
     opcodeFn[SaleJS.Opcodes.TOTAL_RESERVE_IN] = (

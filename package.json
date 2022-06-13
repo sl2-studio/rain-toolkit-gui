@@ -37,7 +37,6 @@
   },
   "dependencies": {
     "@beyonk/svelte-datepicker": "^12.0.0",
-    "@coinbase/wallet-sdk": "^3.1.0",
     "@metamask/jazzicon": "^2.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "@tailwindcss/aspect-ratio": "^0.4.0",
@@ -53,7 +52,7 @@
     "js-sha3": "^0.8.0",
     "postcss": "^7.0.39",
     "process": "^0.11.10",
-    "rain-sdk": "^0.1.6",
+    "rain-sdk": "^1.1.0",
     "sirv-cli": "^1.0.0",
     "svelte-ethers-store": "^0.6.3",
     "svelte-loading-animation": "^0.0.1",

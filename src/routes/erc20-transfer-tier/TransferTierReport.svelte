@@ -7,22 +7,22 @@
   import { tierReport } from "../../utils";
   import { push } from "svelte-spa-router";
   import { operationStore, query } from "@urql/svelte";
-  import { ERC20BalanceTier, ERC20 } from "rain-sdk";
+  import { ERC20TransferTier, ERC20 } from "rain-sdk";
 
   export let params;
 
-  let balanceTierContract,
+  let transferTierContract,
     erc20Contract,
     errorMsg,
     addressToReport,
     parsedReport,
     addressBalance,
-    balanceTierAddress;
+    transferTierAddress;
 
-  const balanceTier = operationStore(
+  const transferTier = operationStore(
     `
-query ($balanceTierAddress: Bytes!) {
-  erc20BalanceTiers (where: {id: $balanceTierAddress}) {
+query ($transferTierAddress: Bytes!) {
+  erc20TransferTiers (where: {id: $transferTierAddress}) {
     id
     address
     deployBlock
@@ -38,43 +38,43 @@ query ($balanceTierAddress: Bytes!) {
   }
 }
 `,
-    { balanceTierAddress },
+    { transferTierAddress },
     {
       pause: true,
       requestPolicy: "network-only",
     }
   );
 
-  query(balanceTier);
+  query(transferTier);
 
   $: if (params.wild) {
     runQuery();
   }
   const runQuery = () => {
-    $balanceTier.variables.balanceTierAddress = params.wild.toLowerCase();
-    $balanceTier.context.pause = false;
-    $balanceTier.reexecute();
+    $transferTier.variables.transferTierAddress = params.wild.toLowerCase();
+    $transferTier.context.pause = false;
+    $transferTier.reexecute();
   };
 
-  $: _balanceTier = $balanceTier.data?.erc20BalanceTiers[0];
+  $: _transferTier = $transferTier.data?.erc20TransferTiers[0];
 
-  $: if (_balanceTier) {
+  $: if (_transferTier) {
     initContracts();
   }
 
   const initContracts = async () => {
-    balanceTierContract = new ERC20BalanceTier(
-      _balanceTier.address,
+    transferTierContract = new ERC20TransferTier(
+      _transferTier.address,
       $signer,
-      _balanceTier.token.id
+      _transferTier.token.id
     );
 
-    erc20Contract = new ERC20(_balanceTier.token.id, $signer);
+    erc20Contract = new ERC20(_transferTier.token.id, $signer);
   };
 
   const report = async () => {
     if (ethers.utils.isAddress(addressToReport)) {
-      const report = await balanceTierContract.report(addressToReport);
+      const report = await transferTierContract.report(addressToReport);
       parsedReport = tierReport(report);
       addressBalance = await erc20Contract.balanceOf(addressToReport);
     } else {
@@ -90,28 +90,28 @@ query ($balanceTierAddress: Bytes!) {
 
 <div class="flex w-full max-w-prose flex-col gap-y-4">
   <div class="mb-2 flex flex-col gap-y-2">
-    <span class="text-2xl"> Get a BalanceTier report. </span>
+    <span class="text-2xl"> Get a TransferTier report. </span>
     <span class="text-gray-400">
-      BalanceTier checks the amount of a specific ERC20 held in a wallet.
+      TransferTier checks the amount of a specific ERC20 held in a wallet.
     </span>
     {#if !params.wild}
       <span class="text-gray-400">
-        Enter a BalanceTier contract address below, or <span
+        Enter a TransferTier contract address below, or <span
           class="cursor-pointer underline"
           on:click={() => {
-            push("/erc20balancetier/list");
-          }}>browse all deployed BalanceTier contracts.</span
+            push("/erc20transfertier/list");
+          }}>browse all deployed TransferTier contracts.</span
         >
       </span>
     {/if}
   </div>
-  {#if !$balanceTier.fetching && !$balanceTier.error && $balanceTier.data}
-    <FormPanel heading="ERC20 used for this BalanceTier">
+  {#if !$transferTier.fetching && !$transferTier.error && $transferTier.data}
+    <FormPanel heading="ERC20 used for this TransferTier">
       <div class="mb-4 flex flex-col gap-y-2">
         <div class="flex flex-col text-gray-400">
-          <span>Name: {_balanceTier?.token.name}</span>
-          <span>Symbol: {_balanceTier?.token.symbol}</span>
-          <span>Address: {_balanceTier?.token.id}</span>
+          <span>Name: {_transferTier?.token.name}</span>
+          <span>Symbol: {_transferTier?.token.symbol}</span>
+          <span>Address: {_transferTier?.token.id}</span>
         </div>
       </div>
     </FormPanel>
@@ -126,12 +126,12 @@ query ($balanceTierAddress: Bytes!) {
         <Button shrink on:click={reportMyAddress}>Report my address</Button>
       </div>
       <div class="flex flex-col gap-y-2">
-        <span class="text-lg">Token values for this BalanceTier:</span>
-        {#each _balanceTier.tierValues as value, i}
+        <span class="text-lg">Token values for this TransferTier:</span>
+        {#each _transferTier.tierValues as value, i}
           <span class="text-gray-400">
             Tier {i + 1}: {ethers.utils.formatUnits(
               value,
-              _balanceTier.token.decimals
+              _transferTier.token.decimals
             )}
             {#if parsedReport?.[i] == 0}
               ✅
@@ -145,9 +145,9 @@ query ($balanceTierAddress: Bytes!) {
         <span
           >Balance for {addressToReport}: {ethers.utils.formatUnits(
             addressBalance,
-            _balanceTier.token.decimals
+            _transferTier.token.decimals
           )}
-          {_balanceTier.token.symbol}</span
+          {_transferTier.token.symbol}</span
         >
       {/if}
     </FormPanel>
@@ -156,13 +156,13 @@ query ($balanceTierAddress: Bytes!) {
   {:else if !params.wild}
     <FormPanel>
       <Input
-        bind:value={balanceTierAddress}
+        bind:value={transferTierAddress}
         type="address"
         placeholder="Contract address"
       />
       <Button
         on:click={() => {
-          push(`/erc20balancetier/report/${balanceTierAddress}`);
+          push(`/erc20transfertier/report/${transferTierAddress}`);
         }}
       >
         Load

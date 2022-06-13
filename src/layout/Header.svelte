@@ -8,7 +8,7 @@
   const { open } = getContext("simple-modal");
 
   const handleConnect = () => {
-    open(Connect);
+    // open(Connect);
   };
 </script>
 
@@ -20,16 +20,17 @@
     <span class="text-xl font-light text-gray-50">Rain UI Toolkit</span>
   </div>
   <div class="flex flex-row items-center gap-x-4">
-    {#if $signerAddress}
-      <span class="text-gray-400">
+    <!-- {#if $signerAddress} -->
+    <!-- <span class="text-gray-400">
         <User address={$signerAddress} />
-      </span>
-    {:else}
-      <!-- <button
-        class="rounded-md border-none bg-gray-700 px-4 py-2 text-gray-200"
-        on:click={handleConnect}>Connect</button
-      > -->
-      <WalletConnect />
-    {/if}
+      </span> -->
+
+    <!-- {:else} -->
+    <!-- <button
+      class="rounded-md border-none bg-gray-700 px-4 py-2 text-gray-200"
+      on:click={handleConnect}>Connect</button
+    > -->
+    <WalletConnect />
+    <!-- {/if} -->
   </div>
 </div>

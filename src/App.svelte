@@ -27,7 +27,9 @@
   import ListCombineTier from "./routes/combine-tier/ListCombineTier.svelte";
   import ListSale from "./routes/sale/ListSale.svelte";
   import Footer from "./layout/Footer.svelte";
-  // import WalletConnect from "./WalletConnect.svelte";
+  import DeployTransferTier from "./routes/erc20-transfer-tier/DeployTransferTier.svelte";
+  import TransferTierReport from "./routes/erc20-transfer-tier/TransferTierReport.svelte";
+  import ListTransferTier from "./routes/erc20-transfer-tier/ListTransferTier.svelte";
 
   let routes = {};
 
@@ -44,6 +46,10 @@
     "/combinetier/deploy": DeployCombineTier,
     "/combinetier/report/*": CombineTierReport,
     "/combinetier/list": ListCombineTier,
+
+    "/erc20transfertier/deploy": DeployTransferTier,
+    "/erc20transfertier/report/*": TransferTierReport,
+    "/erc20transfertier/list": ListTransferTier,
 
     "/gatednft/deploy/*": DeployGatedNFT,
     "/gatednft/list": ListGatedNFTs,
@@ -87,7 +93,6 @@
         </Client>
       {:else}
         Connect your wallet to get started.
-        <!-- <WalletConnect /> -->
       {/if}
     </div>
   </main>

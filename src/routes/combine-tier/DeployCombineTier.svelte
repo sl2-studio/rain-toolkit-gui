@@ -6,13 +6,10 @@
   import { addressValidate } from "../../validation";
   import Select from "../../components/Select.svelte";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
-  import { CombineTierGenerator, CombineTier } from "rain-sdk";
+  import { CombineTier, CombineTierGenerator } from "rain-sdk";
   import { selectLteLogic, selectLteMode } from "../../utils";
 
-  
-  let tierContractOne: string,
-    tierContractTwo: string,
-    deployPromise: any;
+  let tierContractOne: string, tierContractTwo: string, deployPromise: any;
 
   const logicOptions = [
     { value: selectLteLogic.any, label: "Any" },
@@ -29,13 +26,11 @@
     modeValue: { value: selectLteMode; label: string };
 
   const deployCombineTier = async () => {
-
-    const combineTierConfig = new CombineTierGenerator(tierContractOne)
-      .combine(
-        tierContractTwo,
-        logicValue.value,
-        modeValue.value
-      );
+    const combineTierConfig = new CombineTierGenerator(tierContractOne).combine(
+      tierContractTwo,
+      logicValue.value,
+      modeValue.value
+    );
     const newCombineTier = await CombineTier.deploy($signer, combineTierConfig);
 
     return newCombineTier;

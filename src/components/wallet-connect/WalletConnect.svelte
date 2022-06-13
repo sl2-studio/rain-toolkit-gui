@@ -2,7 +2,7 @@
   import { ethers } from "ethers";
   import { onMount } from "svelte";
   import Web3Modal from "web3modal";
-  import { providerOptions, networks } from "./constants";
+  import { providerOptions, networks } from "../../constants";
   import {
     defaultEvmStores,
     chainId,
@@ -10,9 +10,9 @@
     provider,
     chainData,
   } from "svelte-ethers-store";
-  import User from "./components/User.svelte";
+  import User from "../../components/User.svelte";
   import { selectedNetwork } from "src/stores";
-  import Select from "./components/Select.svelte";
+  import Select from "../../components/Select.svelte";
   import selectNetwork from "./selectNetwork.svelte";
   import { getContext } from "svelte";
 

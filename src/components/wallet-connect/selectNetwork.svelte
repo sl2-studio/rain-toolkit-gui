@@ -7,7 +7,7 @@
     chainId,
     signerAddress,
   } from "svelte-ethers-store";
-  import Select from "./components/Select.svelte";
+  import Select from "../../components/Select.svelte";
 
   export let onNetworkChange = () => {};
   export let library;

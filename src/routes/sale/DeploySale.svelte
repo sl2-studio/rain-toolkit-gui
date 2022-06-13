@@ -47,40 +47,40 @@
   let tierCapMulAddress = "0x859834199ebd4d53750be5588ebb64ad841266aa";
 
   let discountTier1 = 5,
-      discountTier2 = 10,
-      discountTier3 = 15,
-      discountTier4 = 20,
-      discountTier5 = 25,
-      discountTier6 = 30,
-      discountTier7 = 35,
-      discountTier8 = 40;
+    discountTier2 = 10,
+    discountTier3 = 15,
+    discountTier4 = 20,
+    discountTier5 = 25,
+    discountTier6 = 30,
+    discountTier7 = 35,
+    discountTier8 = 40;
 
   let capMulTier1 = 1,
-      capMulTier2 = 1,
-      capMulTier3 = 1,
-      capMulTier4 = 1.2,
-      capMulTier5 = 1.5,
-      capMulTier6 = 2.5,
-      capMulTier7 = 3,
-      capMulTier8 = 6;
+    capMulTier2 = 1,
+    capMulTier3 = 1,
+    capMulTier4 = 1.2,
+    capMulTier5 = 1.5,
+    capMulTier6 = 2.5,
+    capMulTier7 = 3,
+    capMulTier8 = 6;
 
   let discountActTier1 = 5,
-      discountActTier2 = 3,
-      discountActTier3 = 2,
-      discountActTier4 = 1,
-      discountActTier5 = 0.5,
-      discountActTier6 = 0.25,
-      discountActTier7 = 0.125,
-      discountActTier8 = 0.0625;
+    discountActTier2 = 3,
+    discountActTier3 = 2,
+    discountActTier4 = 1,
+    discountActTier5 = 0.5,
+    discountActTier6 = 0.25,
+    discountActTier7 = 0.125,
+    discountActTier8 = 0.0625;
 
   let capMulActTier1 = 5,
-      capMulActTier2 = 3,
-      capMulActTier3 = 2,
-      capMulActTier4 = 1,
-      capMulActTier5 = 0.5,
-      capMulActTier6 = 0.25,
-      capMulActTier7 = 0.125,
-      capMulActTier8 = 0.0625;
+    capMulActTier2 = 3,
+    capMulActTier3 = 2,
+    capMulActTier4 = 1,
+    capMulActTier5 = 0.5,
+    capMulActTier6 = 0.25,
+    capMulActTier7 = 0.125,
+    capMulActTier8 = 0.0625;
 
   const saleOptions = [
     { value: selectSale.fixedPrice, label: "Fixed Price" },
@@ -89,6 +89,7 @@
   ];
 
   let saleType: { value: number; label: string } = null;
+  // let saleType: { value: number; label: string } = { value: selectSale.fixedPrice, label: "Fixed Price" }
   let maxCapCheck = false;
   let minCapCheck = false;
   let canEndCheck = false;
@@ -106,7 +107,7 @@
     endPrice,
     minimumRaise,
     initialSupply,
-  }
+  };
 
   // @TODO write validators
   const defaultValidator = () => {
@@ -120,7 +121,9 @@
   const deploy = async () => {
     const { validationResult, fieldValues } = validateFields(fields);
     let receipt;
-    fieldValues.startTimestamp = Math.floor(raiseRange?.[0].$d.getTime() / 1000);
+    fieldValues.startTimestamp = Math.floor(
+      raiseRange?.[0].$d.getTime() / 1000
+    );
     fieldValues.endTimestamp = Math.floor(raiseRange?.[1].$d.getTime() / 1000);
     fieldValues.reserveErc20 = reserveErc20;
 
@@ -164,910 +167,918 @@
   }
 </script>
 
+<div class="flex w-full gap-x-3">
+  <div class="flex w-2/3 flex-col gap-y-4">
+    <div class="mb-2 flex flex-col gap-y-2">
+      <span class="text-2xl"> Create a new Sale. </span>
+    </div>
 
-{#if saleVals && saleType}
-  <span class="sticky">
     <FormPanel>
-      <SaleSmallSimulationChart
-        saleType={saleType.value}
-        {saleVals}
-        {reserveErc20}
-      />
+      <Select
+        items={saleOptions}
+        bind:value={saleType}
+        on:change={() => {
+          if (saleType.value == 2)
+            document.getElementById("B").style.display = "block";
+          else document.getElementById("B").style.display = "none";
+        }}
+      >
+        <span slot="label"> Select The Sale Type: </span>
+      </Select>
     </FormPanel>
-  </span>
-{/if}
 
-<div class="flex w-3/4 flex-col gap-y-4">
-  <div class="mb-2 flex flex-col gap-y-2">
-    <span class="text-2xl"> Create a new Sale. </span>
-  </div>
+    {#if saleType !== null}
+      <FormPanel heading="Sale config">
+        <Input
+          type="address"
+          bind:this={fields.recipient}
+          bind:value={recipient}
+          validator={defaultValidator}
+        >
+          <span slot="label"> Recipient: </span>
+        </Input>
 
-  <FormPanel>
-    <Select
-      items={saleOptions}
-      bind:value={saleType}
-      on:change={() => {
-        if (saleType.value == 2)
-          document.getElementById("B").style.display = "block";
-        else document.getElementById("B").style.display = "none";
-      }}
-    >
-      <span slot="label"> Select The Sale Type: </span>
-    </Select>
-  </FormPanel>
+        <Input
+          type="address"
+          bind:this={fields.reserve}
+          bind:value={reserve}
+          validator={defaultValidator}
+        >
+          <span slot="label"> Reserve token: </span>
+          <span slot="description">
+            {#if reserveErc20}
+              <div class="flex flex-col gap-y-1">
+                <span>Name: {reserveErc20.erc20name}</span>
+                <span>Symbol: {reserveErc20.erc20symbol}</span>
+                <span>
+                  Your balance: {formatUnits(
+                    reserveErc20.erc20balance,
+                    reserveErc20.erc20decimals.toString()
+                  )}
+                </span>
+              </div>
+            {/if}
+          </span>
+        </Input>
 
-  {#if saleType !== null}
-    <FormPanel heading="Sale config">
-      <Input
-        type="address"
-        bind:this={fields.recipient}
-        bind:value={recipient}
-        validator={defaultValidator}
-      >
-        <span slot="label"> Recipient: </span>
-      </Input>
-
-      <Input
-        type="address"
-        bind:this={fields.reserve}
-        bind:value={reserve}
-        validator={defaultValidator}
-      >
-        <span slot="label"> Reserve token: </span>
-        <span slot="description">
-          {#if reserveErc20}
-            <div class="flex flex-col gap-y-1">
-              <span>Name: {reserveErc20.erc20name}</span>
-              <span>Symbol: {reserveErc20.erc20symbol}</span>
-              <span>
-                Your balance: {formatUnits(
-                  reserveErc20.erc20balance,
-                  reserveErc20.erc20decimals.toString()
-                )}
-              </span>
-            </div>
-          {/if}
+        <span class="z-20 flex w-full flex-col gap-y-3">
+          <span>Raise start/end time</span>
+          <DatePicker
+            styling={new CalendarStyle({ buttonWidth: "100%" })}
+            bind:selected={raiseRange}
+            time={true}
+            range={true}
+            placeholder="Select date/time"
+            format="DD / MM / YYYY hh:mm"
+          />
+          <span />
         </span>
-      </Input>
 
-      <span class="z-20 flex w-full flex-col gap-y-3">
-        <span>Raise start/end time</span>
-        <DatePicker
-          styling={new CalendarStyle({ buttonWidth: "100%" })}
-          bind:selected={raiseRange}
-          time={true}
-          range={true}
-          placeholder="Select date/time"
-          format="DD / MM / YYYY hh:mm"
-        />
-        <span />
-      </span>
-
-      <Input
-        type="number"
-        bind:this={fields.cooldownDuration}
-        bind:value={cooldownDuration}
-        validator={defaultValidator}
-      >
-        <span slot="label"> Cool down duration (in blocks): </span>
-      </Input>
-
-      <Input
-        type="number"
-        bind:this={fields.minimumRaise}
-        bind:value={minimumRaise}
-        validator={defaultValidator}
-      >
-        <span slot="label"> Minimum raise: </span>
-      </Input>
-
-      {#if saleType.value == 0}
         <Input
           type="number"
-          bind:this={fields.startPrice}
-          bind:value={startPrice}
+          bind:this={fields.cooldownDuration}
+          bind:value={cooldownDuration}
           validator={defaultValidator}
         >
-          <span slot="label"> Price: </span>
+          <span slot="label"> Cool down duration (in blocks): </span>
         </Input>
-      {:else}
-        <Input
-          type="number"
-          bind:this={fields.startPrice}
-          bind:value={startPrice}
-          validator={defaultValidator}
-        >
-          <span slot="label"> Start Price: </span>
-        </Input>
-      {/if}
 
-      <div id="B" style="display:block" class="w-full">
         <Input
           type="number"
-          bind:this={fields.endPrice}
-          bind:value={endPrice}
+          bind:this={fields.minimumRaise}
+          bind:value={minimumRaise}
           validator={defaultValidator}
         >
-          <span slot="label"> End Price: </span>
+          <span slot="label"> Minimum raise: </span>
         </Input>
-      </div>
-    </FormPanel>
 
-    <FormPanel>
-      <div>
-        <span>Creator Control:</span>
-        <Switch bind:checked={creatorControlCheck} />
-        <br />
-        <span class="text-gray-400"
-          >If switched off, everyone can start/end the sale once the
-          canEnd/Start criteria of the sale is met.</span
-        >
-        <br />
-        <span class="text-gray-400"
-          >If switched on, only the sale creator can start/end the sale once the
-          canEnd/Start criteria of the sale is met.</span
-        >
-      </div>
-    </FormPanel>
-
-    <FormPanel>
-      <div>
-        <span> Sale Extra Time: </span>
-        <Switch
-          bind:checked={canEndCheck}
-          on:change={() => {
-            if (canEndCheck)
-              document.getElementById("exTime").style.display = "block";
-            else document.getElementById("exTime").style.display = "none";
-          }}
-        />
-        <br />
-        <span class="text-gray-400"
-          >Specify extra time for the sale that can continue for, if the raised
-          amount reaches a certain amount before the sale's normal end time.</span
-        >
-      </div>
-      <div
-        id="exTime"
-        style="display:none"
-        class="flex w-full flex-col gap-y-4"
-      >
-        <Input
-          type="number"
-          bind:this={fields.extraTime}
-          bind:value={extraTime}
-          validator={defaultValidator}
-        >
-          <span slot="label"> Extra Time: </span>
-          <span slot="description">
-            Specify the amount of extra time (in mnutes) you want the raise to
-            run if you have raised X amount before end of the raise.</span
-          >
-        </Input>
-        <br />
-        <Input
-          type="number"
-          bind:this={fields.extraTimeAmount}
-          bind:value={extraTimeAmount}
-          validator={defaultValidator}
-        >
-          <span slot="label"> Extra Time trigger amount: </span>
-          <span slot="description">
-            Specify the amount that needs to be raised before the end of the
-            raise for extra time to get activated.</span
-          >
-        </Input>
-        <br /><br />
-        <span> Extra Time Discount: </span>
-        <Switch
-          bind:checked={extraTimeDiscountCheck}
-          on:change={() => {
-            if (extraTimeDiscountCheck)
-              document.getElementById("exDis").style.display = "block";
-            else document.getElementById("exDis").style.display = "none";
-          }}
-        />
-        <br />
-        <span class="text-gray-400"
-          >Discount on price for wallets that have purchased certain amount of
-          rTKNs during the raise.</span
-        >
-        <br />
-        <div id="exDis" style="display:none">
-          <br />
+        {#if saleType.value == 0}
           <Input
-            type="range"
-            bind:this={fields.extraTimeDiscount}
-            bind:value={extraTimeDiscount}
+            type="number"
+            bind:this={fields.startPrice}
+            bind:value={startPrice}
             validator={defaultValidator}
-            min="0"
-            max="99"
           >
-            <span slot="label"> Discount: {extraTimeDiscount}%</span>
+            <span slot="label"> Price: </span>
+          </Input>
+        {:else}
+          <Input
+            type="number"
+            bind:this={fields.startPrice}
+            bind:value={startPrice}
+            validator={defaultValidator}
+          >
+            <span slot="label"> Start Price: </span>
+          </Input>
+        {/if}
+
+        <div id="B" style="display:block" class="w-full">
+          <Input
+            type="number"
+            bind:this={fields.endPrice}
+            bind:value={endPrice}
+            validator={defaultValidator}
+          >
+            <span slot="label"> End Price: </span>
+          </Input>
+        </div>
+      </FormPanel>
+
+      <FormPanel>
+        <div>
+          <span>Creator Control:</span>
+          <Switch bind:checked={creatorControlCheck} />
+          <br />
+          <span class="text-gray-400"
+            >If switched off, everyone can start/end the sale once the
+            canEnd/Start criteria of the sale is met.</span
+          >
+          <br />
+          <span class="text-gray-400"
+            >If switched on, only the sale creator can start/end the sale once
+            the canEnd/Start criteria of the sale is met.</span
+          >
+        </div>
+      </FormPanel>
+
+      <FormPanel>
+        <div>
+          <span> Sale Extra Time: </span>
+          <Switch
+            bind:checked={canEndCheck}
+            on:change={() => {
+              if (canEndCheck)
+                document.getElementById("exTime").style.display = "block";
+              else document.getElementById("exTime").style.display = "none";
+            }}
+          />
+          <br />
+          <span class="text-gray-400"
+            >Specify extra time for the sale that can continue for, if the
+            raised amount reaches a certain amount before the sale's normal end
+            time.</span
+          >
+        </div>
+        <div
+          id="exTime"
+          style="display:none"
+          class="flex w-full flex-col gap-y-4"
+        >
+          <Input
+            type="number"
+            bind:this={fields.extraTime}
+            bind:value={extraTime}
+            validator={defaultValidator}
+          >
+            <span slot="label"> Extra Time: </span>
+            <span slot="description">
+              Specify the amount of extra time (in mnutes) you want the raise to
+              run if you have raised X amount before end of the raise.</span
+            >
           </Input>
           <br />
           <Input
             type="number"
-            bind:this={fields.extraTimeDiscountThreshold}
-            bind:value={extraTimeDiscountThreshold}
+            bind:this={fields.extraTimeAmount}
+            bind:value={extraTimeAmount}
             validator={defaultValidator}
           >
-            <span slot="label"> Discount Threshold: </span>
+            <span slot="label"> Extra Time trigger amount: </span>
             <span slot="description">
-              Amount that each wallet had to be purchased to be eligible for the
-              extra time discount.</span
+              Specify the amount that needs to be raised before the end of the
+              raise for extra time to get activated.</span
             >
           </Input>
-        </div>
-      </div>
-    </FormPanel>
-
-    <FormPanel>
-      <div>
-        <span>Tier Discount:</span>
-        <Switch
-          bind:checked={tierDiscountCheck}
-          on:change={() => {
-            if (tierDiscountCheck)
-              document.getElementById("tierDis").style.display = "block";
-            else {
-              document.getElementById("tierDis").style.display = "none";
-              tierDiscountActCheck = false;
-            }
-          }}
-        />
-        <br />
-        <span class="text-gray-400"
-          >Discount on price for tiered wallets based on the tier they hold.</span
-        >
-      </div>
-      <div id="tierDis" style="display:none" class="w-full">
-        <br />
-        <Input
-          type="address"
-          bind:this={fields.tierDiscountAddress}
-          bind:value={tierDiscountAddress}
-          validator={defaultValidator}
-        >
-          <span slot="label">Tier Contract Address: </span>
-          <span slot="description">
-            The address of the tier contract you want to provide the price
-            discounts for.
-          </span>
-        </Input>
-        <br /><br />
-        <div class="grid w-full grid-cols-1 items-start">
-          <table>
-            <tr class="grid w-full grid-cols-2 gap-x-4">
-              <td>
-                <span>Tier Discount Perk (percentage)</span><br />
-                <span class="text-gray-400"
-                  >Discount on price for holding a certain teir.</span
-                >
-              </td>
-              <td>
-                <span>Perk Activation Time (day)</span>
-                <Switch bind:checked={tierDiscountActCheck} />
-                <br />
-                <sapn class="text-gray-400"
-                  >Duration of time tier must be held for the perk to activate.</sapn
-                >
-              </td>
-            </tr><br />
-            <tr class="grid w-full grid-cols-2 gap-x-4">
-              <td>
-                <Input
-                  type="range"
-                  bind:this={fields.discountTier1}
-                  bind:value={discountTier1}
-                  validator={defaultValidator}
-                  min="0"
-                  max="99"
-                >
-                  <span slot="description">
-                    Tier 1 Discount: <span style="color:whitesmoke"
-                      >{discountTier1}%</span
-                    ></span
-                  >
-                </Input>
-              </td>
-              <td id="disAct">
-                <Input
-                  type="number"
-                  bind:this={fields.discountActTier1}
-                  bind:value={discountActTier1}
-                  validator={defaultValidator}
-                  disabled={!tierDiscountActCheck}
-                >
-                  <span slot="description"> Tier 1 Duration:</span>
-                </Input>
-              </td>
-            </tr>
-            <tr class="m-top grid w-full grid-cols-2 gap-x-4">
-              <td>
-                <Input
-                  type="range"
-                  bind:this={fields.discountTier2}
-                  bind:value={discountTier2}
-                  validator={defaultValidator}
-                  min="0"
-                  max="99"
-                >
-                  <span slot="description">
-                    Tier 2 Discount: <span style="color:whitesmoke"
-                      >{discountTier2}%</span
-                    ></span
-                  >
-                </Input>
-              </td>
-              <td id="disAct">
-                <Input
-                  type="number"
-                  bind:this={fields.discountActTier2}
-                  bind:value={discountActTier2}
-                  validator={defaultValidator}
-                  disabled={!tierDiscountActCheck}
-                >
-                  <span slot="description"> Tier 2 Duration:</span>
-                </Input>
-              </td>
-            </tr>
-            <tr class="m-top grid w-full grid-cols-2 gap-x-4">
-              <td>
-                <Input
-                  type="range"
-                  bind:this={fields.discountTier3}
-                  bind:value={discountTier3}
-                  validator={defaultValidator}
-                  min="0"
-                  max="99"
-                >
-                  <span slot="description">
-                    Tier 3 Discount: <span style="color:whitesmoke"
-                      >{discountTier3}%</span
-                    ></span
-                  >
-                </Input>
-              </td>
-              <td id="disAct">
-                <Input
-                  type="number"
-                  bind:this={fields.discountActTier3}
-                  bind:value={discountActTier3}
-                  validator={defaultValidator}
-                  disabled={!tierDiscountActCheck}
-                >
-                  <span slot="description"> Tier 3 Duration:</span>
-                </Input>
-              </td>
-            </tr>
-            <tr class="m-top grid w-full grid-cols-2 gap-x-4">
-              <td>
-                <Input
-                  type="range"
-                  bind:this={fields.discountTier4}
-                  bind:value={discountTier4}
-                  validator={defaultValidator}
-                  min="0"
-                  max="99"
-                >
-                  <span slot="description">
-                    Tier 4 Discount: <span style="color:whitesmoke"
-                      >{discountTier4}%</span
-                    ></span
-                  >
-                </Input>
-              </td>
-              <td id="disAct">
-                <Input
-                  type="number"
-                  bind:this={fields.discountActTier4}
-                  bind:value={discountActTier4}
-                  validator={defaultValidator}
-                  disabled={!tierDiscountActCheck}
-                >
-                  <span slot="description"> Tier 4 Duration:</span>
-                </Input>
-              </td>
-            </tr>
-            <tr class="m-top grid w-full grid-cols-2 gap-x-4">
-              <td>
-                <Input
-                  type="range"
-                  bind:this={fields.discountTier5}
-                  bind:value={discountTier5}
-                  validator={defaultValidator}
-                  min="0"
-                  max="99"
-                >
-                  <span slot="description">
-                    Tier 5 Discount: <span style="color:whitesmoke"
-                      >{discountTier5}%</span
-                    ></span
-                  >
-                </Input>
-              </td>
-              <td id="disAct">
-                <Input
-                  type="number"
-                  bind:this={fields.discountActTier5}
-                  bind:value={discountActTier5}
-                  validator={defaultValidator}
-                  disabled={!tierDiscountActCheck}
-                >
-                  <span slot="description"> Tier 5 Duration:</span>
-                </Input>
-              </td>
-            </tr>
-            <tr class="m-top grid w-full grid-cols-2 gap-x-4">
-              <td>
-                <Input
-                  type="range"
-                  bind:this={fields.discountTier6}
-                  bind:value={discountTier6}
-                  validator={defaultValidator}
-                  min="0"
-                  max="99"
-                >
-                  <span slot="description">
-                    Tier 6 Discount: <span style="color:whitesmoke"
-                      >{discountTier6}%</span
-                    ></span
-                  >
-                </Input>
-              </td>
-              <td id="disAct">
-                <Input
-                  type="number"
-                  bind:this={fields.discountActTier6}
-                  bind:value={discountActTier6}
-                  validator={defaultValidator}
-                  disabled={!tierDiscountActCheck}
-                >
-                  <span slot="description"> Tier 6 Duration:</span>
-                </Input>
-              </td>
-            </tr>
-            <tr class="m-top grid w-full grid-cols-2 gap-x-4">
-              <td>
-                <Input
-                  type="range"
-                  bind:this={fields.discountTier7}
-                  bind:value={discountTier7}
-                  validator={defaultValidator}
-                  min="0"
-                  max="99"
-                >
-                  <span slot="description">
-                    Tier 7 Discount: <span style="color:whitesmoke"
-                      >{discountTier7}%</span
-                    ></span
-                  >
-                </Input>
-              </td>
-              <td id="disAct">
-                <Input
-                  type="number"
-                  bind:this={fields.discountActTier7}
-                  bind:value={discountActTier7}
-                  validator={defaultValidator}
-                  disabled={!tierDiscountActCheck}
-                >
-                  <span slot="description"> Tier 7 Duration:</span>
-                </Input>
-              </td>
-            </tr>
-            <tr class="m-top grid w-full grid-cols-2 gap-x-4">
-              <td>
-                <Input
-                  type="range"
-                  bind:this={fields.discountTier8}
-                  bind:value={discountTier8}
-                  validator={defaultValidator}
-                  min="0"
-                  max="99"
-                >
-                  <span slot="description">
-                    Tier 8 Discount: <span style="color:whitesmoke"
-                      >{discountTier8}%</span
-                    ></span
-                  >
-                </Input>
-              </td>
-              <td id="disAct">
-                <Input
-                  type="number"
-                  bind:this={fields.discountActTier8}
-                  bind:value={discountActTier8}
-                  validator={defaultValidator}
-                  disabled={!tierDiscountActCheck}
-                >
-                  <span slot="description"> Tier 8 Duration:</span>
-                </Input>
-              </td>
-            </tr>
-          </table>
-        </div>
-      </div>
-    </FormPanel>
-
-    <FormPanel>
-      <div class="grid w-full grid-cols-1 items-start">
-        <table class="table-fixed">
-          <tr>
-            <td>
-              Max Cap Per Wallet:
-              <Switch bind:checked={maxCapCheck} on:change={MaxCapHandler} />
-            </td>
-          </tr><span class="text-gray-400"
-            >The maximum number of raise tokens purchaseable by each eligible
-            address.</span
-          >
-          <tr>
-            <td id="capMax" style="display:none">
-              <Input
-                type="number"
-                bind:this={fields.maxWalletCap}
-                bind:value={maxWalletCap}
-                validator={defaultValidator}
-              >
-                <span slot="description" />
-              </Input>
-            </td>
-          </tr>
           <br /><br />
-          <tr>
-            <td>
-              Min Cap Per Wallet:
-              <Switch
-                bind:checked={minCapCheck}
-                on:change={() => {
-                  if (minCapCheck) {
-                    document.getElementById("capMin").style.display = "block";
-                  } else
-                    document.getElementById("capMin").style.display = "none";
-                }}
-              />
-            </td>
-          </tr>
+          <span> Extra Time Discount: </span>
+          <Switch
+            bind:checked={extraTimeDiscountCheck}
+            on:change={() => {
+              if (extraTimeDiscountCheck)
+                document.getElementById("exDis").style.display = "block";
+              else document.getElementById("exDis").style.display = "none";
+            }}
+          />
+          <br />
           <span class="text-gray-400"
-            >The minimum number of raise tokens purchaseable by each eligible
-            address.</span
+            >Discount on price for wallets that have purchased certain amount of
+            rTKNs during the raise.</span
           >
-          <tr>
-            <td id="capMin" style="display:none">
-              <Input
-                type="number"
-                bind:this={fields.minWalletCap}
-                bind:value={minWalletCap}
-                validator={defaultValidator}
-              />
-            </td>
-          </tr>
-        </table>
-      </div>
-    </FormPanel>
+          <br />
+          <div id="exDis" style="display:none">
+            <br />
+            <Input
+              type="range"
+              bind:this={fields.extraTimeDiscount}
+              bind:value={extraTimeDiscount}
+              validator={defaultValidator}
+              min="0"
+              max="99"
+            >
+              <span slot="label"> Discount: {extraTimeDiscount}%</span>
+            </Input>
+            <br />
+            <Input
+              type="number"
+              bind:this={fields.extraTimeDiscountThreshold}
+              bind:value={extraTimeDiscountThreshold}
+              validator={defaultValidator}
+            >
+              <span slot="label"> Discount Threshold: </span>
+              <span slot="description">
+                Amount that each wallet had to be purchased to be eligible for
+                the extra time discount.</span
+              >
+            </Input>
+          </div>
+        </div>
+      </FormPanel>
 
-    <FormPanel>
-      <div>
-        <span>Tier Max Cap Per Wallet Multiplier:</span>
-        <Switch
-          bind:checked={tierCapMulCheck}
-          on:change={() => {
-            if (tierCapMulCheck) {
-              document.getElementById("tierCapMul").style.display = "block";
-              maxCapCheck = true;
-              MaxCapHandler();
-            } else {
-              document.getElementById("tierCapMul").style.display = "none";
-              tierCapMulActCheck = false;
-            }
-          }}
-        />
-        <br />
-        <span class="text-gray-400"
-          >Multiplier for Max Cap Per Wallet for tiered wallets based on the
-          tier they hold.</span
-        >
-        <br />
-        <span class="text-gray-400"
-          >*Max Cap Per Wallet must be specified for this tier perk.</span
-        >
-      </div>
-      <div id="tierCapMul" style="display:none" class="w-full">
-        <br />
-        <Input
-          type="address"
-          bind:this={fields.tierCapMulAddress}
-          bind:value={tierCapMulAddress}
-          validator={defaultValidator}
-        >
-          <span slot="label">Tier Contract Address: </span>
-          <span slot="description">
-            The address of the tier contract you want to provide the max wallet
-            cap multiplier for.
-          </span>
-        </Input>
-        <br /><br />
+      <FormPanel>
+        <div>
+          <span>Tier Discount:</span>
+          <Switch
+            bind:checked={tierDiscountCheck}
+            on:change={() => {
+              if (tierDiscountCheck)
+                document.getElementById("tierDis").style.display = "block";
+              else {
+                document.getElementById("tierDis").style.display = "none";
+                tierDiscountActCheck = false;
+              }
+            }}
+          />
+          <br />
+          <span class="text-gray-400"
+            >Discount on price for tiered wallets based on the tier they hold.</span
+          >
+        </div>
+        <div id="tierDis" style="display:none" class="w-full">
+          <br />
+          <Input
+            type="address"
+            bind:this={fields.tierDiscountAddress}
+            bind:value={tierDiscountAddress}
+            validator={defaultValidator}
+          >
+            <span slot="label">Tier Contract Address: </span>
+            <span slot="description">
+              The address of the tier contract you want to provide the price
+              discounts for.
+            </span>
+          </Input>
+          <br /><br />
+          <div class="grid w-full grid-cols-1 items-start">
+            <table>
+              <tr class="grid w-full grid-cols-2 gap-x-4">
+                <td>
+                  <span>Tier Discount Perk (percentage)</span><br />
+                  <span class="text-gray-400"
+                    >Discount on price for holding a certain teir.</span
+                  >
+                </td>
+                <td>
+                  <span>Perk Activation Time (day)</span>
+                  <Switch bind:checked={tierDiscountActCheck} />
+                  <br />
+                  <sapn class="text-gray-400"
+                    >Duration of time tier must be held for the perk to
+                    activate.</sapn
+                  >
+                </td>
+              </tr><br />
+              <tr class="grid w-full grid-cols-2 gap-x-4">
+                <td>
+                  <Input
+                    type="range"
+                    bind:this={fields.discountTier1}
+                    bind:value={discountTier1}
+                    validator={defaultValidator}
+                    min="0"
+                    max="99"
+                  >
+                    <span slot="description">
+                      Tier 1 Discount: <span style="color:whitesmoke"
+                        >{discountTier1}%</span
+                      ></span
+                    >
+                  </Input>
+                </td>
+                <td id="disAct">
+                  <Input
+                    type="number"
+                    bind:this={fields.discountActTier1}
+                    bind:value={discountActTier1}
+                    validator={defaultValidator}
+                    disabled={!tierDiscountActCheck}
+                  >
+                    <span slot="description"> Tier 1 Duration:</span>
+                  </Input>
+                </td>
+              </tr>
+              <tr class="m-top grid w-full grid-cols-2 gap-x-4">
+                <td>
+                  <Input
+                    type="range"
+                    bind:this={fields.discountTier2}
+                    bind:value={discountTier2}
+                    validator={defaultValidator}
+                    min="0"
+                    max="99"
+                  >
+                    <span slot="description">
+                      Tier 2 Discount: <span style="color:whitesmoke"
+                        >{discountTier2}%</span
+                      ></span
+                    >
+                  </Input>
+                </td>
+                <td id="disAct">
+                  <Input
+                    type="number"
+                    bind:this={fields.discountActTier2}
+                    bind:value={discountActTier2}
+                    validator={defaultValidator}
+                    disabled={!tierDiscountActCheck}
+                  >
+                    <span slot="description"> Tier 2 Duration:</span>
+                  </Input>
+                </td>
+              </tr>
+              <tr class="m-top grid w-full grid-cols-2 gap-x-4">
+                <td>
+                  <Input
+                    type="range"
+                    bind:this={fields.discountTier3}
+                    bind:value={discountTier3}
+                    validator={defaultValidator}
+                    min="0"
+                    max="99"
+                  >
+                    <span slot="description">
+                      Tier 3 Discount: <span style="color:whitesmoke"
+                        >{discountTier3}%</span
+                      ></span
+                    >
+                  </Input>
+                </td>
+                <td id="disAct">
+                  <Input
+                    type="number"
+                    bind:this={fields.discountActTier3}
+                    bind:value={discountActTier3}
+                    validator={defaultValidator}
+                    disabled={!tierDiscountActCheck}
+                  >
+                    <span slot="description"> Tier 3 Duration:</span>
+                  </Input>
+                </td>
+              </tr>
+              <tr class="m-top grid w-full grid-cols-2 gap-x-4">
+                <td>
+                  <Input
+                    type="range"
+                    bind:this={fields.discountTier4}
+                    bind:value={discountTier4}
+                    validator={defaultValidator}
+                    min="0"
+                    max="99"
+                  >
+                    <span slot="description">
+                      Tier 4 Discount: <span style="color:whitesmoke"
+                        >{discountTier4}%</span
+                      ></span
+                    >
+                  </Input>
+                </td>
+                <td id="disAct">
+                  <Input
+                    type="number"
+                    bind:this={fields.discountActTier4}
+                    bind:value={discountActTier4}
+                    validator={defaultValidator}
+                    disabled={!tierDiscountActCheck}
+                  >
+                    <span slot="description"> Tier 4 Duration:</span>
+                  </Input>
+                </td>
+              </tr>
+              <tr class="m-top grid w-full grid-cols-2 gap-x-4">
+                <td>
+                  <Input
+                    type="range"
+                    bind:this={fields.discountTier5}
+                    bind:value={discountTier5}
+                    validator={defaultValidator}
+                    min="0"
+                    max="99"
+                  >
+                    <span slot="description">
+                      Tier 5 Discount: <span style="color:whitesmoke"
+                        >{discountTier5}%</span
+                      ></span
+                    >
+                  </Input>
+                </td>
+                <td id="disAct">
+                  <Input
+                    type="number"
+                    bind:this={fields.discountActTier5}
+                    bind:value={discountActTier5}
+                    validator={defaultValidator}
+                    disabled={!tierDiscountActCheck}
+                  >
+                    <span slot="description"> Tier 5 Duration:</span>
+                  </Input>
+                </td>
+              </tr>
+              <tr class="m-top grid w-full grid-cols-2 gap-x-4">
+                <td>
+                  <Input
+                    type="range"
+                    bind:this={fields.discountTier6}
+                    bind:value={discountTier6}
+                    validator={defaultValidator}
+                    min="0"
+                    max="99"
+                  >
+                    <span slot="description">
+                      Tier 6 Discount: <span style="color:whitesmoke"
+                        >{discountTier6}%</span
+                      ></span
+                    >
+                  </Input>
+                </td>
+                <td id="disAct">
+                  <Input
+                    type="number"
+                    bind:this={fields.discountActTier6}
+                    bind:value={discountActTier6}
+                    validator={defaultValidator}
+                    disabled={!tierDiscountActCheck}
+                  >
+                    <span slot="description"> Tier 6 Duration:</span>
+                  </Input>
+                </td>
+              </tr>
+              <tr class="m-top grid w-full grid-cols-2 gap-x-4">
+                <td>
+                  <Input
+                    type="range"
+                    bind:this={fields.discountTier7}
+                    bind:value={discountTier7}
+                    validator={defaultValidator}
+                    min="0"
+                    max="99"
+                  >
+                    <span slot="description">
+                      Tier 7 Discount: <span style="color:whitesmoke"
+                        >{discountTier7}%</span
+                      ></span
+                    >
+                  </Input>
+                </td>
+                <td id="disAct">
+                  <Input
+                    type="number"
+                    bind:this={fields.discountActTier7}
+                    bind:value={discountActTier7}
+                    validator={defaultValidator}
+                    disabled={!tierDiscountActCheck}
+                  >
+                    <span slot="description"> Tier 7 Duration:</span>
+                  </Input>
+                </td>
+              </tr>
+              <tr class="m-top grid w-full grid-cols-2 gap-x-4">
+                <td>
+                  <Input
+                    type="range"
+                    bind:this={fields.discountTier8}
+                    bind:value={discountTier8}
+                    validator={defaultValidator}
+                    min="0"
+                    max="99"
+                  >
+                    <span slot="description">
+                      Tier 8 Discount: <span style="color:whitesmoke"
+                        >{discountTier8}%</span
+                      ></span
+                    >
+                  </Input>
+                </td>
+                <td id="disAct">
+                  <Input
+                    type="number"
+                    bind:this={fields.discountActTier8}
+                    bind:value={discountActTier8}
+                    validator={defaultValidator}
+                    disabled={!tierDiscountActCheck}
+                  >
+                    <span slot="description"> Tier 8 Duration:</span>
+                  </Input>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </FormPanel>
+
+      <FormPanel>
         <div class="grid w-full grid-cols-1 items-start">
-          <table>
-            <tr class="grid w-full grid-cols-2 gap-x-4">
+          <table class="table-fixed">
+            <tr>
               <td>
-                <span>Tier Cap Multiplier Perk (2 decimals max)</span>
-                <br />
-                <span class="text-gray-400"
-                  >Multiplier for max cap per wallet for holding a certain teir.</span
-                >
+                Max Cap Per Wallet:
+                <Switch bind:checked={maxCapCheck} on:change={MaxCapHandler} />
               </td>
-              <td>
-                <span>Perk Activation Period (day)</span>
-                <Switch bind:checked={tierCapMulActCheck} />
-                <br />
-                <sapn class="text-gray-400"
-                  >Duration of time tier must be held for the perk to activate.</sapn
-                >
-              </td>
-            </tr><br />
-            <tr class="grid w-full grid-cols-2 gap-x-4">
-              <td>
+            </tr><span class="text-gray-400"
+              >The maximum number of raise tokens purchaseable by each eligible
+              address.</span
+            >
+            <tr>
+              <td id="capMax" style="display:none">
                 <Input
                   type="number"
-                  bind:this={fields.capMulTier1}
-                  bind:value={capMulTier1}
+                  bind:this={fields.maxWalletCap}
+                  bind:value={maxWalletCap}
                   validator={defaultValidator}
                 >
-                  <span slot="description"> Tier 1 Multiplier:</span>
-                </Input>
-              </td>
-              <td id="disAct">
-                <Input
-                  type="number"
-                  bind:this={fields.capMulActTier1}
-                  bind:value={capMulActTier1}
-                  validator={defaultValidator}
-                  disabled={!tierCapMulActCheck}
-                >
-                  <span slot="description"> Tier 1 Duration:</span>
+                  <span slot="description" />
                 </Input>
               </td>
             </tr>
-            <tr class="m-top grid w-full grid-cols-2 gap-x-4">
+            <br /><br />
+            <tr>
               <td>
-                <Input
-                  type="number"
-                  bind:this={fields.capMulTier2}
-                  bind:value={capMulTier2}
-                  validator={defaultValidator}
-                >
-                  <span slot="description"> Tier 2 Multiplier:</span>
-                </Input>
-              </td>
-              <td id="disAct">
-                <Input
-                  type="number"
-                  bind:this={fields.capMulActTier2}
-                  bind:value={capMulActTier2}
-                  validator={defaultValidator}
-                  disabled={!tierCapMulActCheck}
-                >
-                  <span slot="description"> Tier 2 Duration:</span>
-                </Input>
+                Min Cap Per Wallet:
+                <Switch
+                  bind:checked={minCapCheck}
+                  on:change={() => {
+                    if (minCapCheck) {
+                      document.getElementById("capMin").style.display = "block";
+                    } else
+                      document.getElementById("capMin").style.display = "none";
+                  }}
+                />
               </td>
             </tr>
-            <tr class="m-top grid w-full grid-cols-2 gap-x-4">
-              <td>
+            <span class="text-gray-400"
+              >The minimum number of raise tokens purchaseable by each eligible
+              address.</span
+            >
+            <tr>
+              <td id="capMin" style="display:none">
                 <Input
                   type="number"
-                  bind:this={fields.capMulTier3}
-                  bind:value={capMulTier3}
+                  bind:this={fields.minWalletCap}
+                  bind:value={minWalletCap}
                   validator={defaultValidator}
-                >
-                  <span slot="description"> Tier 3 Multiplier:</span>
-                </Input>
-              </td>
-              <td id="disAct">
-                <Input
-                  type="number"
-                  bind:this={fields.capMulActTier3}
-                  bind:value={capMulActTier3}
-                  validator={defaultValidator}
-                  disabled={!tierCapMulActCheck}
-                >
-                  <span slot="description"> Tier 3 Duration:</span>
-                </Input>
-              </td>
-            </tr>
-            <tr class="m-top grid w-full grid-cols-2 gap-x-4">
-              <td>
-                <Input
-                  type="number"
-                  bind:this={fields.capMulTier4}
-                  bind:value={capMulTier4}
-                  validator={defaultValidator}
-                >
-                  <span slot="description"> Tier 4 Multiplier:</span>
-                </Input>
-              </td>
-              <td id="disAct">
-                <Input
-                  type="number"
-                  bind:this={fields.capMulActTier4}
-                  bind:value={capMulActTier4}
-                  validator={defaultValidator}
-                  disabled={!tierCapMulActCheck}
-                >
-                  <span slot="description"> Tier 4 Duration:</span>
-                </Input>
-              </td>
-            </tr>
-            <tr class="m-top grid w-full grid-cols-2 gap-x-4">
-              <td>
-                <Input
-                  type="number"
-                  bind:this={fields.capMulTier5}
-                  bind:value={capMulTier5}
-                  validator={defaultValidator}
-                >
-                  <span slot="description"> Tier 5 Multiplier:</span>
-                </Input>
-              </td>
-              <td id="disAct">
-                <Input
-                  type="number"
-                  bind:this={fields.capMulActTier5}
-                  bind:value={capMulActTier5}
-                  validator={defaultValidator}
-                  disabled={!tierCapMulActCheck}
-                >
-                  <span slot="description"> Tier 5 Duration:</span>
-                </Input>
-              </td>
-            </tr>
-            <tr class="m-top grid w-full grid-cols-2 gap-x-4">
-              <td>
-                <Input
-                  type="number"
-                  bind:this={fields.capMulTier6}
-                  bind:value={capMulTier6}
-                  validator={defaultValidator}
-                >
-                  <span slot="description"> Tier 6 Multiplier:</span>
-                </Input>
-              </td>
-              <td id="disAct">
-                <Input
-                  type="number"
-                  bind:this={fields.capMulActTier6}
-                  bind:value={capMulActTier6}
-                  validator={defaultValidator}
-                  disabled={!tierCapMulActCheck}
-                >
-                  <span slot="description"> Tier 6 Duration:</span>
-                </Input>
-              </td>
-            </tr>
-            <tr class="m-top grid w-full grid-cols-2 gap-x-4">
-              <td>
-                <Input
-                  type="number"
-                  bind:this={fields.capMulTier7}
-                  bind:value={capMulTier7}
-                  validator={defaultValidator}
-                >
-                  <span slot="description"> Tier 7 Multiplier:</span>
-                </Input>
-              </td>
-              <td id="disAct">
-                <Input
-                  type="number"
-                  bind:this={fields.capMulActTier7}
-                  bind:value={capMulActTier7}
-                  validator={defaultValidator}
-                  disabled={!tierCapMulActCheck}
-                >
-                  <span slot="description"> Tier 7 Duration:</span>
-                </Input>
-              </td>
-            </tr>
-            <tr class="m-top grid w-full grid-cols-2 gap-x-4">
-              <td>
-                <Input
-                  type="number"
-                  bind:this={fields.capMulTier8}
-                  bind:value={capMulTier8}
-                  validator={defaultValidator}
-                >
-                  <span slot="description"> Tier 8 Multiplier:</span>
-                </Input>
-              </td>
-              <td id="disAct">
-                <Input
-                  type="number"
-                  bind:this={fields.capMulActTier8}
-                  bind:value={capMulActTier8}
-                  validator={defaultValidator}
-                  disabled={!tierCapMulActCheck}
-                >
-                  <span slot="description"> Tier 8 Duration:</span>
-                </Input>
+                />
               </td>
             </tr>
           </table>
         </div>
-      </div>
-    </FormPanel>
+      </FormPanel>
 
-    <FormPanel heading="RedeemableERC20 config">
-      <Input
-        type="text"
-        bind:this={fields.name}
-        bind:value={name}
-        validator={defaultValidator}
-      >
-        <span slot="label"> Name: </span>
-      </Input>
+      <FormPanel>
+        <div>
+          <span>Tier Max Cap Per Wallet Multiplier:</span>
+          <Switch
+            bind:checked={tierCapMulCheck}
+            on:change={() => {
+              if (tierCapMulCheck) {
+                document.getElementById("tierCapMul").style.display = "block";
+                maxCapCheck = true;
+                MaxCapHandler();
+              } else {
+                document.getElementById("tierCapMul").style.display = "none";
+                tierCapMulActCheck = false;
+              }
+            }}
+          />
+          <br />
+          <span class="text-gray-400"
+            >Multiplier for Max Cap Per Wallet for tiered wallets based on the
+            tier they hold.</span
+          >
+          <br />
+          <span class="text-gray-400"
+            >*Max Cap Per Wallet must be specified for this tier perk.</span
+          >
+        </div>
+        <div id="tierCapMul" style="display:none" class="w-full">
+          <br />
+          <Input
+            type="address"
+            bind:this={fields.tierCapMulAddress}
+            bind:value={tierCapMulAddress}
+            validator={defaultValidator}
+          >
+            <span slot="label">Tier Contract Address: </span>
+            <span slot="description">
+              The address of the tier contract you want to provide the max
+              wallet cap multiplier for.
+            </span>
+          </Input>
+          <br /><br />
+          <div class="grid w-full grid-cols-1 items-start">
+            <table>
+              <tr class="grid w-full grid-cols-2 gap-x-4">
+                <td>
+                  <span>Tier Cap Multiplier Perk (2 decimals max)</span>
+                  <br />
+                  <span class="text-gray-400"
+                    >Multiplier for max cap per wallet for holding a certain
+                    teir.</span
+                  >
+                </td>
+                <td>
+                  <span>Perk Activation Period (day)</span>
+                  <Switch bind:checked={tierCapMulActCheck} />
+                  <br />
+                  <sapn class="text-gray-400"
+                    >Duration of time tier must be held for the perk to
+                    activate.</sapn
+                  >
+                </td>
+              </tr><br />
+              <tr class="grid w-full grid-cols-2 gap-x-4">
+                <td>
+                  <Input
+                    type="number"
+                    bind:this={fields.capMulTier1}
+                    bind:value={capMulTier1}
+                    validator={defaultValidator}
+                  >
+                    <span slot="description"> Tier 1 Multiplier:</span>
+                  </Input>
+                </td>
+                <td id="disAct">
+                  <Input
+                    type="number"
+                    bind:this={fields.capMulActTier1}
+                    bind:value={capMulActTier1}
+                    validator={defaultValidator}
+                    disabled={!tierCapMulActCheck}
+                  >
+                    <span slot="description"> Tier 1 Duration:</span>
+                  </Input>
+                </td>
+              </tr>
+              <tr class="m-top grid w-full grid-cols-2 gap-x-4">
+                <td>
+                  <Input
+                    type="number"
+                    bind:this={fields.capMulTier2}
+                    bind:value={capMulTier2}
+                    validator={defaultValidator}
+                  >
+                    <span slot="description"> Tier 2 Multiplier:</span>
+                  </Input>
+                </td>
+                <td id="disAct">
+                  <Input
+                    type="number"
+                    bind:this={fields.capMulActTier2}
+                    bind:value={capMulActTier2}
+                    validator={defaultValidator}
+                    disabled={!tierCapMulActCheck}
+                  >
+                    <span slot="description"> Tier 2 Duration:</span>
+                  </Input>
+                </td>
+              </tr>
+              <tr class="m-top grid w-full grid-cols-2 gap-x-4">
+                <td>
+                  <Input
+                    type="number"
+                    bind:this={fields.capMulTier3}
+                    bind:value={capMulTier3}
+                    validator={defaultValidator}
+                  >
+                    <span slot="description"> Tier 3 Multiplier:</span>
+                  </Input>
+                </td>
+                <td id="disAct">
+                  <Input
+                    type="number"
+                    bind:this={fields.capMulActTier3}
+                    bind:value={capMulActTier3}
+                    validator={defaultValidator}
+                    disabled={!tierCapMulActCheck}
+                  >
+                    <span slot="description"> Tier 3 Duration:</span>
+                  </Input>
+                </td>
+              </tr>
+              <tr class="m-top grid w-full grid-cols-2 gap-x-4">
+                <td>
+                  <Input
+                    type="number"
+                    bind:this={fields.capMulTier4}
+                    bind:value={capMulTier4}
+                    validator={defaultValidator}
+                  >
+                    <span slot="description"> Tier 4 Multiplier:</span>
+                  </Input>
+                </td>
+                <td id="disAct">
+                  <Input
+                    type="number"
+                    bind:this={fields.capMulActTier4}
+                    bind:value={capMulActTier4}
+                    validator={defaultValidator}
+                    disabled={!tierCapMulActCheck}
+                  >
+                    <span slot="description"> Tier 4 Duration:</span>
+                  </Input>
+                </td>
+              </tr>
+              <tr class="m-top grid w-full grid-cols-2 gap-x-4">
+                <td>
+                  <Input
+                    type="number"
+                    bind:this={fields.capMulTier5}
+                    bind:value={capMulTier5}
+                    validator={defaultValidator}
+                  >
+                    <span slot="description"> Tier 5 Multiplier:</span>
+                  </Input>
+                </td>
+                <td id="disAct">
+                  <Input
+                    type="number"
+                    bind:this={fields.capMulActTier5}
+                    bind:value={capMulActTier5}
+                    validator={defaultValidator}
+                    disabled={!tierCapMulActCheck}
+                  >
+                    <span slot="description"> Tier 5 Duration:</span>
+                  </Input>
+                </td>
+              </tr>
+              <tr class="m-top grid w-full grid-cols-2 gap-x-4">
+                <td>
+                  <Input
+                    type="number"
+                    bind:this={fields.capMulTier6}
+                    bind:value={capMulTier6}
+                    validator={defaultValidator}
+                  >
+                    <span slot="description"> Tier 6 Multiplier:</span>
+                  </Input>
+                </td>
+                <td id="disAct">
+                  <Input
+                    type="number"
+                    bind:this={fields.capMulActTier6}
+                    bind:value={capMulActTier6}
+                    validator={defaultValidator}
+                    disabled={!tierCapMulActCheck}
+                  >
+                    <span slot="description"> Tier 6 Duration:</span>
+                  </Input>
+                </td>
+              </tr>
+              <tr class="m-top grid w-full grid-cols-2 gap-x-4">
+                <td>
+                  <Input
+                    type="number"
+                    bind:this={fields.capMulTier7}
+                    bind:value={capMulTier7}
+                    validator={defaultValidator}
+                  >
+                    <span slot="description"> Tier 7 Multiplier:</span>
+                  </Input>
+                </td>
+                <td id="disAct">
+                  <Input
+                    type="number"
+                    bind:this={fields.capMulActTier7}
+                    bind:value={capMulActTier7}
+                    validator={defaultValidator}
+                    disabled={!tierCapMulActCheck}
+                  >
+                    <span slot="description"> Tier 7 Duration:</span>
+                  </Input>
+                </td>
+              </tr>
+              <tr class="m-top grid w-full grid-cols-2 gap-x-4">
+                <td>
+                  <Input
+                    type="number"
+                    bind:this={fields.capMulTier8}
+                    bind:value={capMulTier8}
+                    validator={defaultValidator}
+                  >
+                    <span slot="description"> Tier 8 Multiplier:</span>
+                  </Input>
+                </td>
+                <td id="disAct">
+                  <Input
+                    type="number"
+                    bind:this={fields.capMulActTier8}
+                    bind:value={capMulActTier8}
+                    validator={defaultValidator}
+                    disabled={!tierCapMulActCheck}
+                  >
+                    <span slot="description"> Tier 8 Duration:</span>
+                  </Input>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </FormPanel>
 
-      <Input
-        type="text"
-        bind:this={fields.symbol}
-        bind:value={symbol}
-        validator={defaultValidator}
-      >
-        <span slot="label"> Symbol: </span>
-      </Input>
+      <FormPanel heading="RedeemableERC20 config">
+        <Input
+          type="text"
+          bind:this={fields.name}
+          bind:value={name}
+          validator={defaultValidator}
+        >
+          <span slot="label"> Name: </span>
+        </Input>
 
-      <Input
-        type="number"
-        bind:this={fields.initialSupply}
-        bind:value={initialSupply}
-        validator={defaultValidator}
-      >
-        <span slot="label"> Initial supply: </span>
-      </Input>
+        <Input
+          type="text"
+          bind:this={fields.symbol}
+          bind:value={symbol}
+          validator={defaultValidator}
+        >
+          <span slot="label"> Symbol: </span>
+        </Input>
 
-      <Input
-        type="address"
-        bind:this={fields.distributionEndForwardingAddress}
-        bind:value={distributionEndForwardingAddress}
-        validator={defaultValidator}
-      >
-        <span slot="label">Forwarding address: </span>
-        <span slot="description">
-          If set to anything other than the zero address, all unsold rTKN will
-          be forwarded to this address at the end of the raise. If the minimum
-          raise is 0, this must be set to something other than the zero address.
-        </span>
-      </Input>
+        <Input
+          type="number"
+          bind:this={fields.initialSupply}
+          bind:value={initialSupply}
+          validator={defaultValidator}
+        >
+          <span slot="label"> Initial supply: </span>
+        </Input>
 
-      <Input
-        type="address"
-        bind:this={fields.tier}
-        bind:value={tier}
-        validator={defaultValidator}
-      >
-        <span slot="label"> Tier: </span>
-        <span slot="description">
-          The address of a Tier contract to gate with.
-        </span>
-      </Input>
+        <Input
+          type="address"
+          bind:this={fields.distributionEndForwardingAddress}
+          bind:value={distributionEndForwardingAddress}
+          validator={defaultValidator}
+        >
+          <span slot="label">Forwarding address: </span>
+          <span slot="description">
+            If set to anything other than the zero address, all unsold rTKN will
+            be forwarded to this address at the end of the raise. If the minimum
+            raise is 0, this must be set to something other than the zero
+            address.
+          </span>
+        </Input>
 
-      <Input
-        type="number"
-        bind:this={fields.minimumStatus}
-        bind:value={minimumStatus}
-        validator={defaultValidator}
-      >
-        <span slot="label"> Minimum Status: </span>
-      </Input>
-    </FormPanel>
+        <Input
+          type="address"
+          bind:this={fields.tier}
+          bind:value={tier}
+          validator={defaultValidator}
+        >
+          <span slot="label"> Tier: </span>
+          <span slot="description">
+            The address of a Tier contract to gate with.
+          </span>
+        </Input>
 
-    <FormPanel>
-      {#if !deployPromise}
-        <Button shrink on:click={handleClick}>Deploy Sale</Button>
-      {:else}
-        <ContractDeploy {deployPromise} type="Sale" />
-      {/if}
-    </FormPanel>
+        <Input
+          type="number"
+          bind:this={fields.minimumStatus}
+          bind:value={minimumStatus}
+          validator={defaultValidator}
+        >
+          <span slot="label"> Minimum Status: </span>
+        </Input>
+      </FormPanel>
+
+      <FormPanel>
+        {#if !deployPromise}
+          <Button shrink on:click={handleClick}>Deploy Sale</Button>
+        {:else}
+          <ContractDeploy {deployPromise} type="Sale" />
+        {/if}
+      </FormPanel>
+    {/if}
+  </div>
+
+  {#if saleVals && saleType}
+    <div class="flex w-1/3 flex-col gap-y-4">
+      <span class="sticky">
+        <FormPanel>
+          <SaleSmallSimulationChart
+            saleType={saleType.value}
+            {saleVals}
+            {reserveErc20}
+          />
+        </FormPanel>
+      </span>
+    </div>
   {/if}
 </div>
 
@@ -1075,12 +1086,12 @@
   .m-top {
     margin-top: 15px;
   }
-  
+
   span.sticky {
     margin-top: 52px;
     float: right;
     position: sticky;
     top: 90px;
     padding: 5px;
-}
+  }
 </style>

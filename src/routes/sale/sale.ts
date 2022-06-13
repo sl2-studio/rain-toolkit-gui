@@ -58,7 +58,7 @@ export const getAfterTimestamp = (stateConfig, i) => {
 export const saleStatuses = ["Pending", "Active", "Success", "Fail"];
 
 
-function canEndConfig(config: SaleParams, deployerAddress: string) {
+export function canEndConfig(config: SaleParams, deployerAddress: string) {
 
   const _saleTime_ = new SaleDurationInTimestamp(config.inputValues.endTimestamp)
 
@@ -90,7 +90,7 @@ function canEndConfig(config: SaleParams, deployerAddress: string) {
 }
 
 
-function calculatePriceConfig(config: SaleParams) {
+export function calculatePriceConfig(config: SaleParams) {
 
   const saleSelector = () : PriceCurve => {
 

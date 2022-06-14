@@ -77,7 +77,7 @@
       <SidebarLink url="/verify/administer/">Administer a Verify</SidebarLink>
     </SidebarLinkGroup>
 
-    <SidebarLinkGroup label="TransferTier" url="/erc20transfertier/*">
+    <!-- <SidebarLinkGroup label="TransferTier" url="/erc20transfertier/*">
       <SidebarLink url="/erc20transfertier/deploy"
         >Deploy a ERC20TransferTier</SidebarLink
       >
@@ -89,6 +89,6 @@
       <SidebarLink url="/erc20transfertier/list">
         Browse deployed ERC20TransferTiers
       </SidebarLink>
-    </SidebarLinkGroup>
+    </SidebarLinkGroup> -->
   </div>
 </div>

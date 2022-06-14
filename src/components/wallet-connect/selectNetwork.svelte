@@ -1,6 +1,6 @@
 <script>
-  import { networks } from "src/constants";
-  import { selectedNetwork } from "src/stores";
+  import { networks } from "../../constants";
+  import { selectedNetwork } from "../../stores";
   import { getContext } from "svelte";
   import {
     defaultEvmStores,

@@ -1,15 +1,8 @@
 <script lang="ts">
   import { ethers } from "ethers";
-  import { onMount } from "svelte";
   import Web3Modal from "web3modal";
-  import { providerOptions, networks } from "../../constants";
-  import {
-    defaultEvmStores,
-    chainId,
-    signerAddress,
-    provider,
-    chainData,
-  } from "svelte-ethers-store";
+  import { providerOptions } from "../../constants";
+  import { defaultEvmStores, signerAddress } from "svelte-ethers-store";
   import User from "../../components/User.svelte";
   import { selectedNetwork } from "src/stores";
   import Select from "../../components/Select.svelte";
@@ -20,9 +13,6 @@
 
   let providers,
     library,
-    account,
-    signature,
-    error,
     networkName,
     changedName = false;
 

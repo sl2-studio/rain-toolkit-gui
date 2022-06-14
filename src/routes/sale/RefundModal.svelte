@@ -1,12 +1,12 @@
 <script lang="ts">
   import { signer } from "svelte-ethers-store";
   import { formatUnits } from "ethers/lib/utils";
-  import Button from "components/Button.svelte";
-  import Steps from "components/steps/Steps.svelte";
-  import Ring from "components/Ring.svelte";
-  import { BigNumber, ethers } from "ethers";
-  import ReserveTokenArtifact from "abis/ReserveToken.json";
+  import Button from "../../components/Button.svelte";
+  import Steps from "../../components/steps/Steps.svelte";
+  import Ring from "../../components/Ring.svelte";
+  import { BigNumber } from "ethers";
   import { selectedNetwork } from "src/stores";
+  import { ERC20 } from "rain-sdk";
 
   enum TxStatus {
     None,
@@ -34,11 +34,7 @@
   const receipt = transaction.receipt;
 
   const approve = async () => {
-    const rTKN = new ethers.Contract(
-      token.id,
-      ReserveTokenArtifact.abi,
-      $signer
-    );
+    const rTKN = new ERC20(token.id, $signer);
 
     let tx;
     txStatus = TxStatus.AwaitingSignature;
@@ -93,7 +89,6 @@
 {#if txStatus == TxStatus.None}
   <div class="flex w-600 flex-col items-start gap-y-7">
     <span class="text-xl font-bold">Refund</span>
-
     <Steps
       steps={["Approve", "Confirm", "Complete"]}
       {activeStep}

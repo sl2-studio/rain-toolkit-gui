@@ -1,12 +1,13 @@
 <script lang="ts">
-  import { signerAddress } from "svelte-ethers-store";
+  import { signerAddress, signer } from "svelte-ethers-store";
   import { ethers } from "ethers";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
   import Button from "../../components/Button.svelte";
   import { tierReport } from "../../utils";
   import { push } from "svelte-spa-router";
-  import { init721BalanceTier } from "./erc721-balance-tier";
+  import { operationStore, query } from "@urql/svelte";
+  import { ERC721BalanceTier, ERC721 } from "rain-sdk";
 
   export let params;
 
@@ -22,21 +23,66 @@
     addressBalance,
     balanceTierAddress;
 
+  const balanceTier = operationStore(
+    ` 
+    query ($balanceTierAddress: Bytes!)  {
+  erc721BalanceTiers (where: {id: $balanceTierAddress})  {
+    id
+    address
+    deployBlock
+    deployTimestamp
+    deployer
+    token {
+      id
+      name
+      symbol
+    }
+    tierValues
+  }
+}
+`,
+    { balanceTierAddress },
+    {
+      pause: true,
+      requestPolicy: "network-only",
+    }
+  );
+
+  query(balanceTier);
+
   $: if (params.wild) {
+    runQuery();
+  }
+  const runQuery = () => {
+    $balanceTier.variables.balanceTierAddress = params.wild.toLowerCase();
+    $balanceTier.context.pause = false;
+    $balanceTier.reexecute();
+  };
+
+  $: _balanceTier = $balanceTier.data?.erc721BalanceTiers[0];
+
+  $: if (_balanceTier) {
     initContract();
   }
+
   const initContract = async () => {
     if (ethers.utils.isAddress(params.wild)) {
-      // setting up the balance tier contract
-      ({
-        balanceTierContract,
-        tierValues,
-        errorMsg,
-        erc721Contract,
-        erc721Name,
-        erc721Address,
-        erc721Symbol,
-      } = await init721BalanceTier(params.wild));
+      balanceTierContract = new ERC721BalanceTier(
+        _balanceTier.address,
+        $signer,
+        _balanceTier.token.id
+      );
+      try {
+        tierValues = await balanceTierContract.tierValues();
+      } catch (error) {
+        errorMsg = "Not a valid BalanceTier address";
+        return;
+      }
+
+      erc721Contract = new ERC721(_balanceTier.token.id, $signer);
+      erc721Name = await erc721Contract.name();
+      erc721Address = erc721Contract.address;
+      erc721Symbol = await erc721Contract.symbol();
     } else if (params.wild) {
       errorMsg = "Not a valid BalanceTier address";
     }

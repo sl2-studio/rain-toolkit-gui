@@ -1,11 +1,18 @@
 <script lang="ts">
   import { getContext, onMount } from "svelte";
-  import { TxStatus } from "src/types";
   import Ring from "./Ring.svelte";
   import { selectedNetwork } from "src/stores";
   import { ContractReceipt } from "ethers";
   import Button from "./Button.svelte";
 
+  enum TxStatus {
+    None,
+    AwaitingSignature,
+    AwaitingConfirmation,
+    Error,
+    Confirmed
+  }
+  
   const { close } = getContext("simple-modal");
 
   export let method: Function;

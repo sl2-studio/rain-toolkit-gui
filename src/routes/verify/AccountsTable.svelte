@@ -101,7 +101,10 @@
             </td>
             <td class="py-2 text-right w-36">
               <OverflowMenu>
-                {#if (verifyAddress.status !== VerifyStatuses.APPROVED && verifyAddress.status !== VerifyStatuses.BANNED) || verifyAddress.requestStatus == VerifyStatuses.APPROVED}
+                {#if 
+                  (verifyAddress.status !== VerifyStatuses.APPROVED && verifyAddress.status !== VerifyStatuses.BANNED) || 
+                  verifyAddress.requestStatus == VerifyStatuses.APPROVED
+                }
                   <OverFlowMenuItem
                     on:click={() => {
                       handleApprove(verifyAddress.address);

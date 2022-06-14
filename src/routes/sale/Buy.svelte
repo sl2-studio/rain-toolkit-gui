@@ -1,8 +1,8 @@
 <script lang="ts">
   import { BigNumber, Contract, ethers } from "ethers";
   import { signer, signerAddress } from "svelte-ethers-store";
-  import Button from "components/Button.svelte";
-  import FormPanel from "components/FormPanel.svelte";
+  import Button from "../../components/Button.svelte";
+  import FormPanel from "../../components/FormPanel.svelte";
   import { getContext, onMount } from "svelte";
   import BuyModal from "./BuyModal.svelte";
   import ApproveModal from "./ApproveModal.svelte";

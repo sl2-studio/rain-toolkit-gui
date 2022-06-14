@@ -1,7 +1,7 @@
 <script lang="ts">
-  import Button from "components/Button.svelte";
-  import Steps from "components/steps/Steps.svelte";
-  import Ring from "components/Ring.svelte";
+  import Button from "../../components/Button.svelte";
+  import Steps from "../../components/steps/Steps.svelte";
+  import Ring from "../../components/Ring.svelte";
   import { ethers } from "ethers";
   import { getContext } from "svelte";
   import { selectedNetwork } from "src/stores";

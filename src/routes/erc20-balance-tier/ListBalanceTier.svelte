@@ -1,6 +1,5 @@
 <script>
   import { BigNumber, ethers } from "ethers";
-
   import { formatUnits } from "ethers/lib/utils";
   import { push } from "svelte-spa-router";
   import Button from "../../components/Button.svelte";

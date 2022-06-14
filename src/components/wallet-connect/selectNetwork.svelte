@@ -1,46 +1,51 @@
 <script>
-  import { networks } from "src/constants";
-  import { selectedNetwork } from "src/stores";
+  import { networks } from "../../constants";
+  import { selectedNetwork } from "../../stores";
   import { getContext } from "svelte";
   import {
     defaultEvmStores,
     chainId,
     signerAddress,
   } from "svelte-ethers-store";
-  import Select from "./Select.svelte";
+  import Select from "../../components/Select.svelte";
+
+  export let onNetworkChange = () => {};
+  export let library;
+  let name;
 
   const { close } = getContext("simple-modal");
 
   const handleClick = async () => {
     await switchNetwork($selectedNetwork);
-    defaultEvmStores.setProvider();
+    onNetworkChange(name);
     close();
   };
 
-  $: if ($chainId) {
-    // set the provider again if the connected network changes
-    defaultEvmStores.setProvider();
-  }
-
   const switchNetwork = async (network) => {
     try {
-      await window.ethereum.request({
+      // await window.ethereum.request({
+      await library.provider.request({
         method: "wallet_switchEthereumChain",
         params: [{ chainId: network.config.chainId }],
       });
+      defaultEvmStores.setProvider();
+      name = network.config.chainName;
     } catch (switchError) {
       // This error code indicates that the chain has not been added to MetaMask.
       if (switchError.code === 4902) {
         try {
-          await window.ethereum.request({
+          // await window.ethereum.request({
+          await library.provider.request({
             method: "wallet_addEthereumChain",
             params: [network.config],
           });
-        } catch (addError) {
-          // handle "add" error
-        }
+          defaultEvmStores.setProvider();
+          name = network.config.chainName;
+        } catch (addError) {}
       }
-      // handle other "switch" errors
+      if (switchError.code === 4001) {
+        defaultEvmStores.disconnect();
+      }
     }
   };
 </script>

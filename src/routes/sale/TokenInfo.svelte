@@ -1,6 +1,5 @@
 <script lang="ts">
   import DisplayAddress from "./../../components/DisplayAddress.svelte";
-  import ReserveTokenArtifact from "abis/ReserveToken.json";
   import { BigNumberish, Contract, ethers, Signer } from "ethers";
   import { formatUnits } from "ethers/lib/utils";
   import { Writable } from "svelte/store";
@@ -8,6 +7,7 @@
   import { SvelteComponent } from "svelte";
   import IconLibrary from "src/components/IconLibrary.svelte";
   import { copyToClipboard } from "src/utils";
+  import { ERC20 } from "rain-sdk";
 
   interface TokenData {
     id: string;
@@ -17,21 +17,19 @@
     totalSupply: string;
   }
 
-  export let tokenData: TokenData;
+  export let tokenData;
   export let signer: Writable<Signer> | undefined = undefined;
-  export let token: Contract | undefined = undefined;
+  export let token: ERC20 | undefined = undefined;
 
   let balancePromise: Promise<BigNumberish>;
   let tooltip: SvelteComponent;
 
-  const checkBalance = async (token: Contract): Promise<BigNumberish> => {
-    return await token.balanceOf($signer.getAddress());
+  const checkBalance = async (token: ERC20): Promise<BigNumberish> => {
+    return await token.balanceOf(await $signer.getAddress());
   };
 
   $: if ($signer) {
-    token =
-      token ||
-      new ethers.Contract(tokenData.id, ReserveTokenArtifact.abi, $signer);
+    token = token || new ERC20(tokenData.id, $signer);
     balancePromise = checkBalance(token);
   }
 </script>

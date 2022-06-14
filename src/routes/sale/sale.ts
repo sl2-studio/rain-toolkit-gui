@@ -1,155 +1,365 @@
-import { BigNumber, Contract, ethers, Signer } from "ethers";
-import { SaleConfig, SaleRedeemableERC20Config } from "../../types";
-import { getNewChildFromReceipt, op } from "../../utils";
-import SaleFactoryArtifact from "../../abis/SaleFactory.json";
-import SaleArtifact from "../../abis/Sale.json";
-import RedeemableERC20Artifact from "../../abis/RedeemableERC20.json";
-import ReserveTokenArtifact from "../../abis/ReserveToken.json";
-import { concat } from "ethers/lib/utils";
-import { selectedNetwork } from "src/stores";
-import { get } from "svelte/store";
+import { ethers, Signer } from "ethers";;
+import { parseUnits } from "ethers/lib/utils";
+import { 
+  Sale,
+  PriceCurve,
+  FixedPrice,
+  vLBP,
+  IncreasingPrice,
+  SaleDurationInTimestamp
+} from 'rain-sdk'
 
-export const enum Opcode {
-  SKIP,
-  VAL,
-  DUP,
-  ZIPMAP,
-  BLOCK_NUMBER,
-  BLOCK_TIMESTAMP,
-  SENDER,
-  IS_ZERO,
-  EAGER_IF,
-  EQUAL_TO,
-  LESS_THAN,
-  GREATER_THAN,
-  EVERY,
-  ANY,
-  ADD,
-  SUB,
-  MUL,
-  DIV,
-  MOD,
-  POW,
-  MIN,
-  MAX,
-  REPORT,
-  NEVER,
-  ALWAYS,
-  SATURATING_DIFF,
-  UPDATE_BLOCKS_FOR_TIER_RANGE,
-  SELECT_LTE,
-  ERC20_BALANCE_OF,
-  ERC20_TOTAL_SUPPLY,
-  ERC721_BALANCE_OF,
-  ERC721_OWNER_OF,
-  ERC1155_BALANCE_OF,
-  ERC1155_BALANCE_OF_BATCH,
-  REMAINING_UNITS,
-  TOTAL_RESERVE_IN,
-  LAST_BUY_BLOCK,
-  LAST_BUY_UNITS,
-  LAST_BUY_PRICE,
-  CURRENT_BUY_UNITS,
-  TOKEN_ADDRESS,
-  RESERVE_ADDRESS,
-}
 
-export type BuyConfig = {
-  feeRecipient: string;
-  fee: BigNumber;
-  minimumUnits: BigNumber;
-  desiredUnits: BigNumber;
-  maximumPrice: BigNumber;
+export enum selectSale {
+  fixedPrice,
+  vLBP,
+  increasingPrice,
 };
 
-export interface SaleTokenData {
-  id: string;
-  token: {
-    id: string,
-    name: string,
-    symbols: string,
-    decimals: string,
-  };
-  reserve: {
-    id: string,
-    name: string,
-    symbols: string,
-    decimals: string,
-  }
-}
-
-export const initSaleContracts = (saleData: SaleTokenData, signer: Signer) => {
-  const sale = new ethers.Contract(saleData.id, SaleArtifact.abi, signer);
-  const reserve = new ethers.Contract(saleData.reserve.id, ReserveTokenArtifact.abi, signer);
-  const token = new ethers.Contract(saleData.token.id, ReserveTokenArtifact.abi, signer);
-  return [sale, reserve, token];
+export type SaleParams = {
+  inputValues: any;
+  saleType: number;
+  maxCapMode: boolean;
+  minCapMode: boolean;
+  canEndMode: boolean;
+  extraTimeDiscountMode: boolean;
+  tierDiscountMode: boolean;
+  tierDiscountActMode: boolean;
+  tierCapMulMode: boolean;
+  tierCapMulActMode: boolean;
+  creatorControlMode: boolean;
 };
 
-export const saleDeploy = async (
-  deployer: Signer,
-  config: SaleConfig,
-  saleRedeemableERC20Config: SaleRedeemableERC20Config,
-  ...args
-): Promise<Contract> => {
+export const getAfterTimestampDate = (stateConfig, i) => {
+  if (stateConfig.sources[0] ===
+    "0x0100" ||
+    "0x060001001f00" ||
+    "0x010107001d00060001001f0001021c00" ||
+    "0x060001001f002f0001021e002002060001011f002102" ||
+    "0x010307001d00060001001f002f0001021e002002060001011f00210201041c00") {
 
-  const saleFactory = new ethers.Contract(
-    get(selectedNetwork).addresses.SALE_FACTORY,
-    SaleFactoryArtifact.abi,
-    deployer
-  );
-  const txDeploy = await saleFactory.createChildTyped(
-    config,
-    saleRedeemableERC20Config,
-    ...args
-  );
-  const receipt = await txDeploy.wait();
-
-  return receipt;
-};
-
-export const afterBlockNumberConfig = (blockNumber) => {
-  return {
-    sources: [
-      concat([
-        // (BLOCK_NUMBER blockNumberSub1 gt)
-        op(Opcode.BLOCK_NUMBER),
-        op(Opcode.VAL, 0),
-        op(Opcode.GREATER_THAN),
-      ]),
-    ],
-    constants: [blockNumber - 1],
-    stackLength: 3,
-    argumentsLength: 0,
-  };
-};
-
-export const afterTimestampConfig = (timestamp) => {
-  return {
-    sources: [
-      concat([
-        // (BLOCK_NUMBER blockNumberSub1 gt)
-        op(Opcode.BLOCK_TIMESTAMP),
-        op(Opcode.VAL, 0),
-        op(Opcode.GREATER_THAN),
-      ]),
-    ],
-    constants: [timestamp],
-    stackLength: 3,
-    argumentsLength: 0,
-  };
-};
-
-export const getAfterTimestampDate = (stateConfig) => {
-  if (stateConfig.sources[0] === "0x050001000b00") {
-    return new Date(parseInt(stateConfig.constants[0]) * 1000);
+    return new Date(parseInt(stateConfig.constants[i]) * 1000);
   }
 };
 
 
-export const getAfterTimestamp = (stateConfig) => {
-  if (stateConfig.sources[0] === "0x050001000b00") {
-    return parseInt(stateConfig.constants[0]);
+export const getAfterTimestamp = (stateConfig, i) => {
+  if (stateConfig.sources[0] ===
+    "0x0100" ||
+    "0x060001001f00" ||
+    "0x010107001d00060001001f0001021c00" ||
+    "0x060001001f002f0001021e002002060001011f002102" ||
+    "0x010307001d00060001001f002f0001021e002002060001011f00210201041c00") {
+
+    return parseInt(stateConfig.constants[i]);
   }
 };
 
 export const saleStatuses = ["Pending", "Active", "Success", "Fail"];
+
+
+export function canEndConfig(config: SaleParams, deployerAddress: string) {
+
+  const _saleTime_ = new SaleDurationInTimestamp(config.inputValues.endTimestamp)
+
+  if (config.extraTimeDiscountMode) {
+    _saleTime_.applyExtraTime(
+      config.inputValues.extraTime,
+      config.inputValues.extraTimeAmount
+    )
+    if (config.creatorControlMode) {
+      _saleTime_.applyOwnership(deployerAddress)
+    }
+  } 
+  else {
+    if (config.creatorControlMode && config.canEndMode) {
+      _saleTime_.applyExtraTime(
+        config.inputValues.extraTime,
+        config.inputValues.extraTimeAmount
+      )
+      .applyOwnership(deployerAddress)
+    }
+    if (!config.creatorControlMode && config.canEndMode) {
+      _saleTime_.applyExtraTime(
+        config.inputValues.extraTime,
+        config.inputValues.extraTimeAmount
+      )
+    }
+  }
+  return _saleTime_;
+}
+
+
+export function calculatePriceConfig(config: SaleParams) {
+
+  const saleSelector = () : PriceCurve => {
+
+    //if sale is a Fixed Price
+    if (config.saleType == selectSale.fixedPrice) {
+      return new FixedPrice(
+        config.inputValues.startPrice
+      )
+    }
+
+    //if sale is a vLBP
+    if (config.saleType == selectSale.vLBP) {
+      return new vLBP(
+        config.inputValues.startPrice,
+        config.inputValues.startTimestamp,
+        config.inputValues.endTimestamp,
+        config.inputValues.minimumRaise,
+        config.inputValues.initialSupply
+      )
+    }
+    
+    //if sale is a Linear Increasing Price
+    if (config.saleType == selectSale.increasingPrice) {
+      return new IncreasingPrice(
+        config.inputValues.startPrice,
+        config.inputValues.endPrice,
+        config.inputValues.startTimestamp,
+        config.inputValues.endTimestamp
+      )
+    }
+  }
+
+  //creating the sale PriceCurve instance
+  const _sale_: PriceCurve = saleSelector();
+
+  //if extra time discount is enabled
+  if (config.extraTimeDiscountMode) {
+    _sale_.applyExtraTimeDiscount(
+      config.inputValues.endTimestamp,
+      config.inputValues.extraTimeDiscountThreshold,
+      config.inputValues.extraTimeDiscount
+    )
+  }
+
+  //if tier Discount is enabled
+  if (config.tierDiscountMode) {
+    //if tierActivation is enabled
+    if (config.tierDiscountActMode) {
+      _sale_.applyTierDiscount(
+        config.inputValues.tierDiscountAddress,
+        [
+          config.inputValues.discountTier1,
+          config.inputValues.discountTier2,
+          config.inputValues.discountTier3,
+          config.inputValues.discountTier4,
+          config.inputValues.discountTier5,
+          config.inputValues.discountTier6,
+          config.inputValues.discountTier7,
+          config.inputValues.discountTier8
+        ],
+        [
+          config.inputValues.discountActTier1,
+          config.inputValues.discountActTier2,
+          config.inputValues.discountActTier3,
+          config.inputValues.discountActTier4,
+          config.inputValues.discountActTier5,
+          config.inputValues.discountActTier6,
+          config.inputValues.discountActTier7,
+          config.inputValues.discountActTier8
+        ]
+      )
+    } 
+    else {
+      _sale_.applyTierDiscount(
+        config.inputValues.tierDiscountAddress,
+        [
+          config.inputValues.discountTier1,
+          config.inputValues.discountTier2,
+          config.inputValues.discountTier3,
+          config.inputValues.discountTier4,
+          config.inputValues.discountTier5,
+          config.inputValues.discountTier6,
+          config.inputValues.discountTier7,
+          config.inputValues.discountTier8
+        ]
+      )
+    }
+  }
+
+  //if both Min and Max Cap Per Wallet are enabled
+  if (config.maxCapMode && config.minCapMode) {
+    //if Max cap tier Multiplier is enabled
+    if (config.tierCapMulMode) {
+      //if tierActivation is enabled
+      if (config.tierCapMulActMode) {
+        _sale_.applyWalletCap(
+          2, 
+          {
+            maxWalletCap: config.inputValues.maxWalletCap,
+            minWalletCap: config.inputValues.minWalletCap,
+            tierMultiplierMode: true,
+            tierAddress: config.inputValues.tierCapMulAddress,
+            tierMultiplier: [
+              config.inputValues.capMulTier1,
+              config.inputValues.capMulTier2,
+              config.inputValues.capMulTier3,
+              config.inputValues.capMulTier4,
+              config.inputValues.capMulTier5,
+              config.inputValues.capMulTier6,
+              config.inputValues.capMulTier7,
+              config.inputValues.capMulTier8
+            ],
+            tierActivation: [
+              config.inputValues.capMulActTier1,
+              config.inputValues.capMulActTier2,
+              config.inputValues.capMulActTier3,
+              config.inputValues.capMulActTier4,
+              config.inputValues.capMulActTier5,
+              config.inputValues.capMulActTier6,
+              config.inputValues.capMulActTier7,
+              config.inputValues.capMulActTier8
+            ]
+          }
+        )
+      } 
+      else {
+        _sale_.applyWalletCap(
+          2, 
+          {
+            maxWalletCap: config.inputValues.maxWalletCap,
+            minWalletCap: config.inputValues.minWalletCap,
+            tierMultiplierMode: true,
+            tierAddress: config.inputValues.tierCapMulAddress,
+            tierMultiplier: [
+              config.inputValues.capMulTier1,
+              config.inputValues.capMulTier2,
+              config.inputValues.capMulTier3,
+              config.inputValues.capMulTier4,
+              config.inputValues.capMulTier5,
+              config.inputValues.capMulTier6,
+              config.inputValues.capMulTier7,
+              config.inputValues.capMulTier8
+            ]
+          }
+        )
+      }
+    } 
+    else {
+      _sale_.applyWalletCap(
+        2,
+        { 
+          maxWalletCap: config.inputValues.maxWalletCap,
+          minWalletCap: config.inputValues.minWalletCap,
+        }
+      )
+    }
+  }
+
+  //if only Max cap per wallet is enabled
+  if (config.maxCapMode && !config.minCapMode) {
+    //if tier Multiplier is enabled
+    if (config.tierCapMulMode) {
+      //if tierActivation is enabled
+      if (config.tierCapMulActMode) {
+        _sale_.applyWalletCap(
+          1, 
+          {
+            maxWalletCap: config.inputValues.maxWalletCap,
+            tierMultiplierMode: true,
+            tierAddress: config.inputValues.tierCapMulAddress,
+            tierMultiplier: [
+              config.inputValues.capMulTier1,
+              config.inputValues.capMulTier2,
+              config.inputValues.capMulTier3,
+              config.inputValues.capMulTier4,
+              config.inputValues.capMulTier5,
+              config.inputValues.capMulTier6,
+              config.inputValues.capMulTier7,
+              config.inputValues.capMulTier8
+            ],
+            tierActivation: [
+              config.inputValues.capMulActTier1,
+              config.inputValues.capMulActTier2,
+              config.inputValues.capMulActTier3,
+              config.inputValues.capMulActTier4,
+              config.inputValues.capMulActTier5,
+              config.inputValues.capMulActTier6,
+              config.inputValues.capMulActTier7,
+              config.inputValues.capMulActTier8
+            ]
+          }
+        )
+      }
+      else {
+        _sale_.applyWalletCap(
+          1, 
+          {
+            maxWalletCap: config.inputValues.maxWalletCap,
+            tierMultiplierMode: true,
+            tierAddress: config.inputValues.tierCapMulAddress,
+            tierMultiplier: [
+              config.inputValues.capMulTier1,
+              config.inputValues.capMulTier2,
+              config.inputValues.capMulTier3,
+              config.inputValues.capMulTier4,
+              config.inputValues.capMulTier5,
+              config.inputValues.capMulTier6,
+              config.inputValues.capMulTier7,
+              config.inputValues.capMulTier8
+            ]
+          }
+        )
+      }
+    } 
+    else {
+      _sale_.applyWalletCap(
+        1, 
+        {maxWalletCap: config.inputValues.maxWalletCap}
+      )
+    }
+  }
+
+  //if only Min Cap Per Wallet is enabled
+  if (!config.maxCapMode && config.minCapMode) {
+    _sale_.applyWalletCap(
+      0,
+      { minWalletCap: config.inputValues.minWalletCap }
+    )
+  }
+
+  return _sale_;
+}
+
+export const saleDeploy = async (
+  deployer: Signer,
+  deployerAddress: string,
+  config: SaleParams,
+  ...args
+): Promise<Sale> => {
+
+  const newSale = Sale.deploy(
+    deployer,
+    {
+      canStartStateConfig: config.creatorControlMode 
+        ? new SaleDurationInTimestamp(config.inputValues.startTimestamp).applyOwnership(deployerAddress)
+        : new SaleDurationInTimestamp(config.inputValues.startTimestamp),
+      canEndStateConfig: canEndConfig(config, deployerAddress),
+      calculatePriceStateConfig: calculatePriceConfig(config),
+      recipient: config.inputValues.recipient,
+      reserve: config.inputValues.reserve,
+      saleTimeout: 10,
+      cooldownDuration: parseInt(config.inputValues.cooldownDuration),
+      minimumRaise: parseUnits(
+        config.inputValues.minimumRaise.toString(),
+        config.inputValues.reserveErc20.erc20decimals
+      ),
+      dustSize: 0,
+    },
+    {
+      erc20Config: {
+        name: config.inputValues.name,
+        symbol: config.inputValues.symbol,
+        distributor: ethers.constants.AddressZero,
+        initialSupply: parseUnits(config.inputValues.initialSupply.toString()),
+      },
+      tier: config.inputValues.tier,
+      minimumTier: config.inputValues.minimumStatus,
+      distributionEndForwardingAddress: config.inputValues.distributionEndForwardingAddress,
+    }
+  )
+  return newSale
+}

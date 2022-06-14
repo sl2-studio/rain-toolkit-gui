@@ -9,6 +9,7 @@ import css from "rollup-plugin-css-only";
 import json from "@rollup/plugin-json";
 import replace from "@rollup/plugin-replace";
 import alias from "@rollup/plugin-alias";
+// import polyfill from 'rollup-plugin-node-polyfills'
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -44,6 +45,9 @@ export default {
     format: "iife",
     name: "app",
     file: "public/build/bundle.js",
+    // globals: {
+    //   'crypto': 'crypto'
+    // }
   },
   plugins: [
     svelte({
@@ -74,11 +78,13 @@ export default {
     // some cases you'll need additional configuration -
     // consult the documentation for details:
     // https://github.com/rollup/plugins/tree/master/packages/commonjs
+
     resolve({
       browser: true,
       dedupe: ["svelte", "svelte/transition", "svelte/interal"],
     }),
     commonjs(),
+    // polyfill(),
     production
       ? replace({ "process.env.NODE_ENV": JSON.stringify("production") })
       : replace({ "process.env.NODE_ENV": JSON.stringify("development") }),
@@ -101,5 +107,5 @@ export default {
   ],
   watch: {
     clearScreen: false,
-  },
+  }
 };

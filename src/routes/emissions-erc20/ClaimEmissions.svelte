@@ -1,13 +1,14 @@
 <script lang="ts">
-  import { BigNumber, ethers } from "ethers";
-  import { formatUnits, parseUnits } from "ethers/lib/utils";
+  import { ethers } from "ethers";
+  import { formatUnits } from "ethers/lib/utils";
   import { signer, signerAddress } from "svelte-ethers-store";
   import { push } from "svelte-spa-router";
   import Button from "../../components/Button.svelte";
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
   import TokenInfo from "../sale/TokenInfo.svelte";
-  import { initEmissions } from "./emissions";
+  import { EmissionsERC20 } from "rain-sdk";
+import { getERC20 } from "src/utils";
 
   export let params: {
     wild: string;
@@ -24,11 +25,9 @@
 
   const initContract = async () => {
     if (ethers.utils.isAddress(params.wild || "")) {
-      [emissionsContract, token] = await initEmissions(
-        $signer,
-        params.wild,
-        $signerAddress
-      );
+      emissionsContract = new EmissionsERC20(params.wild, $signer);
+      token = await getERC20(params.wild, $signer, $signerAddress);
+      
     } else if (params.wild) {
       errorMsg = "Not a valid contract address";
     }

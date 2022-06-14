@@ -2,13 +2,12 @@
   import { signer, signerAddress } from "svelte-ethers-store";
   import { ethers } from "ethers";
   import FormPanel from "../../components/FormPanel.svelte";
-  import BalanceTierAbi from "../../abis/ERC20BalanceTier.json";
-  import ERC20Abi from "../../abis/ReserveToken.json";
   import Input from "../../components/Input.svelte";
   import Button from "../../components/Button.svelte";
   import { tierReport } from "../../utils";
   import { push } from "svelte-spa-router";
   import { operationStore, query } from "@urql/svelte";
+  import { ERC20BalanceTier, ERC20 } from "rain-sdk";
 
   export let params;
 
@@ -64,16 +63,13 @@ query ($balanceTierAddress: Bytes!) {
   }
 
   const initContracts = async () => {
-    balanceTierContract = new ethers.Contract(
+    balanceTierContract = new ERC20BalanceTier(
       _balanceTier.address,
-      BalanceTierAbi.abi,
-      $signer
+      $signer,
+      _balanceTier.token.id
     );
-    erc20Contract = new ethers.Contract(
-      _balanceTier.token.id,
-      ERC20Abi.abi,
-      $signer
-    );
+
+    erc20Contract = new ERC20(_balanceTier.token.id, $signer);
   };
 
   const report = async () => {

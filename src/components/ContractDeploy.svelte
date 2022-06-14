@@ -1,24 +1,16 @@
 <script lang="ts">
-  import { ContractReceipt } from "ethers";
-  import { ethers } from "ethers";
+  import { Contract } from "ethers";
   import { selectedNetwork } from "src/stores";
   import NewAddress from "./NewAddress.svelte";
   import Ring from "./Ring.svelte";
 
-  export let deployPromise: Promise<ContractReceipt>;
+  export let deployPromise: Promise<Contract>;
   export let type: string;
 
   let contractAddress;
 
-  deployPromise.then((receipt: ContractReceipt) => {
-    receipt.events.forEach((event) => {
-      if (event.event == "NewChild") {
-        contractAddress = ethers.utils.defaultAbiCoder.decode(
-          ["address", "address"],
-          event.data
-        )[1];
-      }
-    });
+  deployPromise.then((receipt) => {
+    contractAddress = receipt.address;
   });
 </script>
 
@@ -47,7 +39,7 @@
         View contract on block explorer
       </a>
     </span>
-    <span>
+    <!-- <span>
       <a
         target="_blank"
         class="underline"
@@ -55,7 +47,7 @@
       >
         View transaction on block explorer
       </a>
-    </span>
+    </span> -->
   {:catch error}
     <div class="text-red-400">{error.message}</div>
   {/await}

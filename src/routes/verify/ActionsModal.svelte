@@ -3,7 +3,7 @@
   import Input from "src/components/Input.svelte";
   import SimpleTransactionModal from "src/components/SimpleTransactionModal.svelte";
   import { validateFields } from "src/utils";
-  import { addressValidate, defaultValidator } from "src/validation";
+  import { defaultValidator } from "src/validation";
   import { getContext } from "svelte";
 
   const { open } = getContext("simple-modal");

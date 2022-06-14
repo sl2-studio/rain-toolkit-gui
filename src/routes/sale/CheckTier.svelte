@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { Contract, ethers, Signer } from "ethers";
+  import { Signer } from "ethers";
   import { Writable } from "svelte/store";
-  import ITierArtifact from "abis/ITier.json";
   import { tierReport } from "src/utils";
+  import { ITier } from "rain-sdk";
 
   interface TierData {
     __typename: string;
@@ -25,7 +25,7 @@
 
   let eligibleStatus;
 
-  const checkTier = async (tier: Contract, minimumStatus: number) => {
+  const checkTier = async (tier, minimumStatus: number) => {
     const report = await tier.report($signer.getAddress());
     const parsedReport = tierReport(report);
 
@@ -41,7 +41,8 @@
   };
 
   $: if ($signer && minimumStatus !== undefined && tierData?.id) {
-    const tier = new ethers.Contract(tierData.id, ITierArtifact.abi, $signer);
+    const tier = new ITier(tierData.id, $signer);
+
     checkTier(tier, minimumStatus);
   }
 </script>

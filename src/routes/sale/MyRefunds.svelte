@@ -2,7 +2,7 @@
   import dayjs from "dayjs";
   import { operationStore, query } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
-  import IconLibrary from "components/IconLibrary.svelte";
+  import IconLibrary from "../../components/IconLibrary.svelte";
   import { selectedNetwork } from "src/stores";
 
   export let saleContract;

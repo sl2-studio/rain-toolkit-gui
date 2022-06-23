@@ -7,6 +7,7 @@
   import { push } from "svelte-spa-router";
   import { selectedNetwork } from "src/stores";
   import { GatedNFT } from "rain-sdk";
+  import { Logger } from "ethers/lib/utils";
 
   let gatedMinter,
     mintPromise,
@@ -35,7 +36,17 @@
         receipt = await tx.wait();
         return receipt;
       } catch (error) {
-        throw error;
+        if (error.code === Logger.errors.TRANSACTION_REPLACED) {
+          if (error.cancelled) {
+            errorMsg = "Transaction Cancelled";
+            return;
+          } else {
+            receipt = await error.replacement.wait();
+          }
+        } else {
+          errorMsg = error.data?.message || error?.message;
+          return;
+        }
       }
     } else {
       mintError = "Not a valid Ethereum address.";

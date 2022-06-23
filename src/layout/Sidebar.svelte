@@ -5,6 +5,20 @@
 
 <div class="min-h-screen w-96 border-r border-gray-700">
   <div class="sticky top-16 flex flex-col  gap-y-3 self-start p-5">
+    <SidebarLinkGroup label="TransferTier" url="/erc20transfertier/*">
+      <SidebarLink url="/erc20transfertier/deploy"
+        >Deploy a ERC20TransferTier</SidebarLink
+      >
+
+      <SidebarLink url="/erc20transfertier/report/">
+        Check a ERC20TransferTier Report
+      </SidebarLink>
+
+      <SidebarLink url="/erc20transfertier/list">
+        Browse deployed ERC20TransferTiers
+      </SidebarLink>
+    </SidebarLinkGroup>
+
     <SidebarLinkGroup label="ERC20BalanceTier" url="/erc20balancetier/*">
       <SidebarLink url="/erc20balancetier/deploy">
         Deploy an ERC20BalanceTier
@@ -76,19 +90,5 @@
 
       <SidebarLink url="/verify/administer/">Administer a Verify</SidebarLink>
     </SidebarLinkGroup>
-
-    <!-- <SidebarLinkGroup label="TransferTier" url="/erc20transfertier/*">
-      <SidebarLink url="/erc20transfertier/deploy"
-        >Deploy a ERC20TransferTier</SidebarLink
-      >
-
-      <SidebarLink url="/erc20transfertier/report/">
-        Check a ERC20TransferTier Report
-      </SidebarLink>
-
-      <SidebarLink url="/erc20transfertier/list">
-        Browse deployed ERC20TransferTiers
-      </SidebarLink>
-    </SidebarLinkGroup> -->
   </div>
 </div>

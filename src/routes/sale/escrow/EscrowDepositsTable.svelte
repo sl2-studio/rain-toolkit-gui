@@ -67,7 +67,7 @@
   {:else if $txQuery?.data?.redeemableEscrowSupplyTokenWithdrawers.length}
     <table class="table-auto w-full space-y-2 text-sm">
       <tr class="border-b border-gray-600 uppercase text-sm">
-        <th class="text-gray-400 text-left pb-2 font-light">Depositor</th>
+        <th class="text-gray-400 text-left pb-2 font-light">Withdrawer</th>
         <th class="text-gray-400 text-left pb-2 font-light">Token Address</th>
         <th class="text-gray-400 text-left pb-2 font-light"
           >Claimable Balance</th
@@ -111,11 +111,7 @@
             {data.deposit.token.symbol}
           </td>
           <td class="py-2 text-right">
-            {#if 
-              formatUnits(signerBalance, decimals) !== "0.0" && 
-              data.deposit.totalRemaining !== "0" &&
-              data.withdrawerAddress === $signerAddress.toLowerCase()
-            }
+            {#if formatUnits(signerBalance, decimals) !== "0.0" && data.deposit.totalRemaining !== "0" && data.withdrawerAddress === $signerAddress.toLowerCase()}
               <span
                 class="underline cursor-pointer text-gray-400 mr-4"
                 on:click={() => {

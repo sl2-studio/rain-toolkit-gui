@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ContractDeploy from "components/ContractDeploy.svelte";
+  import ContractDeploy from "../../components/ContractDeploy.svelte";
   import { ethers } from "ethers";
   import { formatUnits } from "ethers/lib/utils";
   import { signer, signerAddress } from "svelte-ethers-store";
@@ -168,7 +168,7 @@
 </script>
 
 <div class="flex w-full gap-x-3">
-  <div class="flex w-2/3 flex-col gap-y-4">
+  <div class="z-10 flex w-2/3 flex-col gap-y-4">
     <div class="mb-2 flex flex-col gap-y-2">
       <span class="text-2xl"> Create a new Sale. </span>
     </div>

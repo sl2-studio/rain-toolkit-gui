@@ -1,6 +1,6 @@
 <script lang="ts">
   import { signer } from "svelte-ethers-store";
-  import { formatUnits } from "ethers/lib/utils";
+  import { formatUnits, Logger } from "ethers/lib/utils";
   import Button from "../../components/Button.svelte";
   import Steps from "../../components/steps/Steps.svelte";
   import Ring from "../../components/Ring.svelte";
@@ -44,14 +44,24 @@
         saleContract.address,
         BigNumber.from(receipt.units)
       );
-    } catch (error) {
-      errorMsg = error.data?.message || error?.message;
-      txStatus = TxStatus.Error;
-      return;
-    }
+      txStatus = TxStatus.AwaitingConfirmation;
 
-    txStatus = TxStatus.AwaitingConfirmation;
-    const txReceipt = await tx.wait();
+      txReceipt = await tx.wait();
+    } catch (error) {
+      if (error.code === Logger.errors.TRANSACTION_REPLACED) {
+        if (error.cancelled) {
+          errorMsg = "Transaction Cancelled";
+          txStatus = TxStatus.Error;
+          return;
+        } else {
+          txReceipt = await error.replacement.wait();
+        }
+      } else {
+        errorMsg = error.data?.message || error?.message;
+        txStatus = TxStatus.Error;
+        return;
+      }
+    }
 
     txStatus = TxStatus.None;
     activeStep = RefundSteps.Confirm;
@@ -70,14 +80,24 @@
         units: BigNumber.from(receipt.units),
         price: BigNumber.from(receipt.price),
       });
-    } catch (error) {
-      errorMsg = error.data?.message || error?.message;
-      txStatus = TxStatus.Error;
-      return;
-    }
 
-    txStatus = TxStatus.AwaitingConfirmation;
-    txReceipt = await tx.wait();
+      txStatus = TxStatus.AwaitingConfirmation;
+      txReceipt = await tx.wait();
+    } catch (error) {
+      if (error.code === Logger.errors.TRANSACTION_REPLACED) {
+        if (error.cancelled) {
+          errorMsg = "Transaction Cancelled";
+          txStatus = TxStatus.Error;
+          return;
+        } else {
+          txReceipt = await error.replacement.wait();
+        }
+      } else {
+        errorMsg = error.data?.message || error?.message;
+        txStatus = TxStatus.Error;
+        return;
+      }
+    }
 
     txStatus = TxStatus.None;
     activeStep = RefundSteps.Complete;

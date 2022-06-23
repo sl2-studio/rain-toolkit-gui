@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { formatUnits, parseUnits } from "ethers/lib/utils";
+  import { formatUnits, Logger, parseUnits } from "ethers/lib/utils";
   import Button from "../../components/Button.svelte";
   import Steps from "../../components/steps/Steps.svelte";
   import Ring from "../../components/Ring.svelte";
   import { BigNumber, ethers } from "ethers";
   import Input from "src/components/Input.svelte";
   import { selectedNetwork } from "src/stores";
-
 
   enum TxStatus {
     None,
@@ -84,15 +83,25 @@
 
     try {
       tx = await sale.buy(buyConfig);
+      txStatus = TxStatus.AwaitingConfirmation;
+
+      txReceipt = await tx.wait();
     } catch (error) {
-      errorMsg = error.data?.message || error?.message;
-      txStatus = TxStatus.Error;
-      return;
+      if (error.code === Logger.errors.TRANSACTION_REPLACED) {
+        if (error.cancelled) {
+          errorMsg = "Transaction Cancelled";
+          txStatus = TxStatus.Error;
+          return;
+        } else {
+          txReceipt = await error.replacement.wait();
+        }
+      } else {
+        errorMsg = error.data?.message || error?.message;
+        txStatus = TxStatus.Error;
+        return;
+      }
     }
 
-    txStatus = TxStatus.AwaitingConfirmation;
-
-    txReceipt = await tx.wait();
     txStatus = TxStatus.None;
     activeStep = BuySteps.Complete;
   };

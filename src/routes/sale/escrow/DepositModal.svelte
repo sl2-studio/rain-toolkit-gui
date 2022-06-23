@@ -1,6 +1,6 @@
 <script lang="ts">
   import { signer } from "svelte-ethers-store";
-  import { formatUnits, parseUnits } from "ethers/lib/utils";
+  import { formatUnits, Logger, parseUnits } from "ethers/lib/utils";
   import Button from "../../../components/Button.svelte";
   import Steps from "../../../components/steps/Steps.svelte";
   import Ring from "../../../components/Ring.svelte";
@@ -87,14 +87,24 @@
     txStatus = TxStatus.AwaitingSignature;
     try {
       tx = await rTKN.approve(redeemableEscrow.address, units);
-    } catch (error) {
-      errorMsg = error.data?.message || error?.message;
-      txStatus = TxStatus.Error;
-      return;
-    }
 
-    txStatus = TxStatus.AwaitingConfirmation;
-    const txReceipt = await tx.wait();
+      txStatus = TxStatus.AwaitingConfirmation;
+      const txReceipt = await tx.wait();
+    } catch (error) {
+      if (error.code === Logger.errors.TRANSACTION_REPLACED) {
+        if (error.cancelled) {
+          errorMsg = "Transaction Cancelled";
+          txStatus = TxStatus.Error;
+          return;
+        } else {
+          txReceipt = await error.replacement.wait();
+        }
+      } else {
+        errorMsg = error.data?.message || error?.message;
+        txStatus = TxStatus.Error;
+        return;
+      }
+    }
 
     txStatus = TxStatus.None;
     activeStep = DepositSteps.Confirm;
@@ -105,18 +115,26 @@
   const Deposit = async () => {
     let tx;
     txStatus = TxStatus.AwaitingSignature;
-
     try {
       tx = await redeemableEscrow.deposit(units);
+
+      txStatus = TxStatus.AwaitingConfirmation;
+      txReceipt = await tx.wait();
     } catch (error) {
-      errorMsg = error.data?.message || error?.message;
-      txStatus = TxStatus.Error;
-      return;
+      if (error.code === Logger.errors.TRANSACTION_REPLACED) {
+        if (error.cancelled) {
+          errorMsg = "Transaction Cancelled";
+          txStatus = TxStatus.Error;
+          return;
+        } else {
+          txReceipt = await error.replacement.wait();
+        }
+      } else {
+        errorMsg = error.data?.message || error?.message;
+        txStatus = TxStatus.Error;
+        return;
+      }
     }
-
-    txStatus = TxStatus.AwaitingConfirmation;
-
-    txReceipt = await tx.wait();
     txStatus = TxStatus.None;
     activeStep = DepositSteps.Complete;
   };
@@ -127,15 +145,25 @@
 
     try {
       tx = await redeemableEscrow.depositPending(units);
+
+      txStatus = TxStatus.AwaitingConfirmation;
+      txReceipt = await tx.wait();
     } catch (error) {
-      errorMsg = error.data?.message || error?.message;
-      txStatus = TxStatus.Error;
-      return;
+      if (error.code === Logger.errors.TRANSACTION_REPLACED) {
+        if (error.cancelled) {
+          errorMsg = "Transaction Cancelled";
+          txStatus = TxStatus.Error;
+          return;
+        } else {
+          txReceipt = await error.replacement.wait();
+        }
+      } else {
+        errorMsg = error.data?.message || error?.message;
+        txStatus = TxStatus.Error;
+        return;
+      }
     }
 
-    txStatus = TxStatus.AwaitingConfirmation;
-
-    txReceipt = await tx.wait();
     txStatus = TxStatus.None;
     activeStep = DepositSteps.Complete;
   };

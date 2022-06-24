@@ -126,7 +126,7 @@ export function calculatePriceConfig(config: SaleParams) {
 
   //creating the sale PriceCurve instance
   const _sale_: PriceCurve = saleSelector();
-
+  console.log("saleSelector", _sale_);
 
   //if extra time discount is enabled
   if (config.extraTimeDiscountMode) {
@@ -136,7 +136,7 @@ export function calculatePriceConfig(config: SaleParams) {
       config.inputValues.extraTimeDiscount
     )
   }
-
+  console.log("after extra time dis", _sale_);
 
   //if tier Discount is enabled
   if (config.tierDiscountMode) {
@@ -182,7 +182,7 @@ export function calculatePriceConfig(config: SaleParams) {
       )
     }
   }
-
+  console.log("hii before max & min cap", _sale_);
   //if both Min and Max Cap Per Wallet are enabled
   if (config.maxCapMode && config.minCapMode) {
     //if Max cap tier Multiplier is enabled
@@ -252,7 +252,7 @@ export function calculatePriceConfig(config: SaleParams) {
     }
   }
 
-
+  console.log("hii before max cap", _sale_);
   //if only Max cap per wallet is enabled
   if (config.maxCapMode && !config.minCapMode) {
     //if tier Multiplier is enabled
@@ -317,7 +317,7 @@ export function calculatePriceConfig(config: SaleParams) {
     }
   }
 
-
+  console.log("hii after max cap", _sale_);
 
   //if only Min Cap Per Wallet is enabled
   if (!config.maxCapMode && config.minCapMode) {

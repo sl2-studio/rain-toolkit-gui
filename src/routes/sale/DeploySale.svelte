@@ -65,23 +65,23 @@
     capMulTier7 = 3,
     capMulTier8 = 6;
 
-  let discountActTier1 = 5,
-    discountActTier2 = 3,
-    discountActTier3 = 2,
-    discountActTier4 = 1,
-    discountActTier5 = 0.5,
-    discountActTier6 = 0.25,
-    discountActTier7 = 0.125,
-    discountActTier8 = 0.0625;
+  let discountActTier1 = 8,
+    discountActTier2 = 7,
+    discountActTier3 = 6,
+    discountActTier4 = 5,
+    discountActTier5 = 4,
+    discountActTier6 = 3,
+    discountActTier7 = 2,
+    discountActTier8 = 1;
 
-  let capMulActTier1 = 5,
-    capMulActTier2 = 3,
-    capMulActTier3 = 2,
-    capMulActTier4 = 1,
-    capMulActTier5 = 0.5,
-    capMulActTier6 = 0.25,
-    capMulActTier7 = 0.125,
-    capMulActTier8 = 0.0625;
+  let capMulActTier1 = 8,
+    capMulActTier2 = 7,
+    capMulActTier3 = 6,
+    capMulActTier4 = 5,
+    capMulActTier5 = 4,
+    capMulActTier6 = 3,
+    capMulActTier7 = 2,
+    capMulActTier8 = 1;
 
   const saleOptions = [
     { value: selectSale.fixedPrice, label: "Fixed Price" },
@@ -522,7 +522,7 @@
                   >
                 </td>
                 <td>
-                  <span>Perk Activation Time (day)</span>
+                  <span>Perk Activation Time (Block)</span>
                   <Switch bind:checked={tierDiscountActCheck} />
                   <br />
                   <sapn class="text-gray-400"
@@ -878,7 +878,7 @@
                   >
                 </td>
                 <td>
-                  <span>Perk Activation Period (day)</span>
+                  <span>Perk Activation Period (Block)</span>
                   <Switch bind:checked={tierCapMulActCheck} />
                   <br />
                   <sapn class="text-gray-400"

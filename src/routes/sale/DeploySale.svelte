@@ -12,6 +12,7 @@
   import { saleDeploy, SaleParams, selectSale } from "./sale";
   import { DatePicker, CalendarStyle } from "@beyonk/svelte-datepicker";
   import SaleSmallSimulationChart from "./SaleSmallSimulationChart.svelte";
+  import HumanReadable from "../../components/FriendlySource/HumanReadable.svelte";
 
   let fields: any = {};
   let deployPromise;
@@ -89,7 +90,6 @@
   ];
 
   let saleType: { value: number; label: string } = null;
-  // let saleType: { value: number; label: string } = { value: selectSale.fixedPrice, label: "Fixed Price" }
   let maxCapCheck = false;
   let minCapCheck = false;
   let canEndCheck = false;
@@ -100,6 +100,31 @@
   let tierCapMulActCheck = false;
   let creatorControlCheck = false;
 
+  const getSaleParams = () => {
+    const { validationResult, fieldValues } = validateFields(fields);
+    fieldValues.startTimestamp = Math.floor(
+      raiseRange?.[0].$d.getTime() / 1000
+    );
+    fieldValues.endTimestamp = Math.floor(raiseRange?.[1].$d.getTime() / 1000);
+    fieldValues.reserveErc20 = reserveErc20;
+
+    saleParams = {
+      inputValues: fieldValues,
+      saleType: saleType?.value,
+      maxCapMode: maxCapCheck,
+      minCapMode: minCapCheck,
+      canEndMode: canEndCheck,
+      extraTimeDiscountMode: extraTimeDiscountCheck,
+      tierDiscountMode: tierDiscountCheck,
+      tierDiscountActMode: tierDiscountActCheck,
+      tierCapMulMode: tierCapMulCheck,
+      tierCapMulActMode: tierCapMulActCheck,
+      creatorControlMode: creatorControlCheck,
+    };
+
+    return saleParams;
+  };
+
   $: saleVals = {
     startTimestamp: Math.floor(raiseRange?.[0].$d.getTime() / 1000),
     endTimestamp: Math.floor(raiseRange?.[1].$d.getTime() / 1000),
@@ -107,6 +132,83 @@
     endPrice,
     minimumRaise,
     initialSupply,
+  };
+
+  $: FriendlySource = {
+    startTimestamp: Math.floor(raiseRange?.[0].$d.getTime() / 1000),
+    endTimestamp: Math.floor(raiseRange?.[1].$d.getTime() / 1000),
+    saleType: saleType?.value,
+    maxCapMode: maxCapCheck,
+    minCapMode: minCapCheck,
+    canEndMode: canEndCheck,
+    extraTimeDiscountMode: extraTimeDiscountCheck,
+    tierDiscountMode: tierDiscountCheck,
+    tierDiscountActMode: tierDiscountActCheck,
+    tierCapMulMode: tierCapMulCheck,
+    tierCapMulActMode: tierCapMulActCheck,
+    creatorControlMode: creatorControlCheck,
+
+    recipient,
+    reserve,
+    startBlock,
+    cooldownDuration,
+    saleTimeout,
+    minimumRaise,
+    startPrice,
+    endPrice,
+    name,
+    symbol,
+    initialSupply,
+    distributionEndForwardingAddress,
+    maxWalletCap,
+    minWalletCap,
+    tier,
+    minimumStatus,
+    raiseRange,
+    extraTimeDiscountThreshold,
+    extraTimeDiscount,
+    extraTime,
+    extraTimeAmount,
+    tierDiscountAddress,
+    tierCapMulAddress,
+    discountTier1,
+    discountTier2,
+    discountTier3,
+    discountTier4,
+    discountTier5,
+    discountTier6,
+    discountTier7,
+    discountTier8,
+    capMulTier1,
+    capMulTier2,
+    capMulTier3,
+    capMulTier4,
+    capMulTier5,
+    capMulTier6,
+    capMulTier7,
+    capMulTier8,
+    discountActTier1,
+    discountActTier2,
+    discountActTier3,
+    discountActTier4,
+    discountActTier5,
+    discountActTier6,
+    discountActTier7,
+    discountActTier8,
+    capMulActTier1,
+    capMulActTier2,
+    capMulActTier3,
+    capMulActTier4,
+    capMulActTier5,
+    capMulActTier6,
+    capMulActTier7,
+    capMulActTier8,
+
+    saleParam: getSaleParams(),
+  };
+
+  const getSaleParams2 = (e) => {
+    // console.log(getSaleParams());
   };
 
   // @TODO write validators
@@ -120,26 +222,7 @@
 
   const deploy = async () => {
     const { validationResult, fieldValues } = validateFields(fields);
-    let receipt;
-    fieldValues.startTimestamp = Math.floor(
-      raiseRange?.[0].$d.getTime() / 1000
-    );
-    fieldValues.endTimestamp = Math.floor(raiseRange?.[1].$d.getTime() / 1000);
-    fieldValues.reserveErc20 = reserveErc20;
-
-    saleParams = {
-      inputValues: fieldValues,
-      saleType: saleType.value,
-      maxCapMode: maxCapCheck,
-      minCapMode: minCapCheck,
-      canEndMode: canEndCheck,
-      extraTimeDiscountMode: extraTimeDiscountCheck,
-      tierDiscountMode: tierDiscountCheck,
-      tierDiscountActMode: tierDiscountActCheck,
-      tierCapMulMode: tierCapMulCheck,
-      tierCapMulActMode: tierCapMulActCheck,
-      creatorControlMode: creatorControlCheck,
-    };
+    saleParams = getSaleParams();
 
     if (validationResult) {
       return await saleDeploy(
@@ -168,7 +251,7 @@
 </script>
 
 <div class="flex w-full gap-x-3">
-  <div class="z-10 flex w-2/3 flex-col gap-y-4">
+  <div class="z-10 flex w-3/5 flex-col gap-y-4">
     <div class="mb-2 flex flex-col gap-y-2">
       <span class="text-2xl"> Create a new Sale. </span>
     </div>
@@ -193,6 +276,7 @@
           type="address"
           bind:this={fields.recipient}
           bind:value={recipient}
+          on:input={getSaleParams2}
           validator={defaultValidator}
         >
           <span slot="label"> Recipient: </span>
@@ -1067,9 +1151,9 @@
     {/if}
   </div>
 
-  {#if saleVals && saleType}
-    <div class="flex w-1/3 flex-col gap-y-4">
-      <span class="sticky">
+  <div class="flex w-2/5 flex-col gap-y-4">
+    {#if saleVals && saleType}
+      <span class="relative">
         <FormPanel>
           <SaleSmallSimulationChart
             saleType={saleType.value}
@@ -1078,8 +1162,19 @@
           />
         </FormPanel>
       </span>
-    </div>
-  {/if}
+    {/if}
+    {#if FriendlySource && saleType}
+      <span class="sticky">
+        <FormPanel heading="Human Readable Source">
+          <HumanReadable
+            signer={$signerAddress}
+            contractType="sale"
+            {FriendlySource}
+          />
+        </FormPanel>
+      </span>
+    {/if}
+  </div>
 </div>
 
 <style>
@@ -1087,8 +1182,15 @@
     margin-top: 15px;
   }
 
-  span.sticky {
+  span.relative {
     margin-top: 52px;
+    float: right;
+    position: relative;
+    /* top: 90px; */
+    padding: 5px;
+  }
+
+  span.sticky {
     float: right;
     position: sticky;
     top: 90px;

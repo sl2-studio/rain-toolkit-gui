@@ -137,7 +137,7 @@
     data = points;
 
     // consol the points for dev
-    console.log(data);
+    // console.log(data);
 
     // min and max prices among points for dev
     min = points.reduce((e, m) =>

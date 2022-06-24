@@ -1,6 +1,6 @@
 import { ethers, Signer } from "ethers";;
 import { parseUnits } from "ethers/lib/utils";
-import { 
+import {
   Sale,
   PriceCurve,
   FixedPrice,
@@ -8,6 +8,7 @@ import {
   IncreasingPrice,
   SaleDurationInTimestamp
 } from 'rain-sdk'
+import { HumanFriendlySource } from 'rain-sdk'
 
 
 export enum selectSale {
@@ -70,14 +71,14 @@ export function canEndConfig(config: SaleParams, deployerAddress: string) {
     if (config.creatorControlMode) {
       _saleTime_.applyOwnership(deployerAddress)
     }
-  } 
+  }
   else {
     if (config.creatorControlMode && config.canEndMode) {
       _saleTime_.applyExtraTime(
         config.inputValues.extraTime,
         config.inputValues.extraTimeAmount
       )
-      .applyOwnership(deployerAddress)
+        .applyOwnership(deployerAddress)
     }
     if (!config.creatorControlMode && config.canEndMode) {
       _saleTime_.applyExtraTime(
@@ -92,7 +93,7 @@ export function canEndConfig(config: SaleParams, deployerAddress: string) {
 
 export function calculatePriceConfig(config: SaleParams) {
 
-  const saleSelector = () : PriceCurve => {
+  const saleSelector = (): PriceCurve => {
 
     //if sale is a Fixed Price
     if (config.saleType == selectSale.fixedPrice) {
@@ -111,7 +112,7 @@ export function calculatePriceConfig(config: SaleParams) {
         config.inputValues.initialSupply
       )
     }
-    
+
     //if sale is a Linear Increasing Price
     if (config.saleType == selectSale.increasingPrice) {
       return new IncreasingPrice(
@@ -126,6 +127,7 @@ export function calculatePriceConfig(config: SaleParams) {
   //creating the sale PriceCurve instance
   const _sale_: PriceCurve = saleSelector();
 
+
   //if extra time discount is enabled
   if (config.extraTimeDiscountMode) {
     _sale_.applyExtraTimeDiscount(
@@ -134,6 +136,7 @@ export function calculatePriceConfig(config: SaleParams) {
       config.inputValues.extraTimeDiscount
     )
   }
+
 
   //if tier Discount is enabled
   if (config.tierDiscountMode) {
@@ -162,7 +165,7 @@ export function calculatePriceConfig(config: SaleParams) {
           config.inputValues.discountActTier8
         ]
       )
-    } 
+    }
     else {
       _sale_.applyTierDiscount(
         config.inputValues.tierDiscountAddress,
@@ -187,7 +190,7 @@ export function calculatePriceConfig(config: SaleParams) {
       //if tierActivation is enabled
       if (config.tierCapMulActMode) {
         _sale_.applyWalletCap(
-          2, 
+          2,
           {
             maxWalletCap: config.inputValues.maxWalletCap,
             minWalletCap: config.inputValues.minWalletCap,
@@ -215,10 +218,10 @@ export function calculatePriceConfig(config: SaleParams) {
             ]
           }
         )
-      } 
+      }
       else {
         _sale_.applyWalletCap(
-          2, 
+          2,
           {
             maxWalletCap: config.inputValues.maxWalletCap,
             minWalletCap: config.inputValues.minWalletCap,
@@ -237,17 +240,18 @@ export function calculatePriceConfig(config: SaleParams) {
           }
         )
       }
-    } 
+    }
     else {
       _sale_.applyWalletCap(
         2,
-        { 
+        {
           maxWalletCap: config.inputValues.maxWalletCap,
           minWalletCap: config.inputValues.minWalletCap,
         }
       )
     }
   }
+
 
   //if only Max cap per wallet is enabled
   if (config.maxCapMode && !config.minCapMode) {
@@ -256,7 +260,7 @@ export function calculatePriceConfig(config: SaleParams) {
       //if tierActivation is enabled
       if (config.tierCapMulActMode) {
         _sale_.applyWalletCap(
-          1, 
+          1,
           {
             maxWalletCap: config.inputValues.maxWalletCap,
             tierMultiplierMode: true,
@@ -286,7 +290,7 @@ export function calculatePriceConfig(config: SaleParams) {
       }
       else {
         _sale_.applyWalletCap(
-          1, 
+          1,
           {
             maxWalletCap: config.inputValues.maxWalletCap,
             tierMultiplierMode: true,
@@ -304,14 +308,16 @@ export function calculatePriceConfig(config: SaleParams) {
           }
         )
       }
-    } 
+    }
     else {
       _sale_.applyWalletCap(
-        1, 
-        {maxWalletCap: config.inputValues.maxWalletCap}
+        1,
+        { maxWalletCap: config.inputValues.maxWalletCap }
       )
     }
   }
+
+
 
   //if only Min Cap Per Wallet is enabled
   if (!config.maxCapMode && config.minCapMode) {
@@ -322,6 +328,17 @@ export function calculatePriceConfig(config: SaleParams) {
   }
 
   return _sale_;
+
+}
+
+export const canStartConfig = (deployerAddress: string, config) => {
+  const canStartStateConfig = config.creatorControlMode
+    ? new SaleDurationInTimestamp(config.inputValues.startTimestamp).applyOwnership(deployerAddress)
+    : new SaleDurationInTimestamp(config.inputValues.startTimestamp);
+
+  return HumanFriendlySource.get(canStartStateConfig)
+  // const canEndStateConfig = canEndConfig(config, deployerAddress);
+  // const calculatePriceStateConfig = calculatePriceConfig(config);
 }
 
 export const saleDeploy = async (
@@ -334,7 +351,7 @@ export const saleDeploy = async (
   const newSale = Sale.deploy(
     deployer,
     {
-      canStartStateConfig: config.creatorControlMode 
+      canStartStateConfig: config.creatorControlMode
         ? new SaleDurationInTimestamp(config.inputValues.startTimestamp).applyOwnership(deployerAddress)
         : new SaleDurationInTimestamp(config.inputValues.startTimestamp),
       canEndStateConfig: canEndConfig(config, deployerAddress),

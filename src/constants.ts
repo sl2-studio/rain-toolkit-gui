@@ -28,6 +28,7 @@ export const providerOptions = {
       infuraId: "0f270373e0934beda174c537257386b0",
       rpc: {
         80001: "https://matic-mumbai.chainstacklabs.com",
+        137: "https://polygon-rpc.com"
       },
     }
   },

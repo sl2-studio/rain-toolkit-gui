@@ -57,13 +57,13 @@
     discountTier8 = 40;
 
   let capMulTier1 = 1,
-    capMulTier2 = 1,
-    capMulTier3 = 1,
-    capMulTier4 = 1.2,
-    capMulTier5 = 1.5,
-    capMulTier6 = 2.5,
-    capMulTier7 = 3,
-    capMulTier8 = 6;
+    capMulTier2 = 2,
+    capMulTier3 = 3,
+    capMulTier4 = 4,
+    capMulTier5 = 5,
+    capMulTier6 = 6,
+    capMulTier7 = 7,
+    capMulTier8 = 8;
 
   let discountActTier1 = 8,
     discountActTier2 = 7,

@@ -271,7 +271,7 @@
     </FormPanel>
 
     {#if saleType !== null}
-      <FormPanel heading="Sale config">
+      <FormPanel heading="Sale config" classes="z-10">
         <Input
           type="address"
           bind:this={fields.recipient}

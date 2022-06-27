@@ -472,7 +472,7 @@
 
 <style>
   span.sticky {
-    margin-top: 83px;
+    margin-top: 107px;
     float: right;
     position: sticky;
     top: 90px;

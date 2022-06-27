@@ -23,63 +23,71 @@
   $: {
     if (contractType.toLowerCase() === "emissions") {
       try {
-        emissionsType = FriendlySource.emissionsType
-          ? FriendlySource.emissionsType
-          : { value: 0, label: "Linear" };
-        let emissionsConfig: EmissionsConfig = emissionsType.value
-          ? {
-              tierAddress: FriendlySource.tierAddress,
-              blockTime: FriendlySource.blockTime,
-              period: FriendlySource.period,
-              periodicRewards: {
-                tier1: FriendlySource.tier1,
-                tier2: FriendlySource.tier2,
-                tier3: FriendlySource.tier3,
-                tier4: FriendlySource.tier4,
-                tier5: FriendlySource.tier6,
-                tier6: FriendlySource.tier6,
-                tier7: FriendlySource.tier7,
-                tier8: FriendlySource.tier8,
-              },
-              maxPeriodicRewards: {
-                tier1: FriendlySource.maxTier1,
-                tier2: FriendlySource.maxTier2,
-                tier3: FriendlySource.maxTier3,
-                tier4: FriendlySource.maxTier4,
-                tier5: FriendlySource.maxTier6,
-                tier6: FriendlySource.maxTier6,
-                tier7: FriendlySource.maxTier7,
-                tier8: FriendlySource.maxTier8,
-              },
-              numberOfIncrements: FriendlySource.numberOfIncrements,
-            }
-          : {
-              tierAddress: FriendlySource.tierAddress,
-              blockTime: FriendlySource.blockTime,
-              period: FriendlySource.period,
-              periodicRewards: {
-                tier1: FriendlySource.tier1,
-                tier2: FriendlySource.tier2,
-                tier3: FriendlySource.tier3,
-                tier4: FriendlySource.tier4,
-                tier5: FriendlySource.tier6,
-                tier6: FriendlySource.tier6,
-                tier7: FriendlySource.tier7,
-                tier8: FriendlySource.tier8,
-              },
-            };
-        let vmStateConfig: StateConfig;
-        if (emissionsType.value) {
-          vmStateConfig = new SequentialEmissions(emissionsConfig);
-        }
-        if (!emissionsType.value) {
-          vmStateConfig = new LinearEmissions(emissionsConfig);
-        }
+        if (FriendlySource.emissionsType) {
+          err = false;
+          emissionsType = FriendlySource.emissionsType;
 
-        emissionsSource = HumanFriendlySource.get(vmStateConfig, {
-          contract: "emissions",
-          pretty: true,
-        });
+          // emissionsType = FriendlySource.emissionsType
+          //   ? FriendlySource.emissionsType
+          //   : { value: 0, label: "Linear" };
+          let emissionsConfig: EmissionsConfig = emissionsType.value
+            ? {
+                tierAddress: FriendlySource.tierAddress,
+                blockTime: FriendlySource.blockTime,
+                period: FriendlySource.period,
+                periodicRewards: {
+                  tier1: FriendlySource.tier1,
+                  tier2: FriendlySource.tier2,
+                  tier3: FriendlySource.tier3,
+                  tier4: FriendlySource.tier4,
+                  tier5: FriendlySource.tier6,
+                  tier6: FriendlySource.tier6,
+                  tier7: FriendlySource.tier7,
+                  tier8: FriendlySource.tier8,
+                },
+                maxPeriodicRewards: {
+                  tier1: FriendlySource.maxTier1,
+                  tier2: FriendlySource.maxTier2,
+                  tier3: FriendlySource.maxTier3,
+                  tier4: FriendlySource.maxTier4,
+                  tier5: FriendlySource.maxTier6,
+                  tier6: FriendlySource.maxTier6,
+                  tier7: FriendlySource.maxTier7,
+                  tier8: FriendlySource.maxTier8,
+                },
+                numberOfIncrements: FriendlySource.numberOfIncrements,
+              }
+            : {
+                tierAddress: FriendlySource.tierAddress,
+                blockTime: FriendlySource.blockTime,
+                period: FriendlySource.period,
+                periodicRewards: {
+                  tier1: FriendlySource.tier1,
+                  tier2: FriendlySource.tier2,
+                  tier3: FriendlySource.tier3,
+                  tier4: FriendlySource.tier4,
+                  tier5: FriendlySource.tier6,
+                  tier6: FriendlySource.tier6,
+                  tier7: FriendlySource.tier7,
+                  tier8: FriendlySource.tier8,
+                },
+              };
+          let vmStateConfig: StateConfig;
+          if (emissionsType.value) {
+            vmStateConfig = new SequentialEmissions(emissionsConfig);
+          }
+          if (!emissionsType.value) {
+            vmStateConfig = new LinearEmissions(emissionsConfig);
+          }
+
+          emissionsSource = HumanFriendlySource.get(vmStateConfig, {
+            contract: "emissions",
+            pretty: true,
+          });
+        } else {
+          err = true;
+          errorMsg = "Select Emission Type";
+        }
       } catch (error) {
         console.log(error);
 

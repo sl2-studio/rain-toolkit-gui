@@ -99,6 +99,7 @@
   let tierCapMulCheck = false;
   let tierCapMulActCheck = false;
   let creatorControlCheck = false;
+  let afterMinimumRaiseCheck = false;
 
   const getSaleParams = () => {
     const { validationResult, fieldValues } = validateFields(fields);
@@ -120,6 +121,7 @@
       tierCapMulMode: tierCapMulCheck,
       tierCapMulActMode: tierCapMulActCheck,
       creatorControlMode: creatorControlCheck,
+      afterMinimumRaiseMode: afterMinimumRaiseCheck
     };
 
     return saleParams;
@@ -387,12 +389,31 @@
 
       <FormPanel>
         <div>
+          <span> Sale End After Hitting Minimum: </span>
+          <Switch
+            bind:checked={afterMinimumRaiseCheck}
+            on:change={() => {
+              if (afterMinimumRaiseCheck)
+                canEndCheck = false;
+            }}
+          />
+          <br />
+          <span class="text-gray-400"
+            >Sale can end once the raised amount hits the minimumRaise.</span
+          >
+        </div>
+      </FormPanel>
+
+      <FormPanel>
+        <div>
           <span> Sale Extra Time: </span>
           <Switch
             bind:checked={canEndCheck}
             on:change={() => {
-              if (canEndCheck)
+              if (canEndCheck){
                 document.getElementById("exTime").style.display = "block";
+                afterMinimumRaiseCheck = false;
+              }
               else document.getElementById("exTime").style.display = "none";
             }}
           />

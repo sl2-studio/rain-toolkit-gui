@@ -7,6 +7,7 @@
   import { validateFields } from "../../utils";
   import { addressValidate } from "../../validation";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
+  import HumanReadable from "../../components/FriendlySource/HumanReadable.svelte";
   import {
     EmissionsERC20,
     ERC20Config,
@@ -16,7 +17,7 @@
     LinearEmissions,
     SequentialEmissions,
   } from "rain-sdk";
-  import HumanReadable from "../../components/FriendlySource/HumanReadable.svelte";
+  
 
   let deployPromise;
 
@@ -34,7 +35,7 @@
   let erc20name = "EmissionsTKN";
   let erc20symbol = "eTKN";
 
-  let tierAddress = "0x4e2c8E95008645651dd4dA64E2f998f99f06a1Ed";
+  let tierAddress = "0x1b044f69674c47ab19475cbb57d4d7673f6ccd6c";
   let blockTime = 2.3;
   let period = 60 * 60 * 24 * 30; // one month in seconds
   let numberOfIncrements = 12;
@@ -260,7 +261,8 @@
             bind:value={numberOfIncrements}
             validator={defaultValidator}
           >
-            <span slot="label"
+            <span slot="label">Periods Length</span>
+            <span slot="description"
               >Number of periods it takes to reach max reward per period</span
             >
           </Input>

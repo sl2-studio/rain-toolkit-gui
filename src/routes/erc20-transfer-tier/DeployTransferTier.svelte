@@ -64,13 +64,13 @@
   <div class="mb-2 flex flex-col gap-y-2">
     <span class="text-2xl"> Deploy a new TransferTier. </span>
     <span class="text-gray-400">
-      Create Tier statuses corresponding to holding at least a certain amount of
-      an ERC20.
+      Create Tier statuses corresponding to locking up at least a certain amount of
+      an ERC20 in the contract.
     </span>
   </div>
   <FormPanel heading="TransferTier settings">
     <Input type="address" placeholder="Token address" bind:value={erc20Address}>
-      <span slot="label">Choose an ERC20 token to check the balance of.</span>
+      <span slot="label">ERC20 token address</span>
       <span slot="description">
         {#if erc20AddressError}
           <span class="text-red-500">
@@ -86,15 +86,11 @@
       </span>
     </Input>
     <div class="flex w-full flex-col gap-y-3">
-      <Input type="number" placeholder="Tier 1" bind:value={tiers[0]} disabled>
+      <Input type="text" placeholder="Tier 1 value is reserved as ZERO for canceling tier membership" disabled>
         <span slot="label"
-          >Set the amount of token that must be held for each of the tiers.</span
+          >Set the amount of token that must be locked up for each tier</span
         >
       </Input>
-      <span
-        >As it is a RESERVED TIER we have set the amount of token for tier 1 by
-        default as ZERO.</span
-      >
       <Input type="number" placeholder="Tier 2" bind:value={tiers[1]} />
       <Input type="number" placeholder="Tier 3" bind:value={tiers[2]} />
       <Input type="number" placeholder="Tier 4" bind:value={tiers[3]} />

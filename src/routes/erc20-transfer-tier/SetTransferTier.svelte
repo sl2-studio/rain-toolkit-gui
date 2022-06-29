@@ -54,13 +54,13 @@
     txReceipt;
 
   const tierValues = [
-    { value: 2, label: "Tier Level 2" },
-    { value: 3, label: "Tier Level 3" },
-    { value: 4, label: "Tier Level 4" },
-    { value: 5, label: "Tier Level 5" },
-    { value: 6, label: "Tier Level 6" },
-    { value: 7, label: "Tier Level 7" },
-    { value: 8, label: "Tier Level 8" },
+    { value: 2, label: "Tier 2" },
+    { value: 3, label: "Tier 3" },
+    { value: 4, label: "Tier 4" },
+    { value: 5, label: "Tier 5" },
+    { value: 6, label: "Tier 6" },
+    { value: 7, label: "Tier 7" },
+    { value: 8, label: "Tier 8" },
   ];
 
   const handleChange = async () => {
@@ -133,8 +133,8 @@
     }
   };
 
-  const unsetTier = async () => {
-    tierValue = { value: 1, label: "Tier Level 1" };
+  const exitTier = async () => {
+    tierValue = { value: 1, label: "Tier 1" };
     updateTier();
   };
 </script>
@@ -142,28 +142,24 @@
 {#if txStatus == TxStatus.None}
   <div class="flex w-full flex-col items-start gap-y-7">
     <div>
-      <span
-        >{#if setTier}Set the Tier{:else}Unset the Tier{/if}</span
-      >
-      <Switch
-        bind:checked={setTier}
-        on:change={() => {
-          if (setTier) {
-            document.getElementById("tierSet").style.display = "none";
-            document.getElementById("tierUnSet").style.display = "flex";
-          } else {
-            document.getElementById("tierSet").style.display = "flex";
-            document.getElementById("tierUnSet").style.display = "none";
-          }
-        }}
-      />
-      <div class="pt-2 text-gray-400">
-        If switched off, you can able to unset the tier i.e, the Tier Level 1.
-      </div>
-      <div class="pt-1 pb-1 text-gray-400">
-        If switched on, you can able to set the tier to any Tier Level from
-        Level 2 to Level 8 you want to.
-      </div>
+      {#if activeStep == TransferTierSetSteps.Approve}
+        {#if currentTier == 0}
+          <div class="pt-2 text-gray-400">
+            Join this TransferTier by locking up required amount of tokens for desired tier status
+          </div>
+        {:else if currentTier == 1}
+          <div class="pt-2 text-gray-400">
+            Upgrade your tier status by locking up the required token amount
+          </div>
+        {:else}
+          <div class="pt-2 text-gray-400">
+           Upgrade or downgrade your tier status by locking up the required token amount
+          </div>
+          <div class="pt-2 text-gray-400">
+            or exit this TransferTier by clicking the "Exit Tiers" button 
+          </div>
+        {/if}
+      {/if}
     </div>
     <div id="tierSet" style="display:flex" class="flex w-full flex-col gap-y-4">
       <Steps
@@ -174,7 +170,7 @@
       />
       {#if activeStep == TransferTierSetSteps.Approve}
         <div class="gap-y-2">
-          <span>Add Other Ethereum Address</span>
+          <span>Upgrade the tier status for a 3rd party address</span>
           <Switch
             bind:checked
             on:change={() => {
@@ -194,7 +190,7 @@
             placeholder="Enter an Ethereum address"
             bind:value={senderAddress}
           >
-            <span slot="label">Enter an Ethereum account address: </span>
+            <span slot="label">Enter the address to upgrade the tier status for: </span>
           </Input>
         </div>
 
@@ -203,10 +199,10 @@
           bind:value={tierValue}
           on:change={handleChange}
         >
-          <span slot="label"> Select The Tier Level: </span>
+          <span slot="label"> Select The Tier Status: </span>
         </Select>
 
-        <div class="flex flex-row gap-x-2">
+        <div class="flex flex-row gap-x-2 justify-between">
           <Button
             shrink
             on:click={!tierCheck ? approve : updateTier}
@@ -214,17 +210,20 @@
               (checked ? senderAddress === "" : false)}
           >
             {#if !tierCheck}
-              Approve the Allowance
+              Approve
             {:else}
-              Set the Tier
+              Downgrade
             {/if}
           </Button>
+          {#if currentTier > 1}
+            <Button shrink on:click={exitTier}>Exit Tiers</Button>
+          {/if}
         </div>
       {/if}
       {#if activeStep == TransferTierSetSteps.Confirm}
-        <span>Click on below button to increase the tier Level.</span>
+        <span>Click on below button to upgrade the tier status.</span>
         <div class="flex flex-row gap-x-2">
-          <Button shrink on:click={updateTier}>Set the Tier</Button>
+          <Button shrink on:click={updateTier}>Upgrade</Button>
         </div>
       {/if}
       {#if activeStep == TransferTierSetSteps.Complete}
@@ -239,7 +238,7 @@
         {close()}
       {/if}
     </div>
-    <div
+    <!-- <div
       id="tierUnSet"
       style="display:none"
       class="flex w-full flex-col gap-y-4"
@@ -248,9 +247,9 @@
         Please confirm the Unsetting of Tier by clicking on below button
       </span>
       <div class="flex flex-row gap-x-2">
-        <Button shrink on:click={unsetTier}>UnSet the Tier</Button>
+        <Button shrink on:click={exitTier}>UnSet the Tier</Button>
       </div>
-    </div>
+    </div> -->
   </div>
 {/if}
 

@@ -32,6 +32,7 @@ query {
         <div class="flex flex-col gap-y-2 mb-4">
           <span class="text-white">CombineTier details</span>
           <div class="text-gray-400 flex flex-col">
+            <span>Contract Address: {combineTier.id}</span>
             <span>Deployer: {combineTier.deployer}</span>
             <span
               >Deployed: {Date(

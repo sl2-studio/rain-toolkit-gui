@@ -137,7 +137,7 @@
                   pretty: true,
                 }
               )
-            : "Select Start & End Time ";
+            : "Select Sale's Start & End Date/Time To Show Price Script";
       } catch (error) {
         console.log(error);
         errorMsg = error;
@@ -151,12 +151,15 @@
   <div class="flex flex-col justify-between">
     {#if contractType.toLowerCase() === "sale" && !err}
       <span class="break-words pt-2 pb-2 whitespace-pre text">
+        <span class="text-gray-400">CanStart Script:</span><br>
         {startConfig}
       </span>
       <span class="break-words pt-2 pb-2 whitespace-pre text">
+        <span class="text-gray-400">CanEnd Script:</span><br>
         {endConfig}
       </span>
       <span class="break-words pt-2 pb-2 whitespace-pre text">
+        <span class="text-gray-400">Price Script:</span><br>
         {priceConfig}
       </span>
     {/if}

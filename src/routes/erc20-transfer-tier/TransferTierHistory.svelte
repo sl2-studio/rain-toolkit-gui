@@ -11,16 +11,16 @@
   const { open } = getContext("simple-modal");
   export let tierAddress;
   let transferTierAddress;
-
+  let signer;
   const transferTierQuery = operationStore(
     `
-query ($transferTierAddress: Bytes!) {
+query ($transferTierAddress: Bytes!, $signer: Bytes!) {
   erc20TransferTiers(where: {id: $transferTierAddress}) {
     id
     address
     deployBlock
     deployTimestamp
-    tierChanges(orderBy:changetimestamp, orderDirection: desc){
+    tierChanges(where:{account: $signer}, orderBy:changetimestamp, orderDirection: desc){
         transactionHash
         id
         startTier
@@ -33,7 +33,10 @@ query ($transferTierAddress: Bytes!) {
   }
 }
 `,
-    { transferTierAddress },
+  { 
+    transferTierAddress,
+    signer 
+  },
     {
       requestPolicy: "network-only",
     }
@@ -47,6 +50,7 @@ query ($transferTierAddress: Bytes!) {
   }
   const runQuery = () => {
     $transferTierQuery.variables.transferTierAddress = tierAddress;
+    $transferTierQuery.variables.signer = $signerAddress.toLowerCase();
   };
   // handling table refresh
   const refresh = () => {
@@ -90,7 +94,11 @@ query ($transferTierAddress: Bytes!) {
         <tr class="border-b border-gray-700">
           <!-- <td> Tier {transaction.startTier} </td> -->
           <td class="w-1/4">
-            Tier {transaction.endTier}
+            {#if transaction.endTier == 1}
+              Exited Tiers
+            {:else}
+              Tier {transaction.endTier}
+            {/if}
           </td>
           <td class="text-center">
             {dayjs.unix(transaction.changetimestamp).format("MMM D h:mm:sa")}

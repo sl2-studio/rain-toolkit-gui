@@ -41,6 +41,7 @@ query {
         <div class="flex flex-col gap-y-2 mb-4">
           <span class="text-white">TransferTier details</span>
           <div class="text-gray-400 flex flex-col">
+            <span>Contract Address: {transferTier.id}</span>
             <span>Deployer: {transferTier.deployer}</span>
             <span
               >Deployed: {Date(

@@ -90,5 +90,12 @@
 
       <SidebarLink url="/verify/administer/">Administer a Verify</SidebarLink>
     </SidebarLinkGroup>
+
+    <SidebarLinkGroup label="Deploy ERC20" url="/erc20/*">
+      <SidebarLink url="/mint-erc20/deploy">
+        Deploy an ERC20 Token
+      </SidebarLink>
+    </SidebarLinkGroup>
+
   </div>
 </div>

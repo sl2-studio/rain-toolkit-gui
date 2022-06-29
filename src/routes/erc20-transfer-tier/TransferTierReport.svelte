@@ -11,6 +11,7 @@
   import SetTransferTier from "./SetTransferTier.svelte";
   import { getContext } from "svelte";
   import TransferTierHistory from "./TransferTierHistory.svelte";
+import { Token } from "graphql";
 
   const { open } = getContext("simple-modal");
 
@@ -108,7 +109,7 @@ query ($transferTierAddress: Bytes!) {
   <div class="mb-2 flex flex-col gap-y-2">
     <span class="text-2xl"> Get a TransferTier report. </span>
     <span class="text-gray-400">
-      TransferTier checks the amount of a specific ERC20 held in a wallet.
+      TransferTier stores the time (block number) when an address joins a tier by locking up the required amount of tokens for that tier
     </span>
     {#if !params.wild}
       <span class="text-gray-400">
@@ -122,34 +123,31 @@ query ($transferTierAddress: Bytes!) {
     {/if}
   </div>
   {#if !$transferTier.fetching && !$transferTier.error && $transferTier.data}
-    <FormPanel heading="Get a report on an address">
+    <FormPanel heading="Get a report of an address">
       <Input
         bind:value={addressToReport}
         type="text"
         placeholder="Enter an Ethereum address"
       />
       <div class="flex flex-row gap-x-2">
-        <Button shrink on:click={report}>Get a report</Button>
+        <Button shrink on:click={report}>Get report</Button>
       </div>
       <div class="flex flex-col gap-y-2">
         {#if addressBalance}
           <span
-            >Balance for {addressToReport}: {ethers.utils.formatUnits(
+            >{addressToReport} Balance: {ethers.utils.formatUnits(
               addressBalance,
               _transferTier.token.decimals
             )}
             {_transferTier.token.symbol}</span
           >
         {/if}
-        <span class="gap-y-1 text-lg">
-          Token values for this TransferTier:
+        <span class="gap-y-1">
+          TransferTier Report:
         </span>
         {#each _transferTier.tierValues as value, i}
           <span class="text-gray-400">
-            Tier {i + 1} : {ethers.utils.formatUnits(
-              value,
-              _transferTier.token.decimals
-            )}
+            Tier {i + 1} :
             {#if parsedReport?.[i] != "0xffffffff"}
               ✅
             {:else if parsedReport?.[i] == "0xffffffff"}
@@ -159,7 +157,7 @@ query ($transferTierAddress: Bytes!) {
         {/each}
       </div>
     </FormPanel>
-    <FormPanel heading="ERC20 used for this TransferTier">
+    <FormPanel heading="TransferTier Details">
       <div class="mb-4 flex flex-col gap-y-2">
         <div class="flex flex-col text-gray-400">
           <span>Name: {_transferTier?.token.name}</span>
@@ -169,20 +167,21 @@ query ($transferTierAddress: Bytes!) {
       </div>
       <div class="flex w-full gap-x-2 self-stretch">
         <div class="w-1/2">
-          <span class="gap-y-1 text-lg">
-            Token values for this TransferTier:
+          <span class="gap-y-1">
+            Token values of each tier:
           </span>
           {#each _transferTier.tierValues as value, i}
             <div class="text-gray-400">
               Tier {i + 1} : {ethers.utils.formatUnits(
                 value,
                 _transferTier.token.decimals
-              )}
+              )
+              } {_transferTier.token.symbol}
             </div>
           {/each}
         </div>
         <div class="w-1/2">
-          <div class="gap-y-1 text-lg">Total members with each tier:</div>
+          <div class="gap-y-1">Total members in each tier:</div>
           {#each _transferTier.tierLevels as value}
             <div class="text-gray-400">
               {#if value.tierLevel !== "0"}
@@ -196,7 +195,7 @@ query ($transferTierAddress: Bytes!) {
       </div>
     </FormPanel>
 
-    <FormPanel heading="Set the Tier">
+    <FormPanel heading="Change Tier">
       <Button
         on:click={() => {
           open(SetTransferTier, {
@@ -204,7 +203,7 @@ query ($transferTierAddress: Bytes!) {
             erc20Contract,
             currentTier,
           });
-        }}>Update the Tier</Button
+        }}>Change Tier Status</Button
       >
     </FormPanel>
 

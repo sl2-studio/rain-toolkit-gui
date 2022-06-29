@@ -41,6 +41,7 @@ query {
         <div class="flex flex-col gap-y-2 mb-4">
           <span class="text-white">BalanceTier details</span>
           <div class="text-gray-400 flex flex-col">
+            <span>Contract Address: {balanceTier.id}</span>
             <span>Deployer: {balanceTier.deployer}</span>
             <span
               >Deployed: {Date(

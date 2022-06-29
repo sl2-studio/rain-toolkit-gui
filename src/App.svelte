@@ -30,6 +30,7 @@
   import DeployTransferTier from "./routes/erc20-transfer-tier/DeployTransferTier.svelte";
   import TransferTierReport from "./routes/erc20-transfer-tier/TransferTierReport.svelte";
   import ListTransferTier from "./routes/erc20-transfer-tier/ListTransferTier.svelte";
+  import DeployERC20 from "./routes/mint-erc20/DeployERC20.svelte";
 
   let routes = {};
 
@@ -64,6 +65,8 @@
 
     "/verify/deploy": DeployVerify,
     "/verify/administer/*": AdministerVerify,
+
+    "/mint-erc20/deploy": DeployERC20,
 
     "/address-library": AddressLibrary,
 

@@ -44,8 +44,8 @@
   let extraTimeDiscount = 25;
   let extraTime = 30;
   let extraTimeAmount = 150;
-  let tierDiscountAddress = "0x859834199ebd4d53750be5588ebb64ad841266aa";
-  let tierCapMulAddress = "0x859834199ebd4d53750be5588ebb64ad841266aa";
+  let tierDiscountAddress = "0x1b044f69674c47ab19475cbb57d4d7673f6ccd6c";
+  let tierCapMulAddress = "0x1b044f69674c47ab19475cbb57d4d7673f6ccd6c";
 
   let discountTier1 = 5,
     discountTier2 = 10,
@@ -149,6 +149,8 @@
     tierCapMulMode: tierCapMulCheck,
     tierCapMulActMode: tierCapMulActCheck,
     creatorControlMode: creatorControlCheck,
+    afterMinimumRaiseMode: afterMinimumRaiseCheck,
+
 
     recipient,
     reserve,
@@ -313,13 +315,13 @@
         </Input>
 
         <span class="z-20 flex w-full flex-col gap-y-3">
-          <span>Raise start/end time</span>
+          <span>Raise Start/End Time</span>
           <DatePicker
             styling={new CalendarStyle({ buttonWidth: "100%" })}
             bind:selected={raiseRange}
             time={true}
             range={true}
-            placeholder="Select date/time"
+            placeholder="Select Date/Time"
             format="DD / MM / YYYY hh:mm"
           />
           <span />

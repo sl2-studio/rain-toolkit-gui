@@ -29,6 +29,7 @@ export type SaleParams = {
   tierCapMulMode: boolean;
   tierCapMulActMode: boolean;
   creatorControlMode: boolean;
+  afterMinimumRaiseMode: boolean;
 };
 
 export const getAfterTimestampDate = (stateConfig, i) => {
@@ -37,7 +38,9 @@ export const getAfterTimestampDate = (stateConfig, i) => {
     "0x060001001f00" ||
     "0x010107001d00060001001f0001021c00" ||
     "0x060001001f002f0001021e002002060001011f002102" ||
-    "0x010307001d00060001001f002f0001021e002002060001011f00210201041c00") {
+    "0x010307001d00060001001f002f0001021e002002060001011f00210201041c00" ||
+    "0x060001001f0001012f001e002102" ||
+    "0x010207001d00060001001f0001012f001e00210201031c00") {
 
     return new Date(parseInt(stateConfig.constants[i]) * 1000);
   }
@@ -50,7 +53,9 @@ export const getAfterTimestamp = (stateConfig, i) => {
     "0x060001001f00" ||
     "0x010107001d00060001001f0001021c00" ||
     "0x060001001f002f0001021e002002060001011f002102" ||
-    "0x010307001d00060001001f002f0001021e002002060001011f00210201041c00") {
+    "0x010307001d00060001001f002f0001021e002002060001011f00210201041c00" ||
+    "0x060001001f0001012f001e002102" ||
+    "0x010207001d00060001001f0001012f001e00210201031c00") {
 
     return parseInt(stateConfig.constants[i]);
   }
@@ -66,7 +71,17 @@ export function canEndConfig(config: SaleParams, deployerAddress: string) {
   if (config.extraTimeDiscountMode) {
     _saleTime_.applyExtraTime(
       config.inputValues.extraTime,
-      config.inputValues.extraTimeAmount
+      config.inputValues.extraTimeAmount,
+      config.inputValues.reserveErc20.erc20decimals
+    )
+    if (config.creatorControlMode) {
+      _saleTime_.applyOwnership(deployerAddress)
+    }
+  }
+  else if (config.afterMinimumRaiseMode) {
+    _saleTime_.afterMinimumRaise(
+      config.inputValues.minimumRaise,
+      config.inputValues.reserveErc20.erc20decimals
     )
     if (config.creatorControlMode) {
       _saleTime_.applyOwnership(deployerAddress)
@@ -76,15 +91,20 @@ export function canEndConfig(config: SaleParams, deployerAddress: string) {
     if (config.creatorControlMode && config.canEndMode) {
       _saleTime_.applyExtraTime(
         config.inputValues.extraTime,
-        config.inputValues.extraTimeAmount
+        config.inputValues.extraTimeAmount,
+        config.inputValues.reserveErc20.erc20decimals
       )
         .applyOwnership(deployerAddress)
     }
     if (!config.creatorControlMode && config.canEndMode) {
       _saleTime_.applyExtraTime(
         config.inputValues.extraTime,
-        config.inputValues.extraTimeAmount
+        config.inputValues.extraTimeAmount,
+        config.inputValues.reserveErc20.erc20decimals
       )
+    }
+    if (config.creatorControlMode && !config.canEndMode) {
+      _saleTime_.applyOwnership(deployerAddress)
     }
   }
   return _saleTime_;
@@ -98,7 +118,8 @@ export function calculatePriceConfig(config: SaleParams) {
     //if sale is a Fixed Price
     if (config.saleType == selectSale.fixedPrice) {
       return new FixedPrice(
-        config.inputValues.startPrice
+        config.inputValues.startPrice,
+        config.inputValues.reserveErc20.erc20decimals
       )
     }
 
@@ -109,7 +130,8 @@ export function calculatePriceConfig(config: SaleParams) {
         config.inputValues.startTimestamp,
         config.inputValues.endTimestamp,
         config.inputValues.minimumRaise,
-        config.inputValues.initialSupply
+        config.inputValues.initialSupply,
+        config.inputValues.reserveErc20.erc20decimals
       )
     }
 
@@ -119,7 +141,8 @@ export function calculatePriceConfig(config: SaleParams) {
         config.inputValues.startPrice,
         config.inputValues.endPrice,
         config.inputValues.startTimestamp,
-        config.inputValues.endTimestamp
+        config.inputValues.endTimestamp,
+        config.inputValues.reserveErc20.erc20decimals
       )
     }
   }

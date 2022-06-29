@@ -182,7 +182,7 @@
 
 <div class="flex w-full gap-x-3">
   <div class="flex w-3/5 flex-col gap-y-4">
-    <div class="mb-2 flex flex-col gap-y-2">
+    <div class="mb-2 flex flex-col gap-y-2 w-full">
       <span class="text-2xl">Deploy a new EmissionsERC20.</span>
       <span class="text-gray-400">
         Mint a new ERC20 based on a users Tier status according to a defined
@@ -195,9 +195,14 @@
         items={emissionsOptions}
         bind:value={emissionsType}
         on:change={() => {
-          if (emissionsType.value == 1)
-            document.getElementById("A").style.display = "block";
-          else document.getElementById("A").style.display = "none";
+          if (emissionsType.value){
+            document.getElementById("maxReward").style.display = "block";
+            document.getElementById("inc").style.display = "block";
+          }
+          else {
+            document.getElementById("maxReward").style.display = "none";
+            document.getElementById("inc").style.display = "none";
+          }
         }}
       >
         <span slot="label"> Select The Emissions Type: </span>
@@ -245,13 +250,10 @@
         >
           <span slot="label">Claim Period</span>
           <span slot="description"
-            >The period of time to for each claim, default is 1 which means 1
-            month in ploygon, multiply that by 3 for mumbai testnet. For example
-            2 it means 15 days in polygon, so to get 15 days in mumbai it needs
-            to be multiplied by 3, which is 6</span
+            >The time duration of each period (in seconds)</span
           >
         </Input>
-        <div id="A" style="display:none" class="w-full">
+        <div id="inc" style="display:block" class="w-full">
           <Input
             type="number"
             bind:this={fields.numberOfIncrements}
@@ -259,7 +261,7 @@
             validator={defaultValidator}
           >
             <span slot="label"
-              >Reward Increase Over This Span Of Time (months)</span
+              >Number of periods it takes to reach max reward per period</span
             >
           </Input>
         </div>
@@ -294,7 +296,7 @@
         </Input>
       </FormPanel>
 
-      <FormPanel heading="Time period rewards for each tier status">
+      <FormPanel heading="Period's base rewards for each tier status">
         <Input
           type="number"
           placeholder=""
@@ -369,8 +371,8 @@
         </Input>
       </FormPanel>
 
-      <div id="A" style="display:none" class="w-full">
-        <FormPanel heading="Time period max rewards for each tier status">
+      <div id="maxReward" style="display:block" class="w-full">
+        <FormPanel heading="Period's max reward for each tier status">
           <Input
             type="number"
             placeholder=""
@@ -483,7 +485,7 @@
 
 <style>
   span.sticky {
-    margin-top: 107px;
+    margin-top: 80px;
     float: right;
     position: sticky;
     top: 90px;

@@ -64,7 +64,7 @@ import Switch from "src/components/Switch.svelte";
         name: fieldValues.erc20name,
         symbol: fieldValues.erc20symbol,
         distributor: fieldValues.ownerAddress,
-        initialSupply: fieldValues.initSupply,
+        initialSupply: parseUnits(fieldValues.initSupply.toString()),
       };
 
       let emissionsDeployArg: EmissionsERC20DeployArgs;

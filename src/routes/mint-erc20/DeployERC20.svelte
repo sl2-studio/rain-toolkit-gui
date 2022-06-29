@@ -126,7 +126,7 @@ import Switch from "src/components/Switch.svelte";
           bind:value={ownerAddress}
           validator={addressValidate}
         >
-          <span slot="label">Address to mint eTKN for</span>
+          <span slot="label">Owner Address</span>
         </Input>
         {#if fixedSupply}
         <Input

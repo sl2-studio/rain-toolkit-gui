@@ -144,26 +144,31 @@ import Switch from "src/components/Switch.svelte";
         bind:value={initSupply}
         validator={defaultValidator}
       >
-        <span slot="label">Fixed Supply</span>
+        <span slot="label">Total Supply (Fixed)</span>
       </Input>
       {/if}
       </FormPanel>
-
-      <FormPanel heading="Supply Control">
-        <Switch bind:checked={fixedSupply}/>
-        <span class="text-gray-400"
-          >ERC20 token will have fixed supply if switched off</span
-        >
-        {#if fixedSupply}
-          <Input
-          type="number"
-          bind:this={fields.amount}
-          bind:value={amount}
-          validator={defaultValidator}
-        >
-          <span slot="label">Amount of tokens to mint each time in future</span>
-        </Input>
-        {/if}
+    
+      <FormPanel>
+        <div>
+          <span class="font-bold">Supply Control</span>
+          <Switch bind:checked={fixedSupply}/>
+          <br />
+          <span class="text-gray-400"
+            >ERC20 token will have fixed supply if switched off</span
+          >
+          {#if fixedSupply}
+          <br /><br/>
+            <Input
+              type="number"
+              bind:this={fields.amount}
+              bind:value={amount}
+              validator={defaultValidator}
+              >
+              <span slot="label">Amount of tokens to mint each time in future</span>
+            </Input>
+          {/if}
+        </div>
       </FormPanel>
 
       <FormPanel>

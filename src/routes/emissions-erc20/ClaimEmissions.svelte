@@ -8,7 +8,7 @@
   import Input from "../../components/Input.svelte";
   import TokenInfo from "../sale/TokenInfo.svelte";
   import { EmissionsERC20 } from "rain-sdk";
-import { getERC20 } from "src/utils";
+  import { getERC20 } from "src/utils";
 
   export let params: {
     wild: string;
@@ -27,7 +27,6 @@ import { getERC20 } from "src/utils";
     if (ethers.utils.isAddress(params.wild || "")) {
       emissionsContract = new EmissionsERC20(params.wild, $signer);
       token = await getERC20(params.wild, $signer, $signerAddress);
-      
     } else if (params.wild) {
       errorMsg = "Not a valid contract address";
     }
@@ -113,6 +112,8 @@ import { getERC20 } from "src/utils";
             {:then claim}
               Your claim will be {formatUnits(claim, token.erc20decimals)}
               {token.erc20symbol}
+            {:catch err}
+              <span class="text-lg text-red-400">{err.error.message}</span>
             {/await}
           </div>
         {/if}

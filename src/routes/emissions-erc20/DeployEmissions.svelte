@@ -456,6 +456,17 @@
     {/if}
   </div>
   <div class="flex w-2/5 flex-col gap-y-4">
+    <!-- {#if emissionVals && emissionsType}
+      <span class="relative">
+        <FormPanel>
+          <SaleSmallSimulationChart
+            emissionsType={emissionsType.value}
+            {saleVals}
+            {reserveErc20}
+          />
+        </FormPanel>
+      </span>
+    {/if} -->
     {#if FriendlySource}
       <span class="sticky">
         <FormPanel heading="Human Readable Source">

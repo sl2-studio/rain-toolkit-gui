@@ -326,15 +326,6 @@ export function calculatePriceConfig(config: SaleParams) {
 
 }
 
-export const canStartConfig = (deployerAddress: string, config) => {
-  const canStartStateConfig = config.creatorControlMode
-    ? new SaleDurationInTimestamp(config.inputValues.startTimestamp).applyOwnership(deployerAddress)
-    : new SaleDurationInTimestamp(config.inputValues.startTimestamp);
-
-  return HumanFriendlySource.get(canStartStateConfig)
-  // const canEndStateConfig = canEndConfig(config, deployerAddress);
-  // const calculatePriceStateConfig = calculatePriceConfig(config);
-}
 
 export const saleDeploy = async (
   deployer: Signer,

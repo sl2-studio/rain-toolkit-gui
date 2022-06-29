@@ -99,7 +99,7 @@ import Switch from "src/components/Switch.svelte";
       </span>
     </div>
 
-      <FormPanel heading="Emissions ERC20 config">
+      <FormPanel heading="ERC20 Config">
         <Input
           type="text"
           placeholder="Name"
@@ -168,9 +168,9 @@ import Switch from "src/components/Switch.svelte";
 
       <FormPanel>
         {#if !deployPromise}
-          <Button shrink on:click={handleClick}>Deploy EmissionsERC20</Button>
+          <Button shrink on:click={handleClick}>Deploy ERC20 Token</Button>
         {:else}
-          <ContractDeploy {deployPromise} type="EmissionsERC20" />
+          <ContractDeploy {deployPromise} type="ERC20" />
         {/if}
       </FormPanel>
   </div>

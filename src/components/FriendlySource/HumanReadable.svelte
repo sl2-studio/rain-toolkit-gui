@@ -27,9 +27,6 @@
           err = false;
           emissionsType = FriendlySource.emissionsType;
 
-          // emissionsType = FriendlySource.emissionsType
-          //   ? FriendlySource.emissionsType
-          //   : { value: 0, label: "Linear" };
           let emissionsConfig: EmissionsConfig = emissionsType.value
             ? {
                 tierAddress: FriendlySource.tierAddress,

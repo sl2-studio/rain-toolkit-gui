@@ -121,7 +121,7 @@
       tierCapMulMode: tierCapMulCheck,
       tierCapMulActMode: tierCapMulActCheck,
       creatorControlMode: creatorControlCheck,
-      afterMinimumRaiseMode: afterMinimumRaiseCheck
+      afterMinimumRaiseMode: afterMinimumRaiseCheck,
     };
 
     return saleParams;
@@ -248,7 +248,12 @@
 
   function MaxCapHandler() {
     if (maxCapCheck) document.getElementById("capMax").style.display = "block";
-    else document.getElementById("capMax").style.display = "none";
+    else {
+      document.getElementById("capMax").style.display = "none";
+      document.getElementById("tierCapMul").style.display = "none";
+      tierCapMulCheck = false;
+      tierCapMulActCheck = false;
+    }
   }
 </script>
 
@@ -393,8 +398,10 @@
           <Switch
             bind:checked={afterMinimumRaiseCheck}
             on:change={() => {
-              if (afterMinimumRaiseCheck)
+              if (afterMinimumRaiseCheck) {
                 canEndCheck = false;
+                document.getElementById("exTime").style.display = "none";
+              }
             }}
           />
           <br />
@@ -410,11 +417,10 @@
           <Switch
             bind:checked={canEndCheck}
             on:change={() => {
-              if (canEndCheck){
+              if (canEndCheck) {
                 document.getElementById("exTime").style.display = "block";
                 afterMinimumRaiseCheck = false;
-              }
-              else document.getElementById("exTime").style.display = "none";
+              } else document.getElementById("exTime").style.display = "none";
             }}
           />
           <br />

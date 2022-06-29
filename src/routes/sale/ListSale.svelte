@@ -5,7 +5,12 @@
   import { operationStore, query } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
 
-  const sales = operationStore(`
+  let skip;
+
+  //   query($skip: Int) {
+  // sales(first: 100, skip: $skip) {
+  const sales = operationStore(
+    `
 query {
   sales {
     id
@@ -25,8 +30,13 @@ query {
     }
   }
 }
-`);
-
+`,
+    {
+      skip,
+    }
+  );
+  // let skipRecords = 0;
+  // $sales.variables.skip = 0;
   query(sales);
 </script>
 

@@ -27,9 +27,10 @@
   import ListCombineTier from "./routes/combine-tier/ListCombineTier.svelte";
   import ListSale from "./routes/sale/ListSale.svelte";
   import Footer from "./layout/Footer.svelte";
-  // import DeployTransferTier from "./routes/erc20-transfer-tier/DeployTransferTier.svelte";
-  // import TransferTierReport from "./routes/erc20-transfer-tier/TransferTierReport.svelte";
-  // import ListTransferTier from "./routes/erc20-transfer-tier/ListTransferTier.svelte";
+  import DeployTransferTier from "./routes/erc20-transfer-tier/DeployTransferTier.svelte";
+  import TransferTierReport from "./routes/erc20-transfer-tier/TransferTierReport.svelte";
+  import ListTransferTier from "./routes/erc20-transfer-tier/ListTransferTier.svelte";
+  import DeployERC20 from "./routes/mint-erc20/DeployERC20.svelte";
 
   let routes = {};
 
@@ -47,9 +48,9 @@
     "/combinetier/report/*": CombineTierReport,
     "/combinetier/list": ListCombineTier,
 
-    // "/erc20transfertier/deploy": DeployTransferTier,
-    // "/erc20transfertier/report/*": TransferTierReport,
-    // "/erc20transfertier/list": ListTransferTier,
+    "/erc20transfertier/deploy": DeployTransferTier,
+    "/erc20transfertier/report/*": TransferTierReport,
+    "/erc20transfertier/list": ListTransferTier,
 
     "/gatednft/deploy/*": DeployGatedNFT,
     "/gatednft/list": ListGatedNFTs,
@@ -64,6 +65,8 @@
 
     "/verify/deploy": DeployVerify,
     "/verify/administer/*": AdministerVerify,
+
+    "/mint-erc20/deploy": DeployERC20,
 
     "/address-library": AddressLibrary,
 

@@ -3,8 +3,8 @@ import Fortmatic from "fortmatic";
 
 // Example for Polygon/Matic:
 const customNetworkOptions = {
-  rpcUrl: 'https://rpc-mainnet.maticvigil.com',
-  chainId: 137
+  rpcUrl: 'https://rpc-mumbai.maticvigil.com',
+  chainId: 80001
 }
 
 export const providerOptions = {
@@ -28,6 +28,7 @@ export const providerOptions = {
       infuraId: "0f270373e0934beda174c537257386b0",
       rpc: {
         80001: "https://matic-mumbai.chainstacklabs.com",
+        137: "https://polygon-rpc.com"
       },
     }
   },

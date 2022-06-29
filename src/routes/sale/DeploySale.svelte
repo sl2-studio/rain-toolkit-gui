@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ContractDeploy from "components/ContractDeploy.svelte";
+  import ContractDeploy from "../../components/ContractDeploy.svelte";
   import { ethers } from "ethers";
   import { formatUnits } from "ethers/lib/utils";
   import { signer, signerAddress } from "svelte-ethers-store";
@@ -12,6 +12,7 @@
   import { saleDeploy, SaleParams, selectSale } from "./sale";
   import { DatePicker, CalendarStyle } from "@beyonk/svelte-datepicker";
   import SaleSmallSimulationChart from "./SaleSmallSimulationChart.svelte";
+  import HumanReadable from "../../components/FriendlySource/HumanReadable.svelte";
 
   let fields: any = {};
   let deployPromise;
@@ -43,8 +44,8 @@
   let extraTimeDiscount = 25;
   let extraTime = 30;
   let extraTimeAmount = 150;
-  let tierDiscountAddress = "0x859834199ebd4d53750be5588ebb64ad841266aa";
-  let tierCapMulAddress = "0x859834199ebd4d53750be5588ebb64ad841266aa";
+  let tierDiscountAddress = "0x1b044f69674c47ab19475cbb57d4d7673f6ccd6c";
+  let tierCapMulAddress = "0x1b044f69674c47ab19475cbb57d4d7673f6ccd6c";
 
   let discountTier1 = 5,
     discountTier2 = 10,
@@ -56,31 +57,31 @@
     discountTier8 = 40;
 
   let capMulTier1 = 1,
-    capMulTier2 = 1,
-    capMulTier3 = 1,
-    capMulTier4 = 1.2,
-    capMulTier5 = 1.5,
-    capMulTier6 = 2.5,
-    capMulTier7 = 3,
-    capMulTier8 = 6;
+    capMulTier2 = 2,
+    capMulTier3 = 3,
+    capMulTier4 = 4,
+    capMulTier5 = 5,
+    capMulTier6 = 6,
+    capMulTier7 = 7,
+    capMulTier8 = 8;
 
-  let discountActTier1 = 5,
-    discountActTier2 = 3,
-    discountActTier3 = 2,
-    discountActTier4 = 1,
-    discountActTier5 = 0.5,
-    discountActTier6 = 0.25,
-    discountActTier7 = 0.125,
-    discountActTier8 = 0.0625;
+  let discountActTier1 = 8,
+    discountActTier2 = 7,
+    discountActTier3 = 6,
+    discountActTier4 = 5,
+    discountActTier5 = 4,
+    discountActTier6 = 3,
+    discountActTier7 = 2,
+    discountActTier8 = 1;
 
-  let capMulActTier1 = 5,
-    capMulActTier2 = 3,
-    capMulActTier3 = 2,
-    capMulActTier4 = 1,
-    capMulActTier5 = 0.5,
-    capMulActTier6 = 0.25,
-    capMulActTier7 = 0.125,
-    capMulActTier8 = 0.0625;
+  let capMulActTier1 = 8,
+    capMulActTier2 = 7,
+    capMulActTier3 = 6,
+    capMulActTier4 = 5,
+    capMulActTier5 = 4,
+    capMulActTier6 = 3,
+    capMulActTier7 = 2,
+    capMulActTier8 = 1;
 
   const saleOptions = [
     { value: selectSale.fixedPrice, label: "Fixed Price" },
@@ -89,7 +90,6 @@
   ];
 
   let saleType: { value: number; label: string } = null;
-  // let saleType: { value: number; label: string } = { value: selectSale.fixedPrice, label: "Fixed Price" }
   let maxCapCheck = false;
   let minCapCheck = false;
   let canEndCheck = false;
@@ -99,6 +99,33 @@
   let tierCapMulCheck = false;
   let tierCapMulActCheck = false;
   let creatorControlCheck = false;
+  let afterMinimumRaiseCheck = false;
+
+  const getSaleParams = () => {
+    const { validationResult, fieldValues } = validateFields(fields);
+    fieldValues.startTimestamp = Math.floor(
+      raiseRange?.[0].$d.getTime() / 1000
+    );
+    fieldValues.endTimestamp = Math.floor(raiseRange?.[1].$d.getTime() / 1000);
+    fieldValues.reserveErc20 = reserveErc20;
+
+    saleParams = {
+      inputValues: fieldValues,
+      saleType: saleType?.value,
+      maxCapMode: maxCapCheck,
+      minCapMode: minCapCheck,
+      canEndMode: canEndCheck,
+      extraTimeDiscountMode: extraTimeDiscountCheck,
+      tierDiscountMode: tierDiscountCheck,
+      tierDiscountActMode: tierDiscountActCheck,
+      tierCapMulMode: tierCapMulCheck,
+      tierCapMulActMode: tierCapMulActCheck,
+      creatorControlMode: creatorControlCheck,
+      afterMinimumRaiseMode: afterMinimumRaiseCheck,
+    };
+
+    return saleParams;
+  };
 
   $: saleVals = {
     startTimestamp: Math.floor(raiseRange?.[0].$d.getTime() / 1000),
@@ -107,6 +134,85 @@
     endPrice,
     minimumRaise,
     initialSupply,
+  };
+
+  $: FriendlySource = {
+    startTimestamp: Math.floor(raiseRange?.[0].$d.getTime() / 1000),
+    endTimestamp: Math.floor(raiseRange?.[1].$d.getTime() / 1000),
+    saleType: saleType?.value,
+    maxCapMode: maxCapCheck,
+    minCapMode: minCapCheck,
+    canEndMode: canEndCheck,
+    extraTimeDiscountMode: extraTimeDiscountCheck,
+    tierDiscountMode: tierDiscountCheck,
+    tierDiscountActMode: tierDiscountActCheck,
+    tierCapMulMode: tierCapMulCheck,
+    tierCapMulActMode: tierCapMulActCheck,
+    creatorControlMode: creatorControlCheck,
+    afterMinimumRaiseMode: afterMinimumRaiseCheck,
+
+
+    recipient,
+    reserve,
+    startBlock,
+    cooldownDuration,
+    saleTimeout,
+    minimumRaise,
+    startPrice,
+    endPrice,
+    name,
+    symbol,
+    initialSupply,
+    distributionEndForwardingAddress,
+    maxWalletCap,
+    minWalletCap,
+    tier,
+    minimumStatus,
+    raiseRange,
+    extraTimeDiscountThreshold,
+    extraTimeDiscount,
+    extraTime,
+    extraTimeAmount,
+    tierDiscountAddress,
+    tierCapMulAddress,
+    discountTier1,
+    discountTier2,
+    discountTier3,
+    discountTier4,
+    discountTier5,
+    discountTier6,
+    discountTier7,
+    discountTier8,
+    capMulTier1,
+    capMulTier2,
+    capMulTier3,
+    capMulTier4,
+    capMulTier5,
+    capMulTier6,
+    capMulTier7,
+    capMulTier8,
+    discountActTier1,
+    discountActTier2,
+    discountActTier3,
+    discountActTier4,
+    discountActTier5,
+    discountActTier6,
+    discountActTier7,
+    discountActTier8,
+    capMulActTier1,
+    capMulActTier2,
+    capMulActTier3,
+    capMulActTier4,
+    capMulActTier5,
+    capMulActTier6,
+    capMulActTier7,
+    capMulActTier8,
+
+    saleParam: getSaleParams(),
+  };
+
+  const getSaleParams2 = (e) => {
+    // console.log(getSaleParams());
   };
 
   // @TODO write validators
@@ -120,26 +226,7 @@
 
   const deploy = async () => {
     const { validationResult, fieldValues } = validateFields(fields);
-    let receipt;
-    fieldValues.startTimestamp = Math.floor(
-      raiseRange?.[0].$d.getTime() / 1000
-    );
-    fieldValues.endTimestamp = Math.floor(raiseRange?.[1].$d.getTime() / 1000);
-    fieldValues.reserveErc20 = reserveErc20;
-
-    saleParams = {
-      inputValues: fieldValues,
-      saleType: saleType.value,
-      maxCapMode: maxCapCheck,
-      minCapMode: minCapCheck,
-      canEndMode: canEndCheck,
-      extraTimeDiscountMode: extraTimeDiscountCheck,
-      tierDiscountMode: tierDiscountCheck,
-      tierDiscountActMode: tierDiscountActCheck,
-      tierCapMulMode: tierCapMulCheck,
-      tierCapMulActMode: tierCapMulActCheck,
-      creatorControlMode: creatorControlCheck,
-    };
+    saleParams = getSaleParams();
 
     if (validationResult) {
       return await saleDeploy(
@@ -163,12 +250,17 @@
 
   function MaxCapHandler() {
     if (maxCapCheck) document.getElementById("capMax").style.display = "block";
-    else document.getElementById("capMax").style.display = "none";
+    else {
+      document.getElementById("capMax").style.display = "none";
+      document.getElementById("tierCapMul").style.display = "none";
+      tierCapMulCheck = false;
+      tierCapMulActCheck = false;
+    }
   }
 </script>
 
 <div class="flex w-full gap-x-3">
-  <div class="flex w-2/3 flex-col gap-y-4">
+  <div class="z-10 flex w-3/5 flex-col gap-y-4">
     <div class="mb-2 flex flex-col gap-y-2">
       <span class="text-2xl"> Create a new Sale. </span>
     </div>
@@ -188,11 +280,12 @@
     </FormPanel>
 
     {#if saleType !== null}
-      <FormPanel heading="Sale config">
+      <FormPanel heading="Sale config" classes="z-10">
         <Input
           type="address"
           bind:this={fields.recipient}
           bind:value={recipient}
+          on:input={getSaleParams2}
           validator={defaultValidator}
         >
           <span slot="label"> Recipient: </span>
@@ -222,13 +315,13 @@
         </Input>
 
         <span class="z-20 flex w-full flex-col gap-y-3">
-          <span>Raise start/end time</span>
+          <span>Raise Start/End Time</span>
           <DatePicker
             styling={new CalendarStyle({ buttonWidth: "100%" })}
             bind:selected={raiseRange}
             time={true}
             range={true}
-            placeholder="Select date/time"
+            placeholder="Select Date/Time"
             format="DD / MM / YYYY hh:mm"
           />
           <span />
@@ -303,13 +396,33 @@
 
       <FormPanel>
         <div>
+          <span> Sale End After Hitting Minimum: </span>
+          <Switch
+            bind:checked={afterMinimumRaiseCheck}
+            on:change={() => {
+              if (afterMinimumRaiseCheck) {
+                canEndCheck = false;
+                document.getElementById("exTime").style.display = "none";
+              }
+            }}
+          />
+          <br />
+          <span class="text-gray-400"
+            >Sale can end once the raised amount hits the minimumRaise.</span
+          >
+        </div>
+      </FormPanel>
+
+      <FormPanel>
+        <div>
           <span> Sale Extra Time: </span>
           <Switch
             bind:checked={canEndCheck}
             on:change={() => {
-              if (canEndCheck)
+              if (canEndCheck) {
                 document.getElementById("exTime").style.display = "block";
-              else document.getElementById("exTime").style.display = "none";
+                afterMinimumRaiseCheck = false;
+              } else document.getElementById("exTime").style.display = "none";
             }}
           />
           <br />
@@ -438,7 +551,7 @@
                   >
                 </td>
                 <td>
-                  <span>Perk Activation Time (day)</span>
+                  <span>Perk Activation Time (Block)</span>
                   <Switch bind:checked={tierDiscountActCheck} />
                   <br />
                   <sapn class="text-gray-400"
@@ -794,7 +907,7 @@
                   >
                 </td>
                 <td>
-                  <span>Perk Activation Period (day)</span>
+                  <span>Perk Activation Period (Block)</span>
                   <Switch bind:checked={tierCapMulActCheck} />
                   <br />
                   <sapn class="text-gray-400"
@@ -1067,9 +1180,9 @@
     {/if}
   </div>
 
-  {#if saleVals && saleType}
-    <div class="flex w-1/3 flex-col gap-y-4">
-      <span class="sticky">
+  <div class="flex w-2/5 flex-col gap-y-4">
+    {#if saleVals && saleType}
+      <span class="relative">
         <FormPanel>
           <SaleSmallSimulationChart
             saleType={saleType.value}
@@ -1078,8 +1191,19 @@
           />
         </FormPanel>
       </span>
-    </div>
-  {/if}
+    {/if}
+    {#if FriendlySource && saleType}
+      <span class="sticky">
+        <FormPanel heading="Human Readable Source">
+          <HumanReadable
+            signer={$signerAddress}
+            contractType="sale"
+            {FriendlySource}
+          />
+        </FormPanel>
+      </span>
+    {/if}
+  </div>
 </div>
 
 <style>
@@ -1087,8 +1211,15 @@
     margin-top: 15px;
   }
 
-  span.sticky {
+  span.relative {
     margin-top: 52px;
+    float: right;
+    position: relative;
+    /* top: 90px; */
+    padding: 5px;
+  }
+
+  span.sticky {
     float: right;
     position: sticky;
     top: 90px;

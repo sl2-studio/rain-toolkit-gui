@@ -1,13 +1,14 @@
 <script>
   import { BigNumber, ethers } from "ethers";
+  import { formatUnits } from "ethers/lib/utils";
   import { push } from "svelte-spa-router";
   import Button from "../../components/Button.svelte";
   import FormPanel from "../../components/FormPanel.svelte";
   import { operationStore, query } from "@urql/svelte";
 
-  const balanceTiers = operationStore(`
+  const transferTiers = operationStore(`
 query {
-  erc721BalanceTiers {
+  erc20TransferTiers {
     id
     address
     deployBlock
@@ -17,56 +18,57 @@ query {
       id
       name
       symbol
+      decimals
     }
     tierValues
   }
 }
 `);
 
-  query(balanceTiers);
+  query(transferTiers);
 </script>
 
-{#if $balanceTiers.fetching}
+{#if $transferTiers.fetching}
   Loading...
-{:else if $balanceTiers.error}
+{:else if $transferTiers.error}
   <span class="text-red-400"
     >Something went wrong, try refreshing the page.</span
   >
 {:else}
   <div class="flex flex-col gap-y-3">
-    {#each $balanceTiers.data.erc721BalanceTiers as balanceTier}
+    {#each $transferTiers.data.erc20TransferTiers as transferTier}
       <FormPanel>
         <div class="flex flex-col gap-y-2 mb-4">
-          <span class="text-white">ERC721BalanceTier details</span>
+          <span class="text-white">TransferTier details</span>
           <div class="text-gray-400 flex flex-col">
-            <span>Contract Address: {balanceTier.id}</span>
-            <span>Deployer: {balanceTier.deployer}</span>
+            <span>Contract Address: {transferTier.id}</span>
+            <span>Deployer: {transferTier.deployer}</span>
             <span
               >Deployed: {Date(
-                balanceTier.deployTimestamp
+                transferTier.deployTimestamp
               ).toLocaleString()}</span
             >
             <span>
               Token tiers:
-              {#each balanceTier.tierValues as tierValue}
+              {#each transferTier.tierValues as tierValue}
                 {#if !BigNumber.from(tierValue).eq(ethers.constants.MaxInt256)}
-                  {tierValue.toString()},
+                  {formatUnits(tierValue, transferTier.token.decimals)},
                 {/if}
               {/each}
             </span>
           </div>
         </div>
         <div class="flex flex-col gap-y-2 mb-4">
-          <span class="text-white">ERC721 details</span>
+          <span class="text-white">ERC20 details</span>
           <div class="text-gray-400 flex flex-col">
-            <span>Name: {balanceTier.token.name}</span>
-            <span>Symbol: {balanceTier.token.symbol}</span>
-            <span>Address: {balanceTier.token.id}</span>
+            <span>Name: {transferTier.token.name}</span>
+            <span>Symbol: {transferTier.token.symbol}</span>
+            <span>Address: {transferTier.token.id}</span>
           </div>
         </div>
         <div class="flex flex-row gap-x-2">
           <Button
-            on:click={push(`/erc721balancetier/report/${balanceTier.address}`)}
+            on:click={push(`/erc20transfertier/report/${transferTier.address}`)}
             >Report</Button
           >
         </div>

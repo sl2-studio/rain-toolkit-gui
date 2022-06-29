@@ -102,7 +102,12 @@ query ($saleAddress: Bytes!) {
         Number(+formatUnits(sale.totalRaised, sale.reserve.decimals)) >= Number(+formatUnits(sale.canEndStateConfig.constants[2]))
       )
         ? getAfterTimestampDate(sale.canEndStateConfig, 1).getTime() / 1000
-        : getAfterTimestampDate(sale.canEndStateConfig, 0).getTime() / 1000;
+        : (
+            (sale.canEndStateConfig.sources[0] === "0x060001001f0001012f001e002102" ||
+            sale.canEndStateConfig.sources[0] === "0x010207001d00060001001f0001012f001e00210201031c00") &&
+            Number(+formatUnits(sale.totalRaised, sale.reserve.decimals)) >= Number(+formatUnits(sale.canEndStateConfig.constants[1]))
+          )
+        ? now : getAfterTimestampDate(sale.canEndStateConfig, 0).getTime() / 1000;
 
     if (sale?.saleStatus == 1) {
       const start = parseInt(sale.startEvent.timestamp);
@@ -129,6 +134,15 @@ query ($saleAddress: Bytes!) {
     <div class="mb-2 flex flex-col gap-y-2">
       <span class="text-xl"
         ><span class="text-gray-400">Sale Duration Mode:</span> Extra Time</span
+      >
+    </div>
+  {:else if (
+    (sale.canEndStateConfig.sources[0] === "0x060001001f0001012f001e002102" ||
+    sale.canEndStateConfig.sources[0] === "0x010207001d00060001001f0001012f001e00210201031c00") 
+  )}
+    <div class="mb-2 flex flex-col gap-y-2">
+      <span class="text-xl"
+        ><span class="text-gray-400">Sale Duration Mode:</span> Minimum Target</span
       >
     </div>
   {:else}
@@ -183,7 +197,7 @@ query ($saleAddress: Bytes!) {
             .unix(getAfterTimestamp(sale.canStartStateConfig, 0))
             .format("MMM D h:mm:ssa")}
           {#if sale.canStartStateConfig.sources[0] === "0x010107001d00060001001f0001021c00"}
-            <span class="text-small text-gray-400">(Only by the creator)</span>
+            <span class="text-xs text-gray-400">(only by the creator)</span>
           {/if}
         </td>
       </tr>
@@ -201,7 +215,26 @@ query ($saleAddress: Bytes!) {
               .unix(getAfterTimestamp(sale.canEndStateConfig, 1))
               .format("MMM D h:mm:ssa")}
             {#if sale.canStartStateConfig.sources[0] === "0x010107001d00060001001f0001021c00"}
-              <span class="text-small text-gray-400">(Only by the creator)</span
+              <span class="text-xs text-gray-400">(only by the creator)</span
+              >
+            {/if}
+          </td>
+        </tr>
+      {:else if (
+        (sale.canEndStateConfig.sources[0] === "0x060001001f0001012f001e002102" ||
+        sale.canEndStateConfig.sources[0] === "0x010207001d00060001001f0001012f001e00210201031c00") 
+      )}
+        <tr>
+          <td class="text-gray-400">Can end:</td>
+          <td
+            >{dayjs
+              .unix(getAfterTimestamp(sale.canEndStateConfig, 0))
+              .format("MMM D h:mm:ssa")}
+            {#if sale.canStartStateConfig.sources[0] === "0x010107001d00060001001f0001021c00"}
+              <span class="text-gray-400 text-xs">(or min target hit-creator)</span
+              >
+            {:else}
+            <span class="text-gray-400 text-xs">(or by min target hit)</span
               >
             {/if}
           </td>
@@ -214,7 +247,7 @@ query ($saleAddress: Bytes!) {
               .unix(getAfterTimestamp(sale.canEndStateConfig, 0))
               .format("MMM D h:mm:ssa")}
             {#if sale.canStartStateConfig.sources[0] === "0x010107001d00060001001f0001021c00"}
-              <span class="text-gray-400 text-small">(Only by the creator)</span
+              <span class="text-gray-400 text-xs">(only by the creator)</span
               >
             {/if}
           </td>

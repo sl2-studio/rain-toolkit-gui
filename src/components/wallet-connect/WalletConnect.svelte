@@ -1,7 +1,7 @@
 <script lang="ts">
   import { ethers } from "ethers";
   import Web3Modal from "web3modal";
-  import { providerOptions } from "../../constants";
+  import { networks, providerOptions } from "../../constants";
   import { defaultEvmStores, signerAddress } from "svelte-ethers-store";
   import User from "../../components/User.svelte";
   import { selectedNetwork } from "src/stores";
@@ -28,9 +28,14 @@
       const webLibrary = new ethers.providers.Web3Provider(webProvider);
       defaultEvmStores.setProvider(webProvider);
       const network = await webLibrary.getNetwork();
-      providers = webProvider;
       library = webLibrary;
-      networkName = network.name;
+      // networkName = network.name;
+
+      networks.forEach((element) => {
+        if (parseInt(element.config.chainId) === network.chainId) {
+          networkName = element.config.chainName;
+        }
+      });
     } catch (err) {
       console.log(err);
     }
@@ -44,7 +49,9 @@
 <div class="flex items-center gap-y-4">
   {#if $signerAddress}
     {#if changedName}
-      <span class="mr-2 text-gray-400">
+      <span
+        class="align-center ease mr-2 flex w-max cursor-pointer rounded-full bg-gray-200 px-4 py-2 text-sm font-bold text-gray-500 transition duration-300 active:bg-gray-300"
+      >
         <User
           address={$signerAddress}
           name={null}
@@ -53,7 +60,9 @@
         />
       </span>
     {:else}
-      <span class="mr-2 text-gray-400">
+      <span
+        class="mr-2 px-4 py-2 rounded-full text-gray-600 bg-gray-200 font-bold text-sm flex align-center w-max cursor-pointer active:bg-gray-300 transition duration-300 ease"
+      >
         <User
           address={$signerAddress}
           name={null}

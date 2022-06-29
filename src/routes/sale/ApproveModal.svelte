@@ -5,6 +5,7 @@
   import { ethers } from "ethers";
   import { getContext } from "svelte";
   import { selectedNetwork } from "src/stores";
+  import { Logger } from "ethers/lib/utils";
 
   const { close } = getContext("simple-modal");
 
@@ -28,11 +29,29 @@
     errorMsg;
 
   const approve = async () => {
+    let tx;
     txStatus = TxStatus.AwaitingSignature;
-    const tx = await reserve.approve(saleData.id, ethers.constants.MaxUint256);
 
-    txStatus = TxStatus.AwaitingConfirmation;
-    txReceipt = await tx.wait();
+    try {
+      tx = await reserve.approve(saleData.id, ethers.constants.MaxUint256);
+
+      txStatus = TxStatus.AwaitingConfirmation;
+      txReceipt = await tx.wait();
+    } catch (error) {
+      if (error.code === Logger.errors.TRANSACTION_REPLACED) {
+        if (error.cancelled) {
+          errorMsg = "Transaction Cancelled";
+          txStatus = TxStatus.Error;
+          return;
+        } else {
+          txReceipt = await error.replacement.wait();
+        }
+      } else {
+        errorMsg = error.data?.message || error?.message;
+        txStatus = TxStatus.Error;
+        return;
+      }
+    }
 
     activeStep = ApproveSteps.Complete;
     txStatus = TxStatus.None;

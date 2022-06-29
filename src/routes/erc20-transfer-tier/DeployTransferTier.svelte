@@ -1,11 +1,11 @@
 <script lang="ts">
   import { signer, signerAddress } from "svelte-ethers-store";
   import Input from "../../components/Input.svelte";
-  import { ethers } from "ethers";
+  import { BigNumber, ethers } from "ethers";
   import FormPanel from "../../components/FormPanel.svelte";
   import Button from "../../components/Button.svelte";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
-  import { ERC20BalanceTier, ERC20 } from "rain-sdk";
+  import { ERC20TransferTier, ERC20 } from "rain-sdk";
 
   let erc20Address,
     erc20AddressError,
@@ -16,6 +16,7 @@
     erc20decimals;
   let deployPromise;
   let tiers = [];
+  tiers[0] = 0;
 
   $: if (erc20Address) {
     getERC20();
@@ -40,14 +41,13 @@
     }
   };
 
-  const deployBalanceTier = async () => {
+  const deployTransferTier = async () => {
     const parsedTiers = tiers.map((value) =>
-      value
-        ? ethers.utils.parseUnits(value.toString(), erc20decimals)
-        : ethers.constants.MaxInt256
+      ethers.utils.parseUnits(value.toString(), erc20decimals)
     );
+    console.log("parse", parsedTiers);
 
-    let newBalanceTier = await ERC20BalanceTier.deploy($signer, {
+    let newBalanceTier = await ERC20TransferTier.deploy($signer, {
       erc20: erc20Contract.address,
       tierValues: parsedTiers,
     });
@@ -56,21 +56,21 @@
   };
 
   const handleClick = () => {
-    deployPromise = deployBalanceTier();
+    deployPromise = deployTransferTier();
   };
 </script>
 
 <div class="flex max-w-prose flex-col gap-y-4">
   <div class="mb-2 flex flex-col gap-y-2">
-    <span class="text-2xl"> Deploy a new BalanceTier. </span>
+    <span class="text-2xl"> Deploy a new TransferTier. </span>
     <span class="text-gray-400">
-      Create Tier statuses corresponding to holding at least a certain amount of
-      an ERC20.
+      Create Tier statuses corresponding to locking up at least a certain amount of
+      an ERC20 in the contract.
     </span>
   </div>
-  <FormPanel heading="BalanceTier settings">
+  <FormPanel heading="TransferTier settings">
     <Input type="address" placeholder="Token address" bind:value={erc20Address}>
-      <span slot="label">Choose an ERC20 token to check the balance of.</span>
+      <span slot="label">ERC20 token address</span>
       <span slot="description">
         {#if erc20AddressError}
           <span class="text-red-500">
@@ -86,9 +86,9 @@
       </span>
     </Input>
     <div class="flex w-full flex-col gap-y-3">
-      <Input type="number" placeholder="Tier 1" bind:value={tiers[0]}>
+      <Input type="text" placeholder="Tier 1 value is reserved as ZERO for canceling tier membership" disabled>
         <span slot="label"
-          >Set the amount of token that must be held for each of the tiers.</span
+          >Set the amount of token that must be locked up for each tier</span
         >
       </Input>
       <Input type="number" placeholder="Tier 2" bind:value={tiers[1]} />
@@ -103,9 +103,9 @@
   <FormPanel>
     <div class="mt-1 flex flex-col gap-y-2">
       {#if !deployPromise}
-        <Button shrink on:click={handleClick}>Deploy BalanceTier</Button>
+        <Button shrink on:click={handleClick}>Deploy TransferTier</Button>
       {:else}
-        <ContractDeploy {deployPromise} type="ERC20BalanceTier" />
+        <ContractDeploy {deployPromise} type="ERC20TransferTier" />
       {/if}
     </div>
   </FormPanel>

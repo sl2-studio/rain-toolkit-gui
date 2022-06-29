@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { formatUnits, parseUnits } from "ethers/lib/utils";
+  import { formatUnits, Logger, parseUnits } from "ethers/lib/utils";
   import Button from "../../../components/Button.svelte";
   import Steps from "../../../components/steps/Steps.svelte";
   import Ring from "../../../components/Ring.svelte";
@@ -64,14 +64,24 @@
 
     try {
       tx = await redeemableEscrow.undeposit(data.redeemableSupply, units);
-    } catch (error) {
-      errorMsg = error.data?.message || error?.message;
-      txStatus = TxStatus.Error;
-      return;
-    }
 
-    txStatus = TxStatus.AwaitingConfirmation;
-    txReceipt = await tx.wait();
+      txStatus = TxStatus.AwaitingConfirmation;
+      txReceipt = await tx.wait();
+    } catch (error) {
+      if (error.code === Logger.errors.TRANSACTION_REPLACED) {
+        if (error.cancelled) {
+          errorMsg = "Transaction Cancelled";
+          txStatus = TxStatus.Error;
+          return;
+        } else {
+          txReceipt = await error.replacement.wait();
+        }
+      } else {
+        errorMsg = error.data?.message || error?.message;
+        txStatus = TxStatus.Error;
+        return;
+      }
+    }
 
     txStatus = TxStatus.None;
     activeStep = UndepositSteps.Complete;

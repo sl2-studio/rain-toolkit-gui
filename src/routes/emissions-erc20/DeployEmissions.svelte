@@ -17,7 +17,7 @@
     LinearEmissions,
     SequentialEmissions,
   } from "rain-sdk";
-  
+  import EmissionSmallSimulationChart from "./EmissionSmallSimulationChart.svelte";
 
   let deployPromise;
 
@@ -196,11 +196,10 @@
         items={emissionsOptions}
         bind:value={emissionsType}
         on:change={() => {
-          if (emissionsType.value){
+          if (emissionsType.value) {
             document.getElementById("maxReward").style.display = "block";
             document.getElementById("inc").style.display = "block";
-          }
-          else {
+          } else {
             document.getElementById("maxReward").style.display = "none";
             document.getElementById("inc").style.display = "none";
           }
@@ -460,18 +459,14 @@
     {/if}
   </div>
   <div class="flex w-2/5 flex-col gap-y-4">
-    <!-- {#if emissionVals && emissionsType}
+    {#if FriendlySource && emissionsType}
       <span class="relative">
         <FormPanel>
-          <SaleSmallSimulationChart
-            emissionsType={emissionsType.value}
-            {saleVals}
-            {reserveErc20}
-          />
+          <EmissionSmallSimulationChart {FriendlySource} />
         </FormPanel>
       </span>
-    {/if} -->
-    {#if FriendlySource}
+    {/if}
+    {#if FriendlySource && emissionsType}
       <span class="sticky">
         <FormPanel heading="Human Readable Source">
           <HumanReadable
@@ -486,8 +481,15 @@
 </div>
 
 <style>
-  span.sticky {
+  span.relative {
     margin-top: 80px;
+    float: right;
+    position: relative;
+    /* top: 90px; */
+    padding: 5px;
+  }
+
+  span.sticky {
     float: right;
     position: sticky;
     top: 90px;

@@ -48,7 +48,7 @@
     "js-sha3": "^0.8.0",
     "postcss": "^7.0.39",
     "process": "^0.11.10",
-    "rain-sdk": "^1.2.9",
+    "rain-sdk": "^1.2.11",
     "sirv-cli": "^1.0.0",
     "svelte-ethers-store": "^0.6.3",
     "svelte-loading-animation": "^0.0.1",

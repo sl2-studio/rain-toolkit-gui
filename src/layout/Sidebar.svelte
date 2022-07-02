@@ -92,9 +92,11 @@
     </SidebarLinkGroup>
 
     <SidebarLinkGroup label="Deploy ERC20" url="/erc20/*">
-      <SidebarLink url="/mint-erc20/deploy">
+      <SidebarLink url="/erc20/deploy">
         Deploy an ERC20 Token
       </SidebarLink>
+
+      <SidebarLink url="/erc20/mint/">Mint From An Existing ERC20</SidebarLink>
     </SidebarLinkGroup>
 
   </div>

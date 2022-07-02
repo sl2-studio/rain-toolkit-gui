@@ -30,6 +30,17 @@
       });
       defaultEvmStores.setProvider();
       name = network.config.chainName;
+      selectedNetwork.update(
+        (net) =>
+          networks[
+            networks.findIndex((net) => {
+              return (
+                parseInt(net.config.chainId) ===
+                parseInt(network.config.chainId)
+              );
+            })
+          ]
+      );
     } catch (switchError) {
       // This error code indicates that the chain has not been added to MetaMask.
       if (switchError.code === 4902) {
@@ -41,6 +52,17 @@
           });
           defaultEvmStores.setProvider();
           name = network.config.chainName;
+          selectedNetwork.update(
+            (net) =>
+              networks[
+                networks.findIndex((net) => {
+                  return (
+                    parseInt(net.config.chainId) ===
+                    parseInt(network.config.chainId)
+                  );
+                })
+              ]
+          );
         } catch (addError) {}
       }
       if (switchError.code === 4001) {

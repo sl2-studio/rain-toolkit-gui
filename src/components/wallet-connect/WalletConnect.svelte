@@ -1,20 +1,22 @@
 <script lang="ts">
   import { ethers } from "ethers";
   import Web3Modal from "web3modal";
-  import { networks, providerOptions } from "../../constants";
+  import { networks, providerOptions, networkNameAlias } from "../../constants";
   import { defaultEvmStores, signerAddress } from "svelte-ethers-store";
   import User from "../../components/User.svelte";
-  import { selectedNetwork } from "src/stores";
   import Select from "../../components/Select.svelte";
   import selectNetwork from "./selectNetwork.svelte";
   import { getContext } from "svelte";
+  import { selectedNetwork } from "src/stores";
+  import { writable } from "svelte/store";
 
   const { open } = getContext("simple-modal");
 
   let providers,
     library,
     networkName,
-    changedName = false;
+    changedName = false,
+    Network;
 
   const web3Modal = new Web3Modal({
     cacheProvider: false, // optional
@@ -25,21 +27,32 @@
     try {
       await web3Modal.clearCachedProvider();
       const webProvider = await web3Modal.connect();
+
       const webLibrary = new ethers.providers.Web3Provider(webProvider);
-      defaultEvmStores.setProvider(webProvider);
       const network = await webLibrary.getNetwork();
       library = webLibrary;
-      // networkName = network.name;
 
-      networks.forEach((element) => {
-        if (parseInt(element.config.chainId) === network.chainId) {
-          networkName = element.config.chainName;
-        }
-      });
+      networkName = networkNameAlias[network.name.toString().toUpperCase()];
+
+      // networks.forEach((element, index) => {
+      //   if (parseInt(element.config.chainId) === network.chainId) {
+      //     // networkName = element.config.chainName;
+      //   }
+      // });
+      selectedNetwork.update(
+        (net) =>
+          networks[
+            networks.findIndex((net) => {
+              return parseInt(net.config.chainId) === network.chainId;
+            })
+          ]
+      );
+      defaultEvmStores.setProvider(webProvider);
     } catch (err) {
       console.log(err);
     }
   };
+
   const onNetworkChange = (text) => {
     networkName = text;
     changedName = true;
@@ -77,6 +90,8 @@
       >Change Network</button
     >
   {:else}
+    <!-- <span>Choose network:</span>
+    <Select bind:value={$selectedNetwork} items={networks} /> -->
     <button
       class="rounded-md border-none bg-gray-700 px-4 py-2 text-gray-200"
       on:click={connectWallet}>Connect Wallet</button

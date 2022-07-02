@@ -1,4 +1,5 @@
 <script>
+  import { Signer } from "ethers";
   import { getContext } from "svelte";
   import { signerAddress } from "svelte-ethers-store";
   import Connect from "../components/Connect.svelte";
@@ -7,9 +8,9 @@
 
   const { open } = getContext("simple-modal");
 
-  const handleConnect = () => {
-    // open(Connect);
-  };
+  // const handleConnect = () => {
+  //   open(WalletConnect);
+  // };
 </script>
 
 <div

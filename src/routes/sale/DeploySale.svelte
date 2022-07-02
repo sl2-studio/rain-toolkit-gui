@@ -151,7 +151,6 @@
     creatorControlMode: creatorControlCheck,
     afterMinimumRaiseMode: afterMinimumRaiseCheck,
 
-
     recipient,
     reserve,
     startBlock,
@@ -233,7 +232,7 @@
         $signer,
         $signerAddress,
         saleParams,
-        reserveErc20.erc20decimals
+        reserveErc20?.erc20decimals
       );
     }
   };
@@ -301,12 +300,12 @@
           <span slot="description">
             {#if reserveErc20}
               <div class="flex flex-col gap-y-1">
-                <span>Name: {reserveErc20.erc20name}</span>
-                <span>Symbol: {reserveErc20.erc20symbol}</span>
+                <span>Name: {reserveErc20?.erc20name}</span>
+                <span>Symbol: {reserveErc20?.erc20symbol}</span>
                 <span>
                   Your balance: {formatUnits(
-                    reserveErc20.erc20balance,
-                    reserveErc20.erc20decimals.toString()
+                    reserveErc20?.erc20balance,
+                    reserveErc20?.erc20decimals.toString()
                   )}
                 </span>
               </div>

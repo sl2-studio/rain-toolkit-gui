@@ -7,7 +7,8 @@
   import { tierReport } from "../../utils";
   import { push } from "svelte-spa-router";
   import { operationStore, query } from "@urql/svelte";
-  import { ERC721BalanceTier, ERC721 } from "rain-sdk";
+  import { ERC721BalanceTier, ERC721, AddressBook } from "rain-sdk";
+  import { selectedNetwork } from "src/stores";
 
   export let params;
 
@@ -45,6 +46,9 @@
     {
       pause: true,
       requestPolicy: "network-only",
+      url: AddressBook.getSubgraphEndpoint(
+        parseInt($selectedNetwork.config.chainId, 16)
+      ),
     }
   );
 

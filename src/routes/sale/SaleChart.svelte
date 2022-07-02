@@ -14,6 +14,9 @@
   import { formatAddress } from "src/utils";
   import { writable } from "svelte/store";
   import IconLibrary from "src/components/IconLibrary.svelte";
+  import { selectedNetwork } from "src/stores";
+  import { AddressBook } from "rain-sdk";
+  import { chainId } from "svelte-ethers-store";
   export let saleContract: Contract;
   export let reserve, token;
 
@@ -32,11 +35,22 @@
   $saleBuysQuery.variables.saleContractAddress =
     saleContract.address.toLowerCase();
 
+  // $saleBuysQuery.variables.selectedNetwork = selectedNetwork
+
   query(saleBuysQuery);
 
   const refresh = () => {
     saleBuysQuery.reexecute();
   };
+
+  $: if (parseInt($selectedNetwork.config.chainId, 16) == $chainId) {
+    saleBuysQuery.reexecute({
+      requestPolicy: "network-only",
+      url: AddressBook.getSubgraphEndpoint(
+        parseInt($selectedNetwork.config.chainId, 16)
+      ),
+    });
+  }
 
   // mapping data from the subgraph query into a format for the chart
   saleBuysQuery.subscribe((query) => {

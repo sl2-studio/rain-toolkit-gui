@@ -7,11 +7,11 @@
   import { tierReport } from "../../utils";
   import { push } from "svelte-spa-router";
   import { operationStore, query } from "@urql/svelte";
-  import { ERC20TransferTier, ERC20 } from "rain-sdk";
+  import { ERC20TransferTier, ERC20, AddressBook } from "rain-sdk";
   import SetTransferTier from "./SetTransferTier.svelte";
   import { getContext } from "svelte";
   import TransferTierHistory from "./TransferTierHistory.svelte";
-import { Token } from "graphql";
+  import { selectedNetwork } from "src/stores";
 
   const { open } = getContext("simple-modal");
 
@@ -54,6 +54,9 @@ query ($transferTierAddress: Bytes!) {
     {
       pause: true,
       requestPolicy: "network-only",
+      url: AddressBook.getSubgraphEndpoint(
+        parseInt($selectedNetwork.config.chainId, 16)
+      ),
     }
   );
 
@@ -109,7 +112,8 @@ query ($transferTierAddress: Bytes!) {
   <div class="mb-2 flex flex-col gap-y-2">
     <span class="text-2xl"> Get a TransferTier report. </span>
     <span class="text-gray-400">
-      TransferTier stores the time (block number) when an address joins a tier by locking up the required amount of tokens for that tier
+      TransferTier stores the time (block number) when an address joins a tier
+      by locking up the required amount of tokens for that tier
     </span>
     {#if !params.wild}
       <span class="text-gray-400">
@@ -142,9 +146,7 @@ query ($transferTierAddress: Bytes!) {
             {_transferTier.token.symbol}</span
           >
         {/if}
-        <span class="gap-y-1">
-          TransferTier Report:
-        </span>
+        <span class="gap-y-1"> TransferTier Report: </span>
         {#each _transferTier.tierValues as value, i}
           <span class="text-gray-400">
             Tier {i + 1} :
@@ -167,16 +169,14 @@ query ($transferTierAddress: Bytes!) {
       </div>
       <div class="flex w-full gap-x-2 self-stretch">
         <div class="w-1/2">
-          <span class="gap-y-1">
-            Token values of each tier:
-          </span>
+          <span class="gap-y-1"> Token values of each tier: </span>
           {#each _transferTier.tierValues as value, i}
             <div class="text-gray-400">
               Tier {i + 1} : {ethers.utils.formatUnits(
                 value,
                 _transferTier.token.decimals
-              )
-              } {_transferTier.token.symbol}
+              )}
+              {_transferTier.token.symbol}
             </div>
           {/each}
         </div>

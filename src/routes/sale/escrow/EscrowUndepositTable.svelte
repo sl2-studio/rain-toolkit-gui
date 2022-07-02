@@ -2,12 +2,14 @@
   import { formatAddress } from "src/utils";
   import { query } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
-  import { signerAddress } from "svelte-ethers-store";
+  import { signerAddress, chainId } from "svelte-ethers-store";
   import { getContext } from "svelte";
   import IconLibrary from "../../../components/IconLibrary.svelte";
   import { allUndepositQuery, myUndepositQuery } from "./escrow-queries";
   import Switch from "src/components/Switch.svelte";
   import EscrowUndepositModal from "./EscrowUndepositModal.svelte";
+  import { AddressBook } from "rain-sdk";
+  import { selectedNetwork } from "../../../stores";
 
   const { open } = getContext("simple-modal");
   export let salesContract, saleData;
@@ -31,6 +33,15 @@
   const refresh = () => {
     $txQuery.reexecute();
   };
+
+  // $: if (parseInt($selectedNetwork.config.chainId, 16) == $chainId) {
+  //   $txQuery.reexecute({
+  //     requestPolicy: "network-only",
+  //     url: AddressBook.getSubgraphEndpoint(
+  //       parseInt($selectedNetwork.config.chainId, 16)
+  //     ),
+  //   });
+  // }
 </script>
 
 <div class="flex w-full flex-col gap-y-4">

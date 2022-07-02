@@ -1,13 +1,13 @@
 <script lang="ts">
   import { createClient, setClient } from "@urql/svelte";
 
-  // import { selectedNetwork } from "./stores";
-
   import { AddressBook } from "rain-sdk";
+  import { chainId } from "svelte-ethers-store";
 
+  let ChainId = typeof $chainId == "number" ? $chainId : parseInt($chainId, 16);
   let client = createClient({
-    // url: $selectedNetwork.graphUrl,
-    url: AddressBook.getSubgraphEndpoint(80001),
+    // url: $selectedNetwork.graphUrl, selectedNetwork.config.
+    url: AddressBook.getSubgraphEndpoint(ChainId),
   });
 
   setClient(client);

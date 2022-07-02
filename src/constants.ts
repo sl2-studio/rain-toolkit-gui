@@ -7,6 +7,16 @@ const customNetworkOptions = {
   chainId: 80001
 }
 
+export const networkNameAlias = {
+  HOMESTEAD: "Ethereum",
+  BNB: "BSC Mainnet",
+  UNKNOWN: "Avalanche Testnet",
+  BNBT: "BSC Testnet",
+  MATIC: "Polygon",
+  MATICMUM: "Mumbai",
+  GOERLI: "Goerli"
+}
+
 export const providerOptions = {
   injected: {
     display: {
@@ -19,7 +29,11 @@ export const providerOptions = {
     package: Fortmatic, // required
     options: {
       key: "pk_live_1BE6BBD3BEAFCDDD", // required
-      network: customNetworkOptions // if we don't pass it, it will default to localhost:8454
+      rpc: {
+        80001: "https://matic-mumbai.chainstacklabs.com",
+        137: "https://polygon-rpc.com"
+      }
+      // network: customNetworkOptions // if we don't pass it, it will default to localhost:8454
     }
   },
   walletconnect: {
@@ -28,7 +42,12 @@ export const providerOptions = {
       infuraId: "0f270373e0934beda174c537257386b0",
       rpc: {
         80001: "https://matic-mumbai.chainstacklabs.com",
-        137: "https://polygon-rpc.com"
+        137: "https://polygon-rpc.com",
+        43113: "https://api.avax-test.network/ext/bc/C/rpc",
+        97: "https://data-seed-prebsc-1-s1.binance.org:8545",
+        56: 'https://bsc-dataseed.binance.org/',
+        1: 'https://eth-mainnet.public.blastapi.io',
+        420: 'https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'
       },
     }
   },
@@ -192,19 +211,19 @@ export const networks = [{
   blockExplorer: 'https://goerli.etherscan.io',
   graphUrl: 'https://api.thegraph.com/subgraphs/name/beehive-innovation/rain-protocol-goerli-e590ce'
 },
-// {
-//   label: " Kovan",
-//   config: {
-//     chainId: "0x2a",
-//     chainName: ' Kovan',
-//     rpcUrls: ['https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
-//     nativeCurrency: {
-//       name: ' Kovan',
-//       symbol: 'ETH',
-//       decimals: 18
-//     },
-//     blockExplorerUrls: ['https://kovan.etherscan.io']
-//   }
-// }
+  // {
+  //   label: " Kovan",
+  //   config: {
+  //     chainId: "0x2a",
+  //     chainName: ' Kovan',
+  //     rpcUrls: ['https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
+  //     nativeCurrency: {
+  //       name: ' Kovan',
+  //       symbol: 'ETH',
+  //       decimals: 18
+  //     },
+  //     blockExplorerUrls: ['https://kovan.etherscan.io']
+  //   }
+  // }
 ]
 

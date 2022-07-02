@@ -7,6 +7,7 @@
   import dayjs from "dayjs";
   import { selectedNetwork } from "src/stores";
   import { operationStore, query } from "@urql/svelte";
+  import { AddressBook } from "rain-sdk";
 
   const { open } = getContext("simple-modal");
   export let tierAddress;
@@ -33,12 +34,15 @@ query ($transferTierAddress: Bytes!, $signer: Bytes!) {
   }
 }
 `,
-  { 
-    transferTierAddress,
-    signer 
-  },
+    {
+      transferTierAddress,
+      signer,
+    },
     {
       requestPolicy: "network-only",
+      url: AddressBook.getSubgraphEndpoint(
+        parseInt($selectedNetwork.config.chainId, 16)
+      ),
     }
   );
 
@@ -75,7 +79,7 @@ query ($transferTierAddress: Bytes!, $signer: Bytes!) {
     Loading transactions...
   {:else if $transferTierQuery.error}
     Something went wrong.
-  {:else if $transferTierQuery?.data?.erc20TransferTiers[0].tierChanges.length}
+  {:else if $transferTierQuery?.data?.erc20TransferTiers[0]?.tierChanges.length}
     <table class="table-auto w-full space-y-2 text-sm">
       <tr class="border-b border-gray-600 uppercase text-sm">
         <th class="text-gray-400 text-left pb-2 font-light ">Current Tier</th>

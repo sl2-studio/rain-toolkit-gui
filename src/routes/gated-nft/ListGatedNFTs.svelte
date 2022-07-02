@@ -3,8 +3,12 @@
   import { push } from "svelte-spa-router";
   import Button from "../../components/Button.svelte";
   import FormPanel from "../../components/FormPanel.svelte";
+  import { AddressBook } from "rain-sdk";
+  import { chainId } from "svelte-ethers-store";
+  import { selectedNetwork } from "src/stores";
 
-  const gatedNFTs = operationStore(`{
+  const gatedNFTs = operationStore(
+    `{
   gatedNFTs {
     id
     creator
@@ -22,9 +26,26 @@
       address
     }
   }
-}`);
+}`,
+    {},
+    {
+      requestPolicy: "network-only",
+      url: AddressBook.getSubgraphEndpoint(
+        parseInt($selectedNetwork.config.chainId, 16)
+      ),
+    }
+  );
 
   query(gatedNFTs);
+
+  $: if (parseInt($selectedNetwork.config.chainId, 16) == $chainId) {
+    gatedNFTs.reexecute({
+      requestPolicy: "network-only",
+      url: AddressBook.getSubgraphEndpoint(
+        parseInt($selectedNetwork.config.chainId, 16)
+      ),
+    });
+  }
 </script>
 
 {#if $gatedNFTs.fetching}

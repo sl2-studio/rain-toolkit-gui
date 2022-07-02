@@ -2,13 +2,15 @@
   import { formatAddress } from "src/utils";
   import { query } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
-  import { signerAddress } from "svelte-ethers-store";
+  import { signerAddress, chainId } from "svelte-ethers-store";
   import { getContext } from "svelte";
   import IconLibrary from "../../../components/IconLibrary.svelte";
   import { allDepositQuery, myDepositQuery } from "./escrow-queries";
   import Switch from "src/components/Switch.svelte";
   import EscrowWithdrawModal from "./EscrowWithdrawModal.svelte";
   import { onMount } from "svelte/internal";
+  import { AddressBook } from "rain-sdk";
+  import { selectedNetwork } from "../../../stores";
 
   const { open } = getContext("simple-modal");
   export let salesContract, saleData, token;
@@ -32,6 +34,16 @@
     $txQuery.reexecute();
     tokenDetails();
   };
+
+  // $: if (parseInt($selectedNetwork.config.chainId, 16) == $chainId) {
+  //   $txQuery.reexecute({
+  //     requestPolicy: "network-only",
+  //     url: AddressBook.getSubgraphEndpoint(
+  //       parseInt($selectedNetwork.config.chainId, 16)
+  //     ),
+  //   });
+  //   tokenDetails();
+  // }
 
   const tokenDetails = async () => {
     signerBalance = await token.balanceOf($signerAddress.toLowerCase());

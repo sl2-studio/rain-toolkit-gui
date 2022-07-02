@@ -10,6 +10,10 @@
     saleStatuses,
   } from "./sale";
   import dayjs from "dayjs";
+  import { selectedNetwork } from "../../stores";
+  import { chainId } from "svelte-ethers-store";
+
+  import { AddressBook } from "rain-sdk";
 
   export let saleContract;
 
@@ -61,7 +65,10 @@ query ($saleAddress: Bytes!) {
       saleAddress,
     },
     {
-      requestPolicy: "cache-and-network",
+      requestPolicy: "network-only",
+      url: AddressBook.getSubgraphEndpoint(
+        parseInt($selectedNetwork.config.chainId, 16)
+      ),
     }
   );
 
@@ -79,6 +86,15 @@ query ($saleAddress: Bytes!) {
     queryTimeout = setTimeout(queryLoop, 3000);
   };
 
+  $: if (parseInt($selectedNetwork.config.chainId, 16) == $chainId) {
+    buysQuery.reexecute({
+      requestPolicy: "network-only",
+      url: AddressBook.getSubgraphEndpoint(
+        parseInt($selectedNetwork.config.chainId, 16)
+      ),
+    });
+  }
+
   // alias the sale for convenience
   $: sale = $buysQuery.data?.sales[0];
 
@@ -95,19 +111,22 @@ query ($saleAddress: Bytes!) {
   // update the time elapse/remaining
   const getTime = () => {
     const now = Math.floor(Date.now() / 1000);
-    const end = 
-      (
-        (sale.canEndStateConfig.sources[0] === "0x060001001f002f0001021e002002060001011f002102" ||
-        sale.canEndStateConfig.sources[0] === "0x010307001d00060001001f002f0001021e002002060001011f00210201041c00") &&
-        Number(+formatUnits(sale.totalRaised, sale.reserve.decimals)) >= Number(+formatUnits(sale.canEndStateConfig.constants[2]))
-      )
+    const end =
+      (sale.canEndStateConfig.sources[0] ===
+        "0x060001001f002f0001021e002002060001011f002102" ||
+        sale.canEndStateConfig.sources[0] ===
+          "0x010307001d00060001001f002f0001021e002002060001011f00210201041c00") &&
+      Number(+formatUnits(sale.totalRaised, sale.reserve.decimals)) >=
+        Number(+formatUnits(sale.canEndStateConfig.constants[2]))
         ? getAfterTimestampDate(sale.canEndStateConfig, 1).getTime() / 1000
-        : (
-            (sale.canEndStateConfig.sources[0] === "0x060001001f0001012f001e002102" ||
-            sale.canEndStateConfig.sources[0] === "0x010207001d00060001001f0001012f001e00210201031c00") &&
-            Number(+formatUnits(sale.totalRaised, sale.reserve.decimals)) >= Number(+formatUnits(sale.canEndStateConfig.constants[1]))
-          )
-        ? now : getAfterTimestampDate(sale.canEndStateConfig, 0).getTime() / 1000;
+        : (sale.canEndStateConfig.sources[0] ===
+            "0x060001001f0001012f001e002102" ||
+            sale.canEndStateConfig.sources[0] ===
+              "0x010207001d00060001001f0001012f001e00210201031c00") &&
+          Number(+formatUnits(sale.totalRaised, sale.reserve.decimals)) >=
+            Number(+formatUnits(sale.canEndStateConfig.constants[1]))
+        ? now
+        : getAfterTimestampDate(sale.canEndStateConfig, 0).getTime() / 1000;
 
     if (sale?.saleStatus == 1) {
       const start = parseInt(sale.startEvent.timestamp);
@@ -125,21 +144,13 @@ query ($saleAddress: Bytes!) {
 </script>
 
 {#if sale}
-  {
-    #if (
-      sale.canEndStateConfig.sources[0] === "0x060001001f002f0001021e002002060001011f002102" || 
-      sale.canEndStateConfig.sources[0] === "0x010307001d00060001001f002f0001021e002002060001011f00210201041c00"
-    )
-  }
+  {#if sale.canEndStateConfig.sources[0] === "0x060001001f002f0001021e002002060001011f002102" || sale.canEndStateConfig.sources[0] === "0x010307001d00060001001f002f0001021e002002060001011f00210201041c00"}
     <div class="mb-2 flex flex-col gap-y-2">
       <span class="text-xl"
         ><span class="text-gray-400">Sale Duration Mode:</span> Extra Time</span
       >
     </div>
-  {:else if (
-    (sale.canEndStateConfig.sources[0] === "0x060001001f0001012f001e002102" ||
-    sale.canEndStateConfig.sources[0] === "0x010207001d00060001001f0001012f001e00210201031c00") 
-  )}
+  {:else if sale.canEndStateConfig.sources[0] === "0x060001001f0001012f001e002102" || sale.canEndStateConfig.sources[0] === "0x010207001d00060001001f0001012f001e00210201031c00"}
     <div class="mb-2 flex flex-col gap-y-2">
       <span class="text-xl"
         ><span class="text-gray-400">Sale Duration Mode:</span> Minimum Target</span
@@ -201,13 +212,7 @@ query ($saleAddress: Bytes!) {
           {/if}
         </td>
       </tr>
-      {
-        #if (
-          (sale.canEndStateConfig.sources[0] === "0x060001001f002f0001021e002002060001011f002102" || 
-          sale.canEndStateConfig.sources[0] === "0x010307001d00060001001f002f0001021e002002060001011f00210201041c00") && 
-          Number(+formatUnits(sale.totalRaised, sale.reserve.decimals)) >= Number(+formatUnits(sale.canEndStateConfig.constants[2]))
-        )
-      }
+      {#if (sale.canEndStateConfig.sources[0] === "0x060001001f002f0001021e002002060001011f002102" || sale.canEndStateConfig.sources[0] === "0x010307001d00060001001f002f0001021e002002060001011f00210201041c00") && Number(+formatUnits(sale.totalRaised, sale.reserve.decimals)) >= Number(+formatUnits(sale.canEndStateConfig.constants[2]))}
         <tr>
           <td class="text-gray-400">Can end:</td>
           <td
@@ -215,15 +220,11 @@ query ($saleAddress: Bytes!) {
               .unix(getAfterTimestamp(sale.canEndStateConfig, 1))
               .format("MMM D h:mm:ssa")}
             {#if sale.canStartStateConfig.sources[0] === "0x010107001d00060001001f0001021c00"}
-              <span class="text-xs text-gray-400">(only by the creator)</span
-              >
+              <span class="text-xs text-gray-400">(only by the creator)</span>
             {/if}
           </td>
         </tr>
-      {:else if (
-        (sale.canEndStateConfig.sources[0] === "0x060001001f0001012f001e002102" ||
-        sale.canEndStateConfig.sources[0] === "0x010207001d00060001001f0001012f001e00210201031c00") 
-      )}
+      {:else if sale.canEndStateConfig.sources[0] === "0x060001001f0001012f001e002102" || sale.canEndStateConfig.sources[0] === "0x010207001d00060001001f0001012f001e00210201031c00"}
         <tr>
           <td class="text-gray-400">Can end:</td>
           <td
@@ -231,11 +232,11 @@ query ($saleAddress: Bytes!) {
               .unix(getAfterTimestamp(sale.canEndStateConfig, 0))
               .format("MMM D h:mm:ssa")}
             {#if sale.canStartStateConfig.sources[0] === "0x010107001d00060001001f0001021c00"}
-              <span class="text-gray-400 text-xs">(or min target hit-creator)</span
+              <span class="text-gray-400 text-xs"
+                >(or min target hit-creator)</span
               >
             {:else}
-            <span class="text-gray-400 text-xs">(or by min target hit)</span
-              >
+              <span class="text-gray-400 text-xs">(or by min target hit)</span>
             {/if}
           </td>
         </tr>
@@ -247,8 +248,7 @@ query ($saleAddress: Bytes!) {
               .unix(getAfterTimestamp(sale.canEndStateConfig, 0))
               .format("MMM D h:mm:ssa")}
             {#if sale.canStartStateConfig.sources[0] === "0x010107001d00060001001f0001021c00"}
-              <span class="text-gray-400 text-xs">(only by the creator)</span
-              >
+              <span class="text-gray-400 text-xs">(only by the creator)</span>
             {/if}
           </td>
         </tr>
@@ -262,13 +262,7 @@ query ($saleAddress: Bytes!) {
         </tr>
       {/if}
       {#if sale?.saleStatus == 1}
-        {
-          #if (
-            (sale.canEndStateConfig.sources[0] === "0x060001001f002f0001021e002002060001011f002102" || 
-            sale.canEndStateConfig.sources[0] === "0x010307001d00060001001f002f0001021e002002060001011f00210201041c00") && 
-            Number(+formatUnits(sale.totalRaised, sale.reserve.decimals)) >= Number(+formatUnits(sale.canEndStateConfig.constants[2]))
-          )
-        }
+        {#if (sale.canEndStateConfig.sources[0] === "0x060001001f002f0001021e002002060001011f002102" || sale.canEndStateConfig.sources[0] === "0x010307001d00060001001f002f0001021e002002060001011f00210201041c00") && Number(+formatUnits(sale.totalRaised, sale.reserve.decimals)) >= Number(+formatUnits(sale.canEndStateConfig.constants[2]))}
           <tr>
             <td class="text-gray-400">Time remaining (Extra Time):</td>
             <td>{timeRemaining}</td>
@@ -287,18 +281,13 @@ query ($saleAddress: Bytes!) {
       {#if sale?.saleStatus == 2}
         <tr>
           <td class="text-gray-400">Ended at:</td>
-          <td>{dayjs.unix(sale.endEvent.timestamp).format("MMM D h:mm:ssa")}</td>
+          <td>{dayjs.unix(sale.endEvent.timestamp).format("MMM D h:mm:ssa")}</td
+          >
         </tr>
-    {/if}
+      {/if}
     </table>
   </div>
-  {
-    #if (
-      (sale.canEndStateConfig.sources[0] === "0x060001001f002f0001021e002002060001011f002102" || 
-      sale.canEndStateConfig.sources[0] === "0x010307001d00060001001f002f0001021e002002060001011f00210201041c00") && 
-      Number(+formatUnits(sale.totalRaised, sale.reserve.decimals)) >= Number(+formatUnits(sale.canEndStateConfig.constants[2]))
-    )
-  }
+  {#if (sale.canEndStateConfig.sources[0] === "0x060001001f002f0001021e002002060001011f002102" || sale.canEndStateConfig.sources[0] === "0x010307001d00060001001f002f0001021e002002060001011f00210201041c00") && Number(+formatUnits(sale.totalRaised, sale.reserve.decimals)) >= Number(+formatUnits(sale.canEndStateConfig.constants[2]))}
     {#if sale?.saleStatus == 1}
       <span style="font-size:medium"
         >*The threshold of {Number(
@@ -311,10 +300,10 @@ query ($saleAddress: Bytes!) {
       </span>
     {:else}
       <span style="font-size:medium"
-      >*This sale had
-      {(getAfterTimestamp(sale.canEndStateConfig, 1) -
-        getAfterTimestamp(sale.canEndStateConfig, 0)) /
-        60} minutes of extra time
+        >*This sale had
+        {(getAfterTimestamp(sale.canEndStateConfig, 1) -
+          getAfterTimestamp(sale.canEndStateConfig, 0)) /
+          60} minutes of extra time
       </span>
     {/if}
   {/if}

@@ -7,7 +7,8 @@
   import { tierReport } from "../../utils";
   import { push } from "svelte-spa-router";
   import { operationStore, query } from "@urql/svelte";
-  import { ERC20BalanceTier, ERC20 } from "rain-sdk";
+  import { ERC20BalanceTier, ERC20, AddressBook } from "rain-sdk";
+  import { selectedNetwork } from "src/stores";
 
   export let params;
 
@@ -42,6 +43,9 @@ query ($balanceTierAddress: Bytes!) {
     {
       pause: true,
       requestPolicy: "network-only",
+      url: AddressBook.getSubgraphEndpoint(
+        parseInt($selectedNetwork.config.chainId, 16)
+      ),
     }
   );
 
@@ -127,19 +131,21 @@ query ($balanceTierAddress: Bytes!) {
       </div>
       <div class="flex flex-col gap-y-2">
         <span class="text-lg">Token values for this BalanceTier:</span>
-        {#each _balanceTier.tierValues as value, i}
-          <span class="text-gray-400">
-            Tier {i + 1}: {ethers.utils.formatUnits(
-              value,
-              _balanceTier.token.decimals
-            )}
-            {#if parsedReport?.[i] == 0}
-              ✅
-            {:else if parsedReport?.[i] > 0}
-              ❌
-            {/if}
-          </span>
-        {/each}
+        {#if _balanceTier?.tierValues}
+          {#each _balanceTier.tierValues as value, i}
+            <span class="text-gray-400">
+              Tier {i + 1}: {ethers.utils.formatUnits(
+                value,
+                _balanceTier.token.decimals
+              )}
+              {#if parsedReport?.[i] == 0}
+                ✅
+              {:else if parsedReport?.[i] > 0}
+                ❌
+              {/if}
+            </span>
+          {/each}
+        {/if}
       </div>
       {#if addressBalance}
         <span

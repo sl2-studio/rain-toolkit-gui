@@ -10,9 +10,9 @@
     AwaitingSignature,
     AwaitingConfirmation,
     Error,
-    Confirmed
+    Confirmed,
   }
-  
+
   const { close } = getContext("simple-modal");
 
   export let method: Function;

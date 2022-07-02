@@ -3,12 +3,18 @@
   import Button from "../../components/Button.svelte";
   import FormPanel from "../../components/FormPanel.svelte";
   import { operationStore, query } from "@urql/svelte";
+  import {} from "@ur";
   import { formatUnits } from "ethers/lib/utils";
+  import { selectedNetwork } from "../../stores";
+  import { chainId } from "svelte-ethers-store";
+
+  import { AddressBook } from "rain-sdk";
 
   let skip;
 
   //   query($skip: Int) {
   // sales(first: 100, skip: $skip) {
+
   const sales = operationStore(
     `
 query {
@@ -31,13 +37,26 @@ query {
   }
 }
 `,
+    {},
     {
-      skip,
+      requestPolicy: "network-only",
+      url: AddressBook.getSubgraphEndpoint(
+        parseInt($selectedNetwork.config.chainId, 16)
+      ),
     }
   );
   // let skipRecords = 0;
   // $sales.variables.skip = 0;
   query(sales);
+
+  $: if (parseInt($selectedNetwork.config.chainId, 16) == $chainId) {
+    sales.reexecute({
+      requestPolicy: "network-only",
+      url: AddressBook.getSubgraphEndpoint(
+        parseInt($selectedNetwork.config.chainId, 16)
+      ),
+    });
+  }
 </script>
 
 {#if $sales.fetching}

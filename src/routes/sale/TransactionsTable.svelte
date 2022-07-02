@@ -3,13 +3,14 @@
   import RefundModal from "./RefundModal.svelte";
   import { query } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
-  import { signerAddress } from "svelte-ethers-store";
+  import { signerAddress, chainId } from "svelte-ethers-store";
   import { getContext } from "svelte";
   import IconLibrary from "components/IconLibrary.svelte";
   import dayjs from "dayjs";
   import { selectedNetwork } from "src/stores";
   import { allTxQuery, myTxQuery } from "./sale-queries";
   import Switch from "src/components/Switch.svelte";
+  import { AddressBook } from "rain-sdk";
 
   const { open } = getContext("simple-modal");
   export let saleContract;
@@ -33,6 +34,15 @@
   const refresh = () => {
     $txQuery.reexecute();
   };
+
+  // $: if (parseInt($selectedNetwork.config.chainId, 16) == $chainId) {
+  //   $txQuery.reexecute({
+  //     requestPolicy: "network-only",
+  //     url: AddressBook.getSubgraphEndpoint(
+  //       parseInt($selectedNetwork.config.chainId, 16)
+  //     ),
+  //   });
+  // }
 
   // aliases for convenience
   $: reserve = $txQuery?.data?.saleTransactions[0]?.saleContract.reserve;

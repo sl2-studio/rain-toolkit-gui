@@ -1,6 +1,6 @@
 import { operationStore } from "@urql/svelte";
 
-let saleContractAddress, sender
+let saleContractAddress, sender, selectedNetwork
 
 export const myTxQuery = operationStore(
   `
@@ -135,3 +135,5 @@ export const saleBuysQuery = operationStore(
     requestPolicy: "network-only",
   }
 );
+
+

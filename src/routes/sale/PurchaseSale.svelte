@@ -2,7 +2,7 @@
   import TokenInfo from "./TokenInfo.svelte";
   import { operationStore, query } from "@urql/svelte";
   import { ethers } from "ethers";
-  import { signer } from "svelte-ethers-store";
+  import { signer, chainId } from "svelte-ethers-store";
   import { push } from "svelte-spa-router";
   import Button from "../../components/Button.svelte";
   import FormPanel from "../../components/FormPanel.svelte";
@@ -18,7 +18,8 @@
   import { saleStatuses } from "./sale";
   import EscrowPendingDepositTable from "./escrow/EscrowPendingDepositTable.svelte";
   import EscrowUndepositTable from "./escrow/EscrowUndepositTable.svelte";
-  import { Sale, ERC20 } from "rain-sdk";
+  import { Sale, ERC20, AddressBook } from "rain-sdk";
+  import { selectedNetwork } from "../../stores";
 
   export let params: {
     wild: string;
@@ -62,7 +63,11 @@
       saleAddress,
     },
     {
-      requestPolicy: "cache-and-network",
+      // requestPolicy: "cache-and-network",
+      requestPolicy: "network-only",
+      url: AddressBook.getSubgraphEndpoint(
+        parseInt($selectedNetwork.config.chainId, 16)
+      ),
     }
   );
 
@@ -79,12 +84,22 @@
     errorMsg = "Not a valid contract address";
   }
 
+  // $: if (parseInt($selectedNetwork.config.chainId, 16) == $chainId) {
+  //   saleQuery.reexecute({
+  //     requestPolicy: "network-only",
+  //     url: AddressBook.getSubgraphEndpoint(
+  //       parseInt($selectedNetwork.config.chainId, 16)
+  //     ),
+  //   });
+  //   // query(saleQuery);
+  // }
+
   $: if (!$saleQuery.fetching && $saleQuery.data?.sale) {
     initContracts();
   }
 
   $: saleData = $saleQuery.data?.sale;
-  $: saleStatus = saleStatuses[$saleQuery.data?.sale.saleStatus];
+  $: saleStatus = saleStatuses[$saleQuery.data?.sale?.saleStatus];
 
   const startSale = async () => {
     try {
@@ -207,6 +222,7 @@
       <TransactionsTable saleContract={sale} />
     </FormPanel>
     <EscrowDeposit {saleData} {sale} />
+
     {#if saleStatus == "Success"}
       <FormPanel>
         <EscrowDepositsTable {saleData} salesContract={sale} {token} />

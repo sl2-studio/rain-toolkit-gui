@@ -5,9 +5,9 @@
   import { defaultEvmStores, signerAddress } from "svelte-ethers-store";
   import User from "../../components/User.svelte";
   import { selectedNetwork } from "src/stores";
-  import Select from "../../components/Select.svelte";
   import selectNetwork from "./selectNetwork.svelte";
   import { getContext } from "svelte";
+
 
   const { open } = getContext("simple-modal");
 
@@ -28,12 +28,14 @@
       const webLibrary = new ethers.providers.Web3Provider(webProvider);
       defaultEvmStores.setProvider(webProvider);
       const network = await webLibrary.getNetwork();
+      
       library = webLibrary;
       // networkName = network.name;
 
       networks.forEach((element) => {
         if (parseInt(element.config.chainId) === network.chainId) {
           networkName = element.config.chainName;
+          $selectedNetwork = element;
         }
       });
     } catch (err) {

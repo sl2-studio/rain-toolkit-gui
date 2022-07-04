@@ -6,6 +6,8 @@
   import Button from "../../components/Button.svelte";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
   import { ERC20TransferTier, ERC20 } from "rain-sdk";
+  import { formatUnits } from "ethers/lib/utils";
+  
 
   let erc20Address,
     erc20AddressError,
@@ -80,7 +82,7 @@
           <div class="flex flex-col gap-y-2 font-light text-gray-300">
             <span>Token name: {erc20name}</span>
             <span>Token symbol: {erc20symbol}</span>
-            <span>Your balance: {erc20balance.toString()}</span>
+            <span>Your balance: {formatUnits(erc20balance, erc20decimals.toString())}</span>
           </div>
         {/if}
       </span>

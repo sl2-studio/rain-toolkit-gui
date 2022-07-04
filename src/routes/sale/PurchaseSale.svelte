@@ -1,6 +1,6 @@
 <script lang="ts">
   import TokenInfo from "./TokenInfo.svelte";
-  import { operationStore, query } from "@urql/svelte";
+  import { queryStore } from "@urql/svelte";
   import { ethers } from "ethers";
   import { signer } from "svelte-ethers-store";
   import { push } from "svelte-spa-router";
@@ -19,6 +19,7 @@
   import EscrowPendingDepositTable from "./escrow/EscrowPendingDepositTable.svelte";
   import EscrowUndepositTable from "./escrow/EscrowUndepositTable.svelte";
   import { Sale, ERC20 } from "rain-sdk";
+  import { client } from "src/stores";
 
   export let params: {
     wild: string;
@@ -26,65 +27,64 @@
 
   let sale, reserve, token;
   let errorMsg, saleAddress, saleAddressInput, latestBlock;
-  let startPromise, endPromise;
+  let startPromise, endPromise, temp;
 
-  const saleQuery = operationStore(
-    `
-  query ($saleAddress: Bytes!) {
-    sale (id: $saleAddress) {
-      id
-      token {
-        id
-        name
-        symbol
-        decimals
-        totalSupply
-        minimumTier
-        tier {
-          id
-          __typename
-        }
-      }
-      reserve {
-        id
-        name
-        symbol
-        decimals
-        totalSupply
-      }
-      cooldownDuration
-      deployBlock
-      saleStatus
-    }
-  }
-  `,
-    {
-      saleAddress,
-    },
-    {
-      requestPolicy: "cache-and-network",
+  $: saleQuery = queryStore({
+      client: $client,
+      query:`
+        query ($saleAddress: Bytes!) {
+          sale (id: $saleAddress) {
+            id
+            token {
+              id
+              name
+              symbol
+              decimals
+              totalSupply
+              minimumTier
+              tier {
+                id
+                __typename
+              }
+            }
+            reserve {
+              id
+              name
+              symbol
+              decimals
+              totalSupply
+            }
+            cooldownDuration
+            deployBlock
+            saleStatus
+          }
+        }`,
+      variables: { saleAddress },
+      requestPolicy: "cache-and-network"
     }
   );
 
-  const initContracts = () => {
-    sale = new Sale($saleQuery.data.sale.id, $signer);
-    reserve = new ERC20($saleQuery.data.sale.reserve.id, $signer);
-    token = new ERC20($saleQuery.data.sale.token.id, $signer);
+  $: saleData = !$saleQuery?.fetching && $saleQuery?.data?.sale ? $saleQuery.data.sale : undefined;
+  $: saleStatus = $saleQuery?.data?.sale?.saleStatus ? saleStatuses[$saleQuery.data.sale.saleStatus] : undefined;
+
+  const initContracts = async() => {
+    sale = new Sale($saleQuery?.data?.sale.id, $signer);
+    reserve = new ERC20($saleQuery?.data?.sale.reserve?.id, $signer);
+    token = new ERC20($saleQuery?.data?.sale.token?.id, $signer);
   };
 
   $: if (ethers.utils.isAddress(params.wild)) {
-    $saleQuery.variables.saleAddress = params.wild.toLowerCase();
-    query(saleQuery);
+    saleAddress = params.wild.toLowerCase();
   } else if (params.wild) {
+    saleAddress = undefined;
     errorMsg = "Not a valid contract address";
   }
 
-  $: if (!$saleQuery.fetching && $saleQuery.data?.sale) {
-    initContracts();
-  }
-
-  $: saleData = $saleQuery.data?.sale;
-  $: saleStatus = saleStatuses[$saleQuery.data?.sale.saleStatus];
+  $: if (saleData || $signer) {
+      if (!$saleQuery.fetching && saleData) {
+        initContracts();
+      }
+    }
 
   const startSale = async () => {
     try {
@@ -137,7 +137,7 @@
     Loading...
   {:else if !$saleQuery.data?.sale && $saleQuery.data}
     No Sale found with that address.
-  {:else if sale}
+  {:else if !$saleQuery.fetching && $saleQuery.data && $saleQuery.data.sale}
     <FormPanel>
       <SaleProgress saleContract={sale} />
       <div class="grid grid-cols-2 gap-2 w-full">
@@ -182,8 +182,8 @@
     <FormPanel>
       <SaleChart
         saleContract={sale}
-        token={saleData.token}
-        reserve={saleData.reserve}
+        token={saleData?.token}
+        reserve={saleData?.reserve}
       />
     </FormPanel>
     <FormPanel heading="Eligibility">
@@ -196,10 +196,10 @@
     </FormPanel>
     <div class="grid grid-cols-2 gap-4">
       <FormPanel heading="Raise Token">
-        <TokenInfo tokenData={saleData.token} {signer} />
+        <TokenInfo tokenData={saleData?.token} {signer} />
       </FormPanel>
       <FormPanel heading="Reserve Token">
-        <TokenInfo tokenData={saleData.reserve} {signer} />
+        <TokenInfo tokenData={saleData?.reserve} {signer} />
       </FormPanel>
     </div>
     <Buy {saleData} {sale} {token} {reserve} />
@@ -207,11 +207,11 @@
       <TransactionsTable saleContract={sale} />
     </FormPanel>
     <EscrowDeposit {saleData} {sale} />
-    {#if saleStatus == "Success"}
+    {#if saleStatus != undefined && saleStatus == "Success"}
       <FormPanel>
         <EscrowDepositsTable {saleData} salesContract={sale} {token} />
       </FormPanel>
-    {:else if saleStatus == "Fail"}
+    {:else if saleStatus != undefined && saleStatus == "Fail"}
       <FormPanel>
         <EscrowUndepositTable {saleData} salesContract={sale} />
       </FormPanel>

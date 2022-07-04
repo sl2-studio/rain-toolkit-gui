@@ -1,41 +1,90 @@
 <script lang="ts">
   import { formatAddress } from "src/utils";
-  import { query } from "@urql/svelte";
+  import { queryStore } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
   import { signerAddress } from "svelte-ethers-store";
   import { getContext } from "svelte";
   import IconLibrary from "../../../components/IconLibrary.svelte";
-  import {
-    allPendingDepositQuery,
-    myPendingDepositQuery,
-  } from "./escrow-queries";
   import Switch from "src/components/Switch.svelte";
   import { saleStatuses } from "../sale";
   import EscrowSweepPendingModal from "./EscrowSweepPendingModal.svelte";
+  import { client } from "src/stores";
 
   const { open } = getContext("simple-modal");
 
   export let salesContract;
 
   let checked = true;
+  let temp;
+
+  let saleAddress = salesContract ? salesContract.address.toLowerCase() : undefined;
+  let depositor = $signerAddress.toLowerCase();
+
+  $: allPendingDepositQuery = queryStore({
+      client: $client,
+      query: `
+        query ($saleAddress: Bytes!) {
+          redeemableEscrowPendingDepositorTokens (where: {iSaleAddress: $saleAddress}, orderBy: totalDeposited, orderDirection: asc) {
+            id
+            depositorAddress
+            escrowAddress
+            iSale{
+              saleStatus
+            }
+            iSaleAddress
+            token {
+              id
+              name
+              symbol
+              decimals
+            }
+            totalDeposited
+            swept
+          }
+        }`,
+      variables: { saleAddress },
+      requestPolicy: "network-only",
+      pause: checked ? false : true
+    }
+  );
+
+  $: myPendingDepositQuery = queryStore({
+      client: $client,
+      query: `
+        query ($saleAddress: Bytes!, $depositor: Bytes!) {
+          redeemableEscrowPendingDepositorTokens (where: {iSaleAddress: $saleAddress, depositorAddress: $depositor}, orderBy: totalDeposited, orderDirection: asc) {
+            id
+            depositorAddress
+            escrowAddress
+            iSale{
+              saleStatus
+            }
+            iSaleAddress
+            token {
+              id
+              name
+              symbol
+              decimals
+            }
+            totalDeposited
+            swept
+          }
+        }`,
+      variables: { saleAddress, depositor },
+      requestPolicy: "network-only",
+      pause: !checked ? false : true
+    }
+  );
 
   $: txQuery = checked ? allPendingDepositQuery : myPendingDepositQuery;
 
-  // init the queries
-  query(allPendingDepositQuery);
-  query(myPendingDepositQuery);
-
-  // setting the query variables
-  $myPendingDepositQuery.variables.saleAddress =
-    salesContract.address.toLowerCase();
-  $myPendingDepositQuery.variables.depositor = $signerAddress.toLowerCase();
-
-  $allPendingDepositQuery.variables.saleAddress =
-    salesContract.address.toLowerCase();
-
   // handling table refresh
-  const refresh = () => {
-    $txQuery.reexecute();
+  const refresh = async() => {
+    temp = saleAddress;
+    saleAddress = undefined;
+    if (await !$txQuery.fetching) {
+      saleAddress = temp;
+    }
   };
 
   // aliases for convenience

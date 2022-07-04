@@ -2,42 +2,38 @@
   import { push } from "svelte-spa-router";
   import Button from "../../components/Button.svelte";
   import FormPanel from "../../components/FormPanel.svelte";
-  import { operationStore, query } from "@urql/svelte";
+  import { queryStore } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
+  import { client } from "src/stores";
 
   let skip;
 
-  //   query($skip: Int) {
-  // sales(first: 100, skip: $skip) {
-  const sales = operationStore(
-    `
-query {
-  sales {
-    id
-    address
-    deployBlock
-    deployTimestamp
-    deployer
-    percentRaised
-    saleStatus
-    totalRaised
-    unitsAvailable
-    token {
-      decimals
-    }
-    reserve {
-      decimals
-    }
-  }
-}
-`,
-    {
-      skip,
-    }
+  $: sales = queryStore({
+      client: $client,
+      query: `
+        query {
+          sales {
+            id
+            address
+            deployBlock
+            deployTimestamp
+            deployer
+            percentRaised
+            saleStatus
+            totalRaised
+            unitsAvailable
+            token {
+              decimals
+            }
+            reserve {
+              decimals
+            }
+          }
+        }`,
+      variables: { skip }
+    } 
   );
-  // let skipRecords = 0;
-  // $sales.variables.skip = 0;
-  query(sales);
+
 </script>
 
 {#if $sales.fetching}
@@ -53,7 +49,7 @@ query {
         <div class="flex flex-col gap-y-2 mb-4">
           <span class="text-white">Sale details</span>
           <div class="text-gray-400 flex flex-col">
-            <span>Sale: {sale.id}</span>
+            <span>Sale Address: {sale.id}</span>
             <span>Deployer: {sale.deployer}</span>
             <span>Deployed: {Date(sale.deployTimestamp).toLocaleString()}</span>
             <span>Sales Status: {sale.saleStatus}</span>

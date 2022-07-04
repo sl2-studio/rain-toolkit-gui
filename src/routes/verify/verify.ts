@@ -1,5 +1,4 @@
-import { operationStore } from "@urql/svelte";
-import { Contract, ethers } from "ethers";
+import { ethers } from "ethers";
 
 export const roles = [
     {
@@ -27,56 +26,6 @@ export const roles = [
         value: ethers.utils.keccak256(ethers.utils.toUtf8Bytes("BANNER")),
     },
 ];
-
-let verifyAddress, verifyContractAddress
-
-export const verifyAddresses = operationStore(`
-query ($verifyAddress: Bytes!) {
-    verify (id: $verifyAddress ) {
-        id
-        verifyAddresses {
-          address
-          requestStatus
-          status
-          roles
-        }
-      }
-}`,
-    {
-        verifyAddress,
-    },
-    {
-        requestPolicy: "network-only",
-    })
-
-export const verifyAddressQuery = operationStore(`
-query ($verifyAddress:Bytes!, $verifyContractAddress:Bytes!) 
-{
-    verifyEvents
-    (
-        where:
-        {
-            account:$verifyAddress,
-            verifyContract:$verifyContractAddress
-        },
-        orderBy: timestamp,
-        orderDirection:asc
-        )
-    {
-        id
-        timestamp
-        transactionHash
-        __typename
-        sender
-        account
-        data
-    }
-}`,
-    { verifyAddress, verifyContractAddress },
-    {
-        requestPolicy: "network-only",
-    }
-)
 
 export const verifyStatusNames = [
     "None",

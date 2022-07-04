@@ -8,6 +8,7 @@
     signerAddress,
   } from "svelte-ethers-store";
   import Select from "../../components/Select.svelte";
+  import { signer } from "svelte-ethers-store"
 
   export let onNetworkChange = () => {};
   export let library;
@@ -52,10 +53,10 @@
 
 <div class="flex flex-col gap-y-4">
   <span>Choose network:</span>
-  <Select bind:value={$selectedNetwork} items={networks} />
+  <Select bind:value={$selectedNetwork} items={networks} on:change={handleClick} />
 
-  <button
+  <!-- <button
     class="rounded-md border-none bg-gray-700 px-4 py-2 text-gray-200"
     on:click={handleClick}>Connect</button
-  >
+  > -->
 </div>

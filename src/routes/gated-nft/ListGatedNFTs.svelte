@@ -1,30 +1,33 @@
 <script lang="ts">
-  import { operationStore, query } from "@urql/svelte";
+  import { queryStore } from "@urql/svelte";
   import { push } from "svelte-spa-router";
   import Button from "../../components/Button.svelte";
   import FormPanel from "../../components/FormPanel.svelte";
+  import { client } from "src/stores";
 
-  const gatedNFTs = operationStore(`{
-  gatedNFTs {
-    id
-    creator
-    name
-    symbol
-    description
-    imageUrl
-    animationUrl
-    minimumStatus
-    transferrable
-    maxMintable
-    maxPerAddress
-    tier {
-      __typename
-      address
-    }
-  }
-}`);
+  $: gatedNFTs = queryStore({
+    client: $client,
+    query: `{
+      gatedNFTs {
+        id
+        creator
+        name
+        symbol
+        description
+        imageUrl
+        animationUrl
+        minimumStatus
+        transferrable
+        maxMintable
+        maxPerAddress
+        tier {
+          __typename
+          address
+        }
+      }
+    }`
+  });
 
-  query(gatedNFTs);
 </script>
 
 {#if $gatedNFTs.fetching}

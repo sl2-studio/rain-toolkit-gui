@@ -1,36 +1,92 @@
 <script lang="ts">
   import { formatAddress } from "src/utils";
-  import { query } from "@urql/svelte";
+  import { queryStore } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
   import { signerAddress } from "svelte-ethers-store";
   import { getContext } from "svelte";
   import IconLibrary from "../../../components/IconLibrary.svelte";
-  import { allDepositQuery, myDepositQuery } from "./escrow-queries";
   import Switch from "src/components/Switch.svelte";
   import EscrowWithdrawModal from "./EscrowWithdrawModal.svelte";
   import { onMount } from "svelte/internal";
+  import { client } from "src/stores";
 
   const { open } = getContext("simple-modal");
   export let salesContract, saleData, token;
+  
   let checked = true;
-  let signerBalance, decimals, symbol;
+  let signerBalance, decimals, symbol, temp;
+
+  let saleAddress = salesContract ? salesContract.address.toLowerCase() : undefined;
+  let depositor = $signerAddress.toLowerCase();
+
+  $: allDepositQuery = queryStore({
+      client: $client,
+      query: `
+        query ($saleAddress: Bytes!) {
+          redeemableEscrowSupplyTokenWithdrawers (where: {iSaleAddress: $saleAddress}, orderBy: redeemableBalance, orderDirection: asc) {
+            id
+            withdrawerAddress
+            totalWithdrawn
+            totalWithdrawnAgainst
+            redeemableBalance
+            claimable
+            deposit{
+              redeemableSupply
+              totalRemaining
+              token {
+                id
+                name
+                symbol
+                decimals
+              }
+            }
+          }
+        }`,
+      variables: { saleAddress },
+      requestPolicy: "network-only",
+      pause: checked ? false : true 
+    }
+  );
+
+  $: myDepositQuery = queryStore({
+      client: $client,
+      query: `
+        query ($saleAddress: Bytes!, $depositor: Bytes!) {
+          redeemableEscrowSupplyTokenWithdrawers (where: {iSaleAddress: $saleAddress, withdrawerAddress: $depositor}, orderBy: redeemableBalance, orderDirection: asc) {
+            id
+            withdrawerAddress
+            totalWithdrawn
+            totalWithdrawnAgainst
+            redeemableBalance
+            claimable
+            deposit{
+              redeemableSupply
+              totalRemaining
+              token {
+                id
+                name
+                symbol
+                decimals
+              }
+            }
+          }
+        }`,
+      variables: { saleAddress, depositor },
+      requestPolicy: "network-only",
+      pause: !checked ? false : true 
+    }
+  );
 
   $: txQuery = checked ? allDepositQuery : myDepositQuery;
 
-  // init the queries
-  query(allDepositQuery);
-  query(myDepositQuery);
-
-  // setting the query variables
-  $myDepositQuery.variables.saleAddress = salesContract.address.toLowerCase();
-  $myDepositQuery.variables.depositor = $signerAddress.toLowerCase();
-
-  $allDepositQuery.variables.saleAddress = salesContract.address.toLowerCase();
-
   // handling table refresh
-  const refresh = () => {
-    $txQuery.reexecute();
-    tokenDetails();
+  const refresh = async() => {
+    temp = saleAddress;
+    saleAddress = undefined;
+    if (await !$txQuery.fetching) {
+      saleAddress = temp;
+      tokenDetails();
+    }
   };
 
   const tokenDetails = async () => {

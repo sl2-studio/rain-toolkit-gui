@@ -1,37 +1,132 @@
 <script lang="ts">
   import { formatAddress } from "src/utils";
   import RefundModal from "./RefundModal.svelte";
-  import { query } from "@urql/svelte";
+  import { queryStore } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
   import { signerAddress } from "svelte-ethers-store";
   import { getContext } from "svelte";
   import IconLibrary from "components/IconLibrary.svelte";
   import dayjs from "dayjs";
   import { selectedNetwork } from "src/stores";
-  import { allTxQuery, myTxQuery } from "./sale-queries";
   import Switch from "src/components/Switch.svelte";
+  import { client } from "src/stores";
 
   const { open } = getContext("simple-modal");
   export let saleContract;
 
   let checked = true;
+  let temp;
+
+  let saleContractAddress = saleContract ? saleContract.address.toLowerCase() : undefined;
+  let sender = $signerAddress.toLowerCase();
+
+  $: allTxQuery = queryStore({
+      client: $client,
+      query: `
+        query ($saleContractAddress: Bytes!) {
+          saleTransactions (where: {saleContractAddress: $saleContractAddress}, orderBy: timestamp, orderDirection: asc) {
+            id
+            __typename
+            timestamp
+            transactionHash
+            saleContractAddress
+            sender
+            saleContract {
+              cooldownDuration
+              token {
+                id
+                name
+                symbol
+                decimals
+              }
+              reserve {
+                id
+                name
+                symbol
+                decimals
+              }
+            }
+            receipt {
+              id
+              receiptId
+              fee
+              units
+              price
+              feeRecipient
+            }
+            ... on SaleBuy {
+              refunded
+              totalIn
+            }
+            ... on SaleRefund {
+              totalOut
+            }
+          }
+        }`,
+      variables: { saleContractAddress },
+      requestPolicy: "network-only",
+      pause: checked ? false : true
+    }
+  );
+
+  $: myTxQuery = queryStore({
+      client: $client,
+      query: `
+        query ($saleContractAddress: Bytes!, $sender: Bytes!) {
+          saleTransactions (where: {saleContractAddress: $saleContractAddress, sender: $sender}, orderBy: timestamp, orderDirection: asc) {
+            id
+            __typename
+            timestamp
+            transactionHash
+            saleContractAddress
+            sender
+            saleContract {
+              cooldownDuration
+              token {
+                id
+                name
+                symbol
+                decimals
+              }
+              reserve {
+                id
+                name
+                symbol
+                decimals
+              }
+            }
+            receipt {
+              id
+              receiptId
+              fee
+              units
+              price
+              feeRecipient
+            }
+            ... on SaleBuy {
+              refunded
+              totalIn
+            }
+            ... on SaleRefund {
+              totalOut
+            }
+          }
+        }`,
+      variables: { saleContractAddress, sender },
+      requestPolicy: "network-only",
+      pause: !checked ? false : true
+    }
+  );
 
   $: txQuery = checked ? allTxQuery : myTxQuery;
 
-  // init the queries
-  query(allTxQuery);
-  query(myTxQuery);
-
-  // setting the query variables
-  $myTxQuery.variables.saleContractAddress = saleContract.address.toLowerCase();
-  $myTxQuery.variables.sender = $signerAddress.toLowerCase();
-
-  $allTxQuery.variables.saleContractAddress =
-    saleContract.address.toLowerCase();
-
   // handling table refresh
-  const refresh = () => {
-    $txQuery.reexecute();
+  const refresh = async() => {
+    temp = saleContractAddress;
+    saleContractAddress = undefined;
+    if (await !$txQuery.fetching) {
+      saleContractAddress = temp;
+    }
   };
 
   // aliases for convenience

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { query } from "@urql/svelte";
+  import { queryStore } from "@urql/svelte";
   import { Contract } from "ethers";
   import FormPanel from "src/components/FormPanel.svelte";
   import IconLibrary from "src/components/IconLibrary.svelte";
@@ -8,10 +8,8 @@
   import { getContext } from "svelte";
   import AccountHistoryModal from "./AccountHistoryModal.svelte";
   import ActionsModal from "./ActionsModal.svelte";
-
+  import { client } from "src/stores";
   import {
-    verifyAddresses,
-    verifyAddressQuery,
     verifyRequestStatusNames,
     VerifyStatuses,
     verifyStatusNames,
@@ -21,14 +19,59 @@
 
   export let verifyContract: Contract;
 
-  verifyAddresses.variables.verifyAddress =
-    verifyContract.address.toLowerCase();
+  let temp1, temp2;
+  let verifyAddress = verifyContract ? verifyContract.address.toLowerCase() : undefined;
+  let verifyContractAddress;
 
-  query(verifyAddresses);
-  query(verifyAddressQuery);
+  $: verifyAddresses = queryStore({
+      client: $client,
+      query: `
+        query ($verifyAddress: Bytes!) {
+          verify (id: $verifyAddress ) {
+            id
+            verifyAddresses {
+              address
+              requestStatus
+              status
+              roles
+            }
+          }
+        }`,
+      variables: { verifyAddress },
+      requestPolicy: "network-only"
+    })
 
-  const refresh = () => {
-    $verifyAddresses.reexecute();
+  $: verifyAddressQuery = queryStore({
+      client: $client,
+      query: `
+        query ($verifyAddress:Bytes!, $verifyContractAddress:Bytes!) {
+          verifyEvents (where: {
+            account: $verifyAddress,
+            verifyContract: $verifyContractAddress
+          },
+            orderBy: timestamp,
+            orderDirection:asc
+          )
+          {
+            id
+            timestamp
+            transactionHash
+            __typename
+            sender
+            account
+            data
+          }
+        }`,
+      variables: { verifyAddress, verifyContractAddress },
+      requestPolicy: "network-only"
+    })
+
+  const refresh = async() => {
+    temp1 = verifyAddress;
+    verifyAddress = undefined;
+    if (await !$verifyAddresses.fetching) {
+      verifyAddress = temp1;
+    }
   };
 
   const handleApprove = (address: string) => {
@@ -58,11 +101,14 @@
     });
   };
 
-  const handleEvidence = (address: string) => {
-    verifyAddressQuery.variables.verifyAddress = address.toLowerCase();
-    verifyAddressQuery.variables.verifyContractAddress =
-      verifyContract.address.toLowerCase();
-    verifyAddressQuery.reexecute();
+  const handleEvidence = async(address: string) => {
+    verifyAddress = address.toLowerCase();
+    verifyContractAddress = verifyContract ? verifyContract.address.toLowerCase() : undefined;
+    temp2 = verifyContractAddress
+    verifyContractAddress = undefined;
+    if (await !$verifyAddressQuery) {
+      verifyContractAddress = temp2;
+    }
     open(AccountHistoryModal, { verifyAddressQuery });
   };
 </script>

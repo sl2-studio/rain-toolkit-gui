@@ -6,8 +6,10 @@
   import Button from "../../components/Button.svelte";
   import { tierReport } from "../../utils";
   import { push } from "svelte-spa-router";
-  import { operationStore, query } from "@urql/svelte";
+  import { queryStore } from "@urql/svelte";
+  import { client } from "src/stores";
   import { ERC20BalanceTier, ERC20 } from "rain-sdk";
+
 
   export let params;
 
@@ -16,60 +18,51 @@
     errorMsg,
     addressToReport,
     parsedReport,
-    addressBalance,
-    balanceTierAddress;
+    addressBalance;
 
-  const balanceTier = operationStore(
-    `
-query ($balanceTierAddress: Bytes!) {
-  erc20BalanceTiers (where: {id: $balanceTierAddress}) {
-    id
-    address
-    deployBlock
-    deployTimestamp
-    deployer
-    token {
-      id
-      name
-      symbol
-      decimals
-    }
-    tierValues
-  }
-}
-`,
-    { balanceTierAddress },
-    {
-      pause: true,
+  let  balanceTierAddress = params.wild ? params.wild.toLowerCase() : undefined;
+
+  $: balanceTier = queryStore({
+      client: $client,
+      query:
+        `query ($balanceTierAddress: Bytes!) {
+          erc20BalanceTiers (where: {id: $balanceTierAddress}) {
+            id
+            address
+            deployBlock
+            deployTimestamp
+            deployer
+            token {
+              id
+              name
+              symbol
+              decimals
+            }
+            tierValues
+          }
+        }`,
+      variables: {balanceTierAddress},
       requestPolicy: "network-only",
+      pause: params.wild ? false : true
     }
   );
 
-  query(balanceTier);
-
-  $: if (params.wild) {
-    runQuery();
-  }
-  const runQuery = () => {
-    $balanceTier.variables.balanceTierAddress = params.wild.toLowerCase();
-    $balanceTier.context.pause = false;
-    $balanceTier.reexecute();
-  };
-
   $: _balanceTier = $balanceTier.data?.erc20BalanceTiers[0];
-
-  $: if (_balanceTier) {
-    initContracts();
+  
+  $: if (_balanceTier || $signer) {
+    if (!$balanceTier.fetching && _balanceTier != undefined){
+      initContracts();
+    }
   }
 
   const initContracts = async () => {
     balanceTierContract = new ERC20BalanceTier(
-      _balanceTier.address,
+      _balanceTier?.address,
       $signer,
-      _balanceTier.token.id
+      _balanceTier?.token.id
     );
 
-    erc20Contract = new ERC20(_balanceTier.token.id, $signer);
+    erc20Contract = new ERC20(_balanceTier?.token.id, $signer);
   };
 
   const report = async () => {
@@ -127,27 +120,29 @@ query ($balanceTierAddress: Bytes!) {
       </div>
       <div class="flex flex-col gap-y-2">
         <span class="text-lg">Token values for this BalanceTier:</span>
-        {#each _balanceTier.tierValues as value, i}
-          <span class="text-gray-400">
-            Tier {i + 1}: {ethers.utils.formatUnits(
-              value,
-              _balanceTier.token.decimals
-            )}
-            {#if parsedReport?.[i] == 0}
-              ✅
-            {:else if parsedReport?.[i] > 0}
-              ❌
-            {/if}
-          </span>
-        {/each}
+        {#if _balanceTier && _balanceTier?.tierValues.length}
+          {#each _balanceTier?.tierValues as value, i}
+            <span class="text-gray-400">
+              Tier {i + 1}: {ethers.utils.formatUnits(
+                value,
+                _balanceTier?.token.decimals
+              )}
+              {#if parsedReport?.[i] == 0}
+                ✅
+              {:else if parsedReport?.[i] > 0}
+                ❌
+              {/if}
+            </span>
+          {/each}
+        {/if}
       </div>
       {#if addressBalance}
         <span
-          >Balance for {addressToReport}: {ethers.utils.formatUnits(
+          >{addressToReport} Balance: {ethers.utils.formatUnits(
             addressBalance,
-            _balanceTier.token.decimals
+            _balanceTier?.token.decimals
           )}
-          {_balanceTier.token.symbol}</span
+          {_balanceTier?.token.symbol}</span
         >
       {/if}
     </FormPanel>

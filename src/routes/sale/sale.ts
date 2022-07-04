@@ -143,6 +143,7 @@ export const saleDeploy = async (
 const saleStateConfigGenerator = (saleParams : SaleParams, deployerAddress: string) : SaleConfig => {   
   const constants = saleConstantsGenerator(saleParams);
   const sources = saleSourcesGenerator(saleParams, constants.length);
+  console.log(sources);
   return {
     canStartStateConfig: canStartEndConfigGenerator(
       saleParams.inputValues.startTimestamp,

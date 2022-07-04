@@ -93,8 +93,8 @@ query ($saleAddress: Bytes!) {
   const getTime = () => {
     const now = Math.floor(Date.now() / 1000);
     const end = 
-      (sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d02" ||
-      sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d020600010309000c02") &&
+      (sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d02" |
+       "0x050001000b00230001020a000c02050001010b000d020600010309000c02") &&
       Number(+formatUnits(sale.totalRaised, sale.reserve.decimals)) >= Number(+formatUnits(sale.canEndStateConfig.constants[2])) ? 
       (getAfterTimestampDate(sale.canEndStateConfig, 1).getTime() / 1000) : getAfterTimestampDate(sale.canEndStateConfig, 0).getTime() / 1000;  
     
@@ -115,8 +115,8 @@ query ($saleAddress: Bytes!) {
 </script>
 
 {#if sale}
-{#if sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d02" ||
-sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d020600010309000c02"}
+{#if sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d02" |
+  "0x050001000b00230001020a000c02050001010b000d020600010309000c02"}
 <div class="mb-2 flex flex-col gap-y-2">
   <span class="text-xl"><span class="text-gray-400">Sale Duration Mode:</span> Extra Time</span>
 </div>
@@ -176,8 +176,8 @@ sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b0
           </td>
         </tr>
       {#if 
-        (sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d02" || 
-        sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d020600010309000c02") &&
+        (sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d02" | 
+          "0x050001000b00230001020a000c02050001010b000d020600010309000c02") &&
         Number(
         +formatUnits(sale.totalRaised, sale.reserve.decimals)
         ) >= Number(
@@ -218,8 +218,8 @@ sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b0
       {/if}
       {#if sale?.saleStatus == 1}
       {#if 
-        (sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d02" ||
-        sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d020600010309000c02") &&
+        (sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d02" |
+          "0x050001000b00230001020a000c02050001010b000d020600010309000c02") &&
         Number(
         +formatUnits(sale.totalRaised, sale.reserve.decimals)
         ) >= Number(
@@ -244,8 +244,8 @@ sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b0
     </table>
   </div>
   {#if
-    (sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d02" || 
-    sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d020600010309000c02") &&
+    (sale.canEndStateConfig.sources[0] === "0x050001000b00230001020a000c02050001010b000d02" |
+      "0x050001000b00230001020a000c02050001010b000d020600010309000c02") &&
     Number(
     +formatUnits(sale.totalRaised, sale.reserve.decimals)
     ) >= Number(

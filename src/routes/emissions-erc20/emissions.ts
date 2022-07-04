@@ -22,25 +22,49 @@ const enum Opcode {
   VAL,
   DUP,
   ZIPMAP,
+  DEBUG,
   BLOCK_NUMBER,
   BLOCK_TIMESTAMP,
+  SENDER,
   THIS_ADDRESS,
+  SCALE18_MUL,
+  SCALE18_DIV,
+  SCALE18,
+  SCALEN,
+  SCALE_BY,
+  SCALE18_ONE,
+  SCALE18_DECIMALS,
   ADD,
+  SATURATING_ADD,
   SUB,
+  SATURATING_SUB,
   MUL,
+  SATURATING_MUL,
   DIV,
   MOD,
   EXP,
   MIN,
   MAX,
+  ISZERO,
+  EAGER_IF,
+  EQUAL_TO,
+  LESS_THAN,
+  GREATER_THAN,
+  EVERY,
+  ANY,
   REPORT,
   NEVER,
   ALWAYS,
   SATURATING_DIFF,
   UPDATE_BLOCKS_FOR_TIER_RANGE,
   SELECT_LTE,
+  IERC20_BALANCE_OF,
+  IERC20_TOTAL_SUPPLY,
+  IERC721_BALANCE_OF,
+  IERC721_OWNER_OF,
+  IERC1155_BALANCE_OF,
+  IERC1155_BALANCE_OF_BATCH,
   CLAIMANT_ACCOUNT,
-  CONSTRUCTION_BLOCK_NUMBER,
 }
 
 enum Tier {
@@ -62,7 +86,16 @@ type EmissionsConfig = {
     goldReward: number;
     platReward: number;
   };
+  maxMonthlyRewards: {
+    brnzReward: number;
+    silvReward: number;
+    goldReward: number;
+    platReward: number;
+  };
   tierAddress: string;
+  incrementDuration: number;
+  numberOfIncrements : number;
+  blockTime: number;
 };
 
 export type ERC20ConfigStruct = {
@@ -94,13 +127,14 @@ export const createEmissionsSource = (
   const BN_ONE_REWARD = BigNumber.from("1" + sixZeros);
 
   // 2 seconds per block
-  const BLOCKS_PER_YEAR = 43200 * 365.25;
+  const BLOCKS_PER_YEAR = (86400 / config.blockTime) * 365.25;
 
-  const BLOCKS_PER_MONTH = Math.floor(BLOCKS_PER_YEAR / 12);
+  const BLOCKS_PER_MONTH = Math.floor((BLOCKS_PER_YEAR / 12) / config.incrementDuration);
 
   const MONTHLY_REWARD_BRNZ = BigNumber.from(
     config.monthlyRewards.brnzReward
   ).mul(BN_ONE_REWARD);
+ 
 
   const MONTHLY_REWARD_SILV = BigNumber.from(config.monthlyRewards.silvReward)
     .mul(BN_ONE_REWARD)
@@ -129,7 +163,7 @@ export const createEmissionsSource = (
       paddedUInt32(REWARD_PER_BLOCK_BRNZ)
     )
   );
-
+  
   // BEGIN global constants
 
   const valTierAddress = op(Opcode.VAL, 0);
@@ -243,11 +277,195 @@ export const createEmissionsSource = (
     BN_ONE_REWARD,
   ];
 
+
+const MONTHLY_REWARD_PER_TIER = paddedUInt256(
+  ethers.BigNumber.from(
+    "0x" +
+    paddedUInt32(0).repeat(4) +
+    paddedUInt32(MONTHLY_REWARD_PLAT) +
+    paddedUInt32(MONTHLY_REWARD_GOLD) +
+    paddedUInt32(MONTHLY_REWARD_SILV) +
+    paddedUInt32(MONTHLY_REWARD_BRNZ)
+  )
+);
+
+const MONTHLY_MAX_BRNZ = BigNumber.from(
+  config.maxMonthlyRewards.brnzReward - config.monthlyRewards.brnzReward
+).mul(BN_ONE_REWARD);
+const MONTHLY_MAX_SILV = BigNumber.from(
+  config.maxMonthlyRewards.silvReward - config.monthlyRewards.silvReward 
+).mul(BN_ONE_REWARD).sub(MONTHLY_MAX_BRNZ);
+const MONTHLY_MAX_GOLD = BigNumber.from(
+  config.maxMonthlyRewards.goldReward - config.monthlyRewards.goldReward 
+).mul(BN_ONE_REWARD).sub(MONTHLY_MAX_SILV.add(MONTHLY_MAX_BRNZ));
+const MONTHLY_MAX_PLAT = BigNumber.from(
+  config.maxMonthlyRewards.platReward - config.monthlyRewards.platReward 
+).mul(BN_ONE_REWARD).sub(MONTHLY_MAX_GOLD.add(MONTHLY_MAX_SILV).add(MONTHLY_MAX_BRNZ));
+
+const MONTHLY_INC_BRNZ = MONTHLY_MAX_BRNZ.div(config.numberOfIncrements - 1);
+const MONTHLY_INC_SILV = MONTHLY_MAX_SILV.div(config.numberOfIncrements - 1);
+const MONTHLY_INC_GOLD = MONTHLY_MAX_GOLD.div(config.numberOfIncrements - 1);
+const MONTHLY_INC_PLAT = MONTHLY_MAX_PLAT.div(config.numberOfIncrements - 1);
+
+const MONTHLY_INC_PER_TIER = paddedUInt256(
+  ethers.BigNumber.from(
+    "0x" +
+    paddedUInt32(0).repeat(4) +
+    paddedUInt32(MONTHLY_INC_PLAT) +
+    paddedUInt32(MONTHLY_INC_GOLD) +
+    paddedUInt32(MONTHLY_INC_SILV) +
+    paddedUInt32(MONTHLY_INC_BRNZ) 
+  )
+)
+
+// const LAST_CLAIM_REPORT1 = () => // just for converting NEVER report to ALWAYS
+//     concat([
+//       op(Opcode.THIS_ADDRESS),
+//       op(Opcode.CLAIMANT_ACCOUNT),
+//       op(Opcode.REPORT),
+//       op(Opcode.NEVER),
+//       op(Opcode.EQUAL_TO),
+//       op(Opcode.ALWAYS),
+//       op(Opcode.THIS_ADDRESS),
+//       op(Opcode.CLAIMANT_ACCOUNT),
+//       op(Opcode.REPORT),
+//       op(Opcode.EAGER_IF)
+//     ]);
+
+const constants1 = [
+  config.tierAddress,
+  MONTHLY_REWARD_PER_TIER,
+  MONTHLY_INC_PER_TIER,
+  BLOCKS_PER_MONTH,
+  BN_ONE,
+  BN_ONE_REWARD,
+  config.numberOfIncrements,
+  1,
+  "10",
+  2
+];
+
+const sources1 = [
+  concat([
+    op(Opcode.NEVER),
+    op(Opcode.BLOCK_NUMBER),
+    op(Opcode.UPDATE_BLOCKS_FOR_TIER_RANGE, tierRange(Tier.ZERO, Tier.EIGHT)),
+    op(Opcode.VAL, 0),
+    op(Opcode.CLAIMANT_ACCOUNT),
+    op(Opcode.REPORT),
+    op(Opcode.SATURATING_DIFF),
+    op(Opcode.THIS_ADDRESS),
+    op(Opcode.CLAIMANT_ACCOUNT),
+    op(Opcode.REPORT),
+    op(Opcode.NEVER),
+    op(Opcode.EQUAL_TO),
+    op(Opcode.ALWAYS),
+    op(Opcode.THIS_ADDRESS),
+    op(Opcode.CLAIMANT_ACCOUNT),
+    op(Opcode.REPORT),
+    op(Opcode.EAGER_IF),
+    op(Opcode.VAL, 0),
+    op(Opcode.CLAIMANT_ACCOUNT),
+    op(Opcode.REPORT),
+    op(Opcode.SATURATING_DIFF),
+    op(Opcode.VAL, 1),
+    op(Opcode.VAL, 2),
+    op(Opcode.ZIPMAP, callSize(1, 3, 3)),
+    op(Opcode.ADD, 8),
+    op(Opcode.VAL, 4),
+    op(Opcode.MUL, 2),
+    op(Opcode.VAL, 5),
+    op(Opcode.DIV, 2),
+  ]),
+  concat([
+    op(Opcode.VAL, arg(0)),
+    op(Opcode.VAL, 3),
+    op(Opcode.DIV, 2),
+    op(Opcode.VAL, 6),
+    op(Opcode.GREATER_THAN),
+    op(Opcode.VAL, 6),
+    op(Opcode.VAL, arg(1)),
+    op(Opcode.VAL, 3),
+    op(Opcode.DIV, 2),
+    op(Opcode.SATURATING_SUB, 2),
+    op(Opcode.VAL, arg(1)),
+    op(Opcode.VAL, 3),
+    op(Opcode.DIV, 2),
+    op(Opcode.VAL, 6),
+    op(Opcode.VAL, 7),
+    op(Opcode.SATURATING_SUB, 2),
+    op(Opcode.ADD, 2),
+    op(Opcode.VAL, 8),
+    op(Opcode.MUL, 2),
+    op(Opcode.VAL, 9),
+    op(Opcode.DIV, 2),
+    op(Opcode.MUL, 2),
+    op(Opcode.VAL, 8),
+    op(Opcode.DIV, 2),
+    op(Opcode.VAL, arg(0)),
+    op(Opcode.VAL, 3),
+    op(Opcode.DIV, 2),
+    op(Opcode.VAL, arg(1)),
+    op(Opcode.VAL, 3),
+    op(Opcode.DIV, 2),
+    op(Opcode.SATURATING_SUB, 2),
+    op(Opcode.VAL, 6),
+    op(Opcode.VAL, arg(1)),
+    op(Opcode.VAL, 3),
+    op(Opcode.DIV, 2),
+    op(Opcode.SATURATING_SUB, 2),
+    op(Opcode.SATURATING_SUB, 2),
+    op(Opcode.VAL, 6),
+    op(Opcode.VAL, 7),
+    op(Opcode.SATURATING_SUB, 2),
+    op(Opcode.MUL, 2),
+    op(Opcode.ADD, 2),
+    op(Opcode.VAL, arg(3)),
+    op(Opcode.MUL, 2),
+    op(Opcode.VAL, arg(0)),
+    op(Opcode.VAL, 3),
+    op(Opcode.DIV, 2),
+    op(Opcode.VAL, arg(1)),
+    op(Opcode.VAL, 3),
+    op(Opcode.DIV, 2),
+    op(Opcode.SATURATING_SUB, 2),
+    op(Opcode.VAL, arg(0)),
+    op(Opcode.VAL, 3),
+    op(Opcode.DIV, 2),
+    op(Opcode.VAL, 7),
+    op(Opcode.SATURATING_SUB, 2),
+    op(Opcode.VAL, arg(1)),
+    op(Opcode.VAL, 3),
+    op(Opcode.DIV, 2),
+    op(Opcode.ADD, 2),
+    op(Opcode.VAL, 8),
+    op(Opcode.MUL, 2),
+    op(Opcode.VAL, 9),
+    op(Opcode.DIV, 2),
+    op(Opcode.MUL, 2),
+    op(Opcode.VAL, 8),
+    op(Opcode.DIV, 2),
+    op(Opcode.VAL, arg(3)),
+    op(Opcode.MUL, 2),
+    op(Opcode.EAGER_IF),
+    op(Opcode.VAL, arg(2)),
+    op(Opcode.VAL, arg(0)),
+    op(Opcode.VAL, 3),
+    op(Opcode.DIV, 2),
+    op(Opcode.VAL, arg(1)),
+    op(Opcode.VAL, 3),
+    op(Opcode.DIV, 2),
+    op(Opcode.SATURATING_SUB, 2),
+    op(Opcode.MUL, 2),
+    op(Opcode.ADD, 2),
+  ])
+];
+
   return {
-    sources: [SOURCE(), FN()],
-    constants,
-    argumentsLength: 2,
-    stackLength: SOURCE().length / 2,
+    sources: sources1,
+    constants: constants1,
+    argumentsLength: 4,
+    stackLength: ((sources1[0].length + sources1[1].length) / 2) + 25,
   };
 };
 

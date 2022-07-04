@@ -22,7 +22,6 @@
   import Modal from "svelte-simple-modal";
   import DeployVerify from "./routes/verify/DeployVerify.svelte";
   import AdministerVerify from "./routes/verify/AdministerVerify.svelte";
-  import Client from "./Client.svelte";
   import AddressLibrary from "./routes/address-library/AddressLibrary.svelte";
   import ListCombineTier from "./routes/combine-tier/ListCombineTier.svelte";
   import ListSale from "./routes/sale/ListSale.svelte";
@@ -94,9 +93,7 @@
     <Sidebar />
     <div class="w-full py-5 px-8">
       {#if $signer}
-        <Client>
-          <Router {routes} />
-        </Client>
+        <Router {routes} />
       {:else}
         Connect your wallet to get started.
       {/if}

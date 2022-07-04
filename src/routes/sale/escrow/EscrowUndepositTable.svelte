@@ -1,35 +1,90 @@
 <script lang="ts">
   import { formatAddress } from "src/utils";
-  import { query } from "@urql/svelte";
+  import { queryStore } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
   import { signerAddress } from "svelte-ethers-store";
   import { getContext } from "svelte";
   import IconLibrary from "../../../components/IconLibrary.svelte";
-  import { allUndepositQuery, myUndepositQuery } from "./escrow-queries";
   import Switch from "src/components/Switch.svelte";
   import EscrowUndepositModal from "./EscrowUndepositModal.svelte";
+  import { client } from "src/stores";
 
   const { open } = getContext("simple-modal");
   export let salesContract, saleData;
 
   let checked = true;
+  let temp;
+
+  let saleAddress = salesContract ? salesContract.address.toLowerCase() : undefined;
+  let depositor = $signerAddress.toLowerCase();
+
+  $: allUndepositQuery = queryStore({
+      client: $client,
+      query: `
+        query ($saleAddress: Bytes!) {
+          redeemableEscrowSupplyTokenDepositors (where: {iSaleAddress: $saleAddress}, orderBy: totalDeposited, orderDirection: asc) {
+            id
+            iSaleAddress
+            iSale{
+              saleStatus
+            }
+            escrowAddress
+            depositorAddress
+            token {
+              id
+              name
+              symbol
+              decimals
+            }
+            redeemableSupply
+            totalDeposited
+            totalRemaining
+          }
+        }`,
+      variables: { saleAddress },
+      requestPolicy: "network-only",
+      pause: checked ? false : true
+    }
+  );
+
+  $: myUndepositQuery = queryStore({
+      client: $client,
+      query: `
+        query ($saleAddress: Bytes!, $depositor: Bytes!) {
+          redeemableEscrowSupplyTokenDepositors (where: {iSaleAddress: $saleAddress, depositorAddress: $depositor}, orderBy: totalDeposited, orderDirection: asc) {
+            id
+            iSaleAddress
+            iSale{
+              saleStatus
+            }
+            escrowAddress
+            depositorAddress
+            token {
+              id
+              name
+              symbol
+              decimals
+            }
+            redeemableSupply
+            totalDeposited
+            totalRemaining
+          }
+        }`,
+      variables: { saleAddress, depositor },
+      requestPolicy: "network-only",
+      pause: !checked ? false : true
+    }
+  );
 
   $: txQuery = checked ? allUndepositQuery : myUndepositQuery;
 
-  // init the queries
-  query(allUndepositQuery);
-  query(myUndepositQuery);
-
-  // setting the query variables
-  $myUndepositQuery.variables.saleAddress = salesContract.address.toLowerCase();
-  $myUndepositQuery.variables.depositor = $signerAddress.toLowerCase();
-
-  $allUndepositQuery.variables.saleAddress =
-    salesContract.address.toLowerCase();
-
   // handling table refresh
-  const refresh = () => {
-    $txQuery.reexecute();
+  const refresh = async() => {
+    temp = saleAddress;
+    saleAddress = undefined;
+    if (await !$txQuery.fetching) {
+      saleAddress = temp;
+    }
   };
 </script>
 

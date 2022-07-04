@@ -1,55 +1,49 @@
 <script lang="ts">
   import dayjs from "dayjs";
-  import { operationStore, query } from "@urql/svelte";
+  import { queryStore } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
   import IconLibrary from "../../components/IconLibrary.svelte";
-  import { selectedNetwork } from "src/stores";
+  import { selectedNetwork, client } from "src/stores";
 
   export let saleContract;
 
-  let saleAddress;
+  let saleAddress = saleContract.address.toLowerCase();
 
-  const buysQuery = operationStore(
-    `
-query ($saleAddress: Bytes!) {
-  sales (where: {id: $saleAddress}) {
-    deployer
-    token {
-      symbol
-      name
-      decimals
-    }
-    reserve {
-      symbol
-      name
-      decimals
-    }
-    refunds {
-      timestamp
-      transactionHash
-      id
-      receipt {
-        units
-        price
-        fee
-      }
-      fee
-      totalOut
-    }
-    saleStatus
-  }
-}
-`,
-    {
-      saleAddress,
-    },
-    {
-      requestPolicy: "network-only",
+  $: buysQuery = queryStore({
+      client: $client,
+      query: `
+        query ($saleAddress: Bytes!) {
+          sales (where: {id: $saleAddress}) {
+            deployer
+            token {
+              symbol
+              name
+              decimals
+            }
+            reserve {
+              symbol
+              name
+              decimals
+            }
+            refunds {
+              timestamp
+              transactionHash
+              id
+              receipt {
+                units
+                price
+                fee
+              }
+              fee
+              totalOut
+            }
+            saleStatus
+          }
+        }`,
+      variables: { saleAddress },
+      requestPolicy: "network-only"
     }
   );
-
-  $buysQuery.variables.saleAddress = saleContract.address.toLowerCase();
-  query(buysQuery);
 
   $: reserve = $buysQuery.data?.sales[0].reserve;
   $: token = $buysQuery.data?.sales[0].token;

@@ -51,8 +51,7 @@ export const networks = [{
     },
     blockExplorerUrls: ['https://polygonscan.com/']
   },
-  blockExplorer: 'https://polygonscan.com/',
-  graphUrl: 'https://api.thegraph.com/subgraphs/name/beehive-innovation/rain-protocol-v2-polygon'
+  blockExplorer: 'https://polygonscan.com/'
 },
 {
   label: "Mumbai",
@@ -67,8 +66,7 @@ export const networks = [{
     },
     blockExplorerUrls: ['https://mumbai.polygonscan.com/']
   },
-  blockExplorer: 'https://mumbai.polygonscan.com/',
-  graphUrl: 'https://api.thegraph.com/subgraphs/name/beehive-innovation/rain-protocol-mumbai-e590ce'
+  blockExplorer: 'https://mumbai.polygonscan.com/'
 },
 {
   label: "Avalanche Testnet",
@@ -82,36 +80,53 @@ export const networks = [{
       decimals: 18
     },
     blockExplorerUrls: ['https://testnet.snowtrace.io/']
-  }
+  },
+  blockExplorer: 'https://testnet.snowtrace.io/'
 },
 {
-  label: "Smart Chain - Testnet",
+  label: "BSC - Testnet",
   config: {
     chainId: "0x61",
-    chainName: 'Binance Smart Chain - Testnet',
+    chainName: 'BSC - Testnet',
     rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
     nativeCurrency: {
-      name: 'Binance Smart Chain',
+      name: 'Binance Coin',
       symbol: 'BNB',
       decimals: 18
     },
     blockExplorerUrls: ['https://testnet.bscscan.com']
-  }
+  },
+  blockExplorer: 'https://testnet.bscscan.com'
 },
 {
-  label: "Fantom - Testnet",
+  label: "BSC - Mainnet",
   config: {
-    chainId: "0xfa2",
-    chainName: 'Fantom - Testnet',
-    rpcUrls: ['https://rpc.testnet.fantom.network'],
+    chainId: "0x38",
+    chainName: 'BSC',
+    rpcUrls: ['https://bsc-dataseed.binance.org/'],
     nativeCurrency: {
-      name: 'Fantom - Testnet',
-      symbol: 'FTM',
+      name: 'Binance Coin',
+      symbol: 'BNB',
       decimals: 18
     },
-    blockExplorerUrls: ['https://testnet.ftmscan.com']
-  }
+    blockExplorerUrls: ['https://bscscan.com/']
+  },
+  blockExplorer: 'https://bscscan.com/'
 },
+// {
+//   label: "Fantom - Testnet",
+//   config: {
+//     chainId: "0xfa2",
+//     chainName: 'Fantom - Testnet',
+//     rpcUrls: ['https://rpc.testnet.fantom.network'],
+//     nativeCurrency: {
+//       name: 'Fantom',
+//       symbol: 'FTM',
+//       decimals: 18
+//     },
+//     blockExplorerUrls: ['https://testnet.ftmscan.com']
+//   }
+// },
 {
   label: "Ethereum",
   config: {
@@ -124,36 +139,37 @@ export const networks = [{
       decimals: 18
     },
     blockExplorerUrls: ['https://etherscan.io/']
-  }
+  },
+  blockExplorer: 'https://etherscan.io/'
 },
-{
-  label: "Ropsten",
-  config: {
-    chainId: "0x3",
-    chainName: 'Ropsten',
-    rpcUrls: ['https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
-    nativeCurrency: {
-      name: 'Ropsten',
-      symbol: 'ETH',
-      decimals: 18
-    },
-    blockExplorerUrls: ['https://ropsten.etherscan.io/']
-  }
-},
-{
-  label: "Rinkeby",
-  config: {
-    chainId: "0x4",
-    chainName: 'Rinkeby',
-    rpcUrls: ['https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
-    nativeCurrency: {
-      name: 'Rinkeby',
-      symbol: 'ETH',
-      decimals: 18
-    },
-    blockExplorerUrls: ['https://rinkeby.etherscan.io']
-  }
-},
+// {
+//   label: "Ropsten",
+//   config: {
+//     chainId: "0x3",
+//     chainName: 'Ropsten',
+//     rpcUrls: ['https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
+//     nativeCurrency: {
+//       name: 'Ropsten',
+//       symbol: 'ETH',
+//       decimals: 18
+//     },
+//     blockExplorerUrls: ['https://ropsten.etherscan.io/']
+//   }
+// },
+// {
+//   label: "Rinkeby",
+//   config: {
+//     chainId: "0x4",
+//     chainName: 'Rinkeby',
+//     rpcUrls: ['https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
+//     nativeCurrency: {
+//       name: 'Rinkeby',
+//       symbol: 'ETH',
+//       decimals: 18
+//     },
+//     blockExplorerUrls: ['https://rinkeby.etherscan.io']
+//   }
+// },
 {
   label: "Goerli",
   config: {
@@ -166,21 +182,21 @@ export const networks = [{
       decimals: 18
     },
     blockExplorerUrls: ['https://goerli.etherscan.io']
-  }
+  },
+  blockExplorer: 'https://goerli.etherscan.io'
 },
-{
-  label: " Kovan",
-  config: {
-    chainId: "0x2a",
-    chainName: ' Kovan',
-    rpcUrls: ['https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
-    nativeCurrency: {
-      name: ' Kovan',
-      symbol: 'ETH',
-      decimals: 18
-    },
-    blockExplorerUrls: ['https://kovan.etherscan.io']
-  }
-}
+// {
+//   label: " Kovan",
+//   config: {
+//     chainId: "0x2a",
+//     chainName: ' Kovan',
+//     rpcUrls: ['https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
+//     nativeCurrency: {
+//       name: ' Kovan',
+//       symbol: 'ETH',
+//       decimals: 18
+//     },
+//     blockExplorerUrls: ['https://kovan.etherscan.io']
+//   }
+// }
 ]
-

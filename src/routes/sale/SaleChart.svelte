@@ -1,8 +1,8 @@
 <script lang="ts">
   import { setContext } from "svelte";
-  import { query } from "@urql/svelte";
+  import { queryStore } from "@urql/svelte";
   import { BigNumber, Contract } from "ethers";
-  import { saleBuysQuery } from "./sale-queries";
+  // import { saleBuysQuery } from "./sale-queries";
   import { LayerCake, Svg, Html } from "layercake";
   import { formatUnits } from "ethers/src.ts/utils";
   import AxisX from "src/components/charts/AxisX.svelte";
@@ -14,6 +14,8 @@
   import { formatAddress } from "src/utils";
   import { writable } from "svelte/store";
   import IconLibrary from "src/components/IconLibrary.svelte";
+  import { client } from "src/stores";
+
   export let saleContract: Contract;
   export let reserve, token;
 
@@ -22,26 +24,55 @@
     xKey = "timestamp",
     yKey = "price";
 
+  let temp;
+
   // a store for matching the hovered point with a scatter dot
   const hoverItem = writable(null);
   setContext("found", hoverItem);
 
   const formatTickX = timeFormat("%b. %e. %X");
 
-  // setting the variables
-  $saleBuysQuery.variables.saleContractAddress =
-    saleContract.address.toLowerCase();
+  let saleContractAddress = saleContract ? saleContract.address.toLowerCase() : undefined;
 
-  query(saleBuysQuery);
+  $: saleBuysQuery = queryStore({
+      client: $client,
+      query: `
+        query ($saleContractAddress: Bytes!) {
+          saleBuys (where: {saleContractAddress: $saleContractAddress, refunded: false}, orderBy: timestamp, orderDirection: asc) {
+            id
+            __typename
+            timestamp
+            transactionHash
+            saleContractAddress
+            totalIn
+            sender
+            refunded
+            receipt {
+              id
+              receiptId
+              fee
+              units
+              price
+              feeRecipient
+            }
+          }
+        }`,
+      variables: { saleContractAddress },
+      requestPolicy: "network-only"
+    }
+  );
 
-  const refresh = () => {
-    saleBuysQuery.reexecute();
+  const refresh = async() => {
+    temp = saleContractAddress;
+    saleContractAddress = undefined;
+    if (await !$saleBuysQuery.fetching) {
+      saleContractAddress = temp;
+    }
   };
 
   // mapping data from the subgraph query into a format for the chart
-  saleBuysQuery.subscribe((query) => {
-    if (query?.data?.saleBuys.length) {
-      const _data = query.data.saleBuys.map((buy) => {
+  $: {if ($saleBuysQuery?.data?.saleBuys.length) {
+      const _data = $saleBuysQuery.data.saleBuys.map((buy) => {
         return {
           timestamp: buy.timestamp * 1000,
           price: (+formatUnits(
@@ -60,7 +91,7 @@
         };
       });
 
-      const _dataset = query.data.saleBuys.map((buy) => {
+      const _dataset = $saleBuysQuery.data.saleBuys.map((buy) => {
         return {
           x: buy.timestamp,
           y: formatUnits(BigNumber.from(buy.receipt.price), reserve.decimals),
@@ -69,7 +100,7 @@
       dataset = _dataset;
       data = _data;
     }
-  });
+  };
 </script>
 
 <div class="flex w-full flex-col gap-y-4">

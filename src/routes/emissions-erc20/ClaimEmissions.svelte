@@ -78,62 +78,64 @@
     {#await initPromise}
       Loading...
     {:then}
-      <FormPanel heading="Emissions Token">
-        <TokenInfo
-          tokenData={{
-            name: token.erc20name,
-            symbol: token.erc20symbol,
-            decimals: token.erc20decimals,
-            id: emissionsContract.address,
-            totalSupply: token.erc20totalSupply,
-          }}
-        />
-      </FormPanel>
+      {#if token}
+        <FormPanel heading="Emissions Token">
+          <TokenInfo
+            tokenData={{
+              name: token.erc20name,
+              symbol: token.erc20symbol,
+              decimals: token.erc20decimals,
+              id: emissionsContract.address,
+              totalSupply: token.erc20totalSupply,
+            }}
+          />
+        </FormPanel>
 
-      <FormPanel heading="Claim">
-        {#if !showClaim}
-          <div class="flex flex-col gap-y-4">
-            <span class="text-gray-400"
-              >Calculate claim for {$signerAddress}</span
-            >
-            <Button
-              on:click={() => {
-                calcClaimPromise = calculateClaim();
-              }}
-            >
-              Calculate
-            </Button>
-          </div>
-        {/if}
-        {#if calcClaimPromise}
-          <div>
-            {#await calcClaimPromise}
-              Getting eligible claim...
-            {:then claim}
-              Your claim will be {formatUnits(claim, token.erc20decimals)}
-              {token.erc20symbol}
-            {:catch err}
-              <span class="text-lg text-red-400">{err.error.message}</span>
-            {/await}
-          </div>
-        {/if}
-
-        {#if showClaim}
-          <Button
-            shrink
-            on:click={() => {
-              claimPromise = claim();
-            }}>Claim</Button
-          >
-          {#if claimPromise}
-            {#await claimPromise}
-              Claiming...
-            {:then}
-              Claim complete! Refresh to see your new balance.
-            {/await}
+        <FormPanel heading="Claim">
+          {#if !showClaim}
+            <div class="flex flex-col gap-y-4">
+              <span class="text-gray-400"
+                >Calculate claim for {$signerAddress}</span
+              >
+              <Button
+                on:click={() => {
+                  calcClaimPromise = calculateClaim();
+                }}
+              >
+                Calculate
+              </Button>
+            </div>
           {/if}
-        {/if}
-      </FormPanel>
+          {#if calcClaimPromise}
+            <div>
+              {#await calcClaimPromise}
+                Getting eligible claim...
+              {:then claim}
+                Your claim will be {formatUnits(claim, token.erc20decimals)}
+                {token.erc20symbol}
+              {:catch err}
+                <span class="text-lg text-red-400">{err.error.message}</span>
+              {/await}
+            </div>
+          {/if}
+
+          {#if showClaim}
+            <Button
+              shrink
+              on:click={() => {
+                claimPromise = claim();
+              }}>Claim</Button
+            >
+            {#if claimPromise}
+              {#await claimPromise}
+                Claiming...
+              {:then}
+                Claim complete! Refresh to see your new balance.
+              {/await}
+            {/if}
+          {/if}
+        </FormPanel>
+      {/if}
     {/await}
   {/if}
 </div>

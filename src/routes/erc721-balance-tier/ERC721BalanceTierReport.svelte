@@ -6,7 +6,8 @@
   import Button from "../../components/Button.svelte";
   import { tierReport } from "../../utils";
   import { push } from "svelte-spa-router";
-  import { operationStore, query } from "@urql/svelte";
+  import { queryStore } from "@urql/svelte";
+  import { client } from "src/stores"
   import { ERC721BalanceTier, ERC721 } from "rain-sdk";
 
   export let params;
@@ -20,57 +21,58 @@
     erc721Symbol,
     addressToReport,
     parsedReport,
-    addressBalance,
-    balanceTierAddress;
+    addressBalance;
 
-  const balanceTier = operationStore(
-    ` 
-    query ($balanceTierAddress: Bytes!)  {
-  erc721BalanceTiers (where: {id: $balanceTierAddress})  {
-    id
-    address
-    deployBlock
-    deployTimestamp
-    deployer
-    token {
-      id
-      name
-      symbol
-    }
-    tierValues
-  }
-}
-`,
-    { balanceTierAddress },
-    {
-      pause: true,
-      requestPolicy: "network-only",
+  let balanceTierAddress = params.wild ? params.wild.toLowerCase() : undefined;
+
+  $: balanceTier = queryStore({
+    client: $client,
+    query: `query ($balanceTierAddress: Bytes!)  {
+      erc721BalanceTiers (where: {id: $balanceTierAddress})  {
+        id
+        address
+        deployBlock
+        deployTimestamp
+        deployer
+        token {
+          id
+          name
+          symbol
+        }
+        tierValues
+      }
+    }`,
+    variables: { balanceTierAddress },
+    requestPolicy: "network-only",
+    pause: params.wild ? false : true,
     }
   );
 
-  query(balanceTier);
+  //query(balanceTier);
 
-  $: if (params.wild) {
-    runQuery();
-  }
-  const runQuery = () => {
-    $balanceTier.variables.balanceTierAddress = params.wild.toLowerCase();
-    $balanceTier.context.pause = false;
-    $balanceTier.reexecute();
-  };
+  // $: if (params.wild) {
+  //   runQuery();
+  // }
+  // const runQuery = () => {
+  //   $balanceTier.variables.balanceTierAddress = params.wild.toLowerCase();
+  //   $balanceTier.context.pause = false;
+  //   $balanceTier.reexecute();
+  // };
 
   $: _balanceTier = $balanceTier.data?.erc721BalanceTiers[0];
 
-  $: if (_balanceTier) {
-    initContract();
+  $: if (_balanceTier || $signer) {
+    if (!$balanceTier.fetching && _balanceTier != undefined){
+      initContract();
+    }
   }
 
   const initContract = async () => {
     if (ethers.utils.isAddress(params.wild)) {
       balanceTierContract = new ERC721BalanceTier(
-        _balanceTier.address,
+        _balanceTier?.address,
         $signer,
-        _balanceTier.token.id
+        _balanceTier?.token.id
       );
       try {
         tierValues = await balanceTierContract.tierValues();
@@ -79,7 +81,7 @@
         return;
       }
 
-      erc721Contract = new ERC721(_balanceTier.token.id, $signer);
+      erc721Contract = new ERC721(_balanceTier?.token.id, $signer);
       erc721Name = await erc721Contract.name();
       erc721Address = erc721Contract.address;
       erc721Symbol = await erc721Contract.symbol();
@@ -121,7 +123,7 @@
       </span>
     {/if}
   </div>
-  {#if ethers.utils.isAddress(params.wild) && params.wild && !errorMsg}
+  {#if !$balanceTier.fetching && !$balanceTier.error && $balanceTier.data}
     <FormPanel heading="ERC721 used for this BalanceTier">
       <div class="mb-4 flex flex-col gap-y-2">
         <div class="flex flex-col text-gray-400">
@@ -144,18 +146,20 @@
       {#if tierValues}
         <div class="flex flex-col gap-y-2">
           <span class="text-lg">Token values for this BalanceTier:</span>
-          {#each tierValues as value, i}
-            <span class="text-gray-400">
-              Tier {i + 1}: {value.eq(ethers.constants.MaxInt256)
-                ? "none"
-                : value.toString()}
-              {#if parsedReport?.[i] == 0}
-                ✅
-              {:else if parsedReport?.[i] > 0}
-                ❌
-              {/if}
-            </span>
-          {/each}
+          {#if _balanceTier && _balanceTier?.tierValues.length}
+            {#each tierValues as value, i}
+              <span class="text-gray-400">
+                Tier {i + 1}: {value.eq(ethers.constants.MaxInt256)
+                  ? "none"
+                  : value.toString()}
+                {#if parsedReport?.[i] == 0}
+                  ✅
+                {:else if parsedReport?.[i] > 0}
+                  ❌
+                {/if}
+              </span>
+            {/each}
+          {/if}
         </div>
         {#if addressBalance}
           <span

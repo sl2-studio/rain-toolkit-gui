@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { OperationStore } from "@urql/svelte";
   import { selectedNetwork } from "src/stores";
   import IconLibrary from "src/components/IconLibrary.svelte";
   import { formatAddress } from "src/utils";
-  export let verifyAddressQuery: OperationStore;
   import "node_modules/svelte-material-ui/bare.css";
   import { ethers } from "ethers";
   import HoverTooltip from "src/components/HoverTooltip.svelte";
+
+  export let verifyAddressQuery;
 
   const decoder = new TextDecoder();
 </script>

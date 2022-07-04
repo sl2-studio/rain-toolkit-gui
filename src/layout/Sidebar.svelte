@@ -98,6 +98,5 @@
 
       <SidebarLink url="/erc20/mint/">Mint From An Existing ERC20</SidebarLink>
     </SidebarLinkGroup>
-
   </div>
 </div>

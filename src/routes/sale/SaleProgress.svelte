@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { operationStore, query } from "@urql/svelte";
+  import { queryStore } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
   import { onDestroy } from "svelte";
   import ProgressBar from "components/ProgressBar.svelte";
@@ -10,71 +10,71 @@
     saleStatuses,
   } from "./sale";
   import dayjs from "dayjs";
+  import { client } from "src/stores";
 
   export let saleContract;
 
-  let saleAddress, updateTime, timeRemaining, timeElapsed, queryTimeout;
+  let updateTime, timeRemaining, timeElapsed, queryTimeout, temp;
 
-  const buysQuery = operationStore(
-    `
-query ($saleAddress: Bytes!) {
-  sales (where: {id: $saleAddress}) {
-    id
-    deployer
-    canEndStateConfig {
-      sources
-      constants
-      stackLength
-      argumentsLength
-    }
-    canStartStateConfig {
-      sources
-      constants
-      stackLength
-      argumentsLength
-    }
-    startEvent {
-        timestamp
-    }
-    endEvent {
-      timestamp
-    }
-    token {
-      symbol
-      name
-      decimals
-    }
-    reserve {
-      symbol
-      name
-      decimals
-    }
-    minimumRaise
-    unitsAvailable
-    totalRaised
-    percentRaised
-    saleStatus
-  }
-}
-`,
-    {
-      saleAddress,
-    },
-    {
+  let saleAddress = saleContract ? saleContract.address.toLowerCase() : undefined;
+
+  $: buysQuery = queryStore({
+      client: $client,
+      query:`
+        query ($saleAddress: Bytes!) {
+          sales (where: {id: $saleAddress}) {
+            id
+            deployer
+            canEndStateConfig {
+              sources
+              constants
+              stackLength
+              argumentsLength
+            }
+            canStartStateConfig {
+              sources
+              constants
+              stackLength
+              argumentsLength
+            }
+            startEvent {
+                timestamp
+            }
+            endEvent {
+              timestamp
+            }
+            token {
+              symbol
+              name
+              decimals
+            }
+            reserve {
+              symbol
+              name
+              decimals
+            }
+            minimumRaise
+            unitsAvailable
+            totalRaised
+            percentRaised
+            saleStatus
+          }
+        }`,
+      variables: { saleAddress },
       requestPolicy: "cache-and-network",
+      pause: saleAddress ? false : true
     }
   );
 
-  // set variables for the query
-  $buysQuery.variables.saleAddress = saleContract.address.toLowerCase();
-
-  // init the query
-  query(buysQuery);
-
   // re-execute the query every 3 seconds, unless a current fetch is in already progress
-  const queryLoop = () => {
-    if (!$buysQuery.fetching) {
-      buysQuery.reexecute();
+  const queryLoop = async() => {
+    if ($buysQuery?.data) {
+      temp = saleAddress;
+      saleAddress = undefined;
+      if (await !$buysQuery.fetching) {
+        saleAddress = temp
+      }
+      //buysQuery.reexecute();
     }
     queryTimeout = setTimeout(queryLoop, 3000);
   };

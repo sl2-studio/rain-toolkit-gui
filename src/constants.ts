@@ -51,8 +51,7 @@ export const networks = [{
     },
     blockExplorerUrls: ['https://polygonscan.com/']
   },
-  blockExplorer: 'https://polygonscan.com/',
-  graphUrl: 'https://api.thegraph.com/subgraphs/name/beehive-innovation/rain-protocol-polygon-e590ce'
+  blockExplorer: 'https://polygonscan.com/'
 },
 {
   label: "Mumbai",
@@ -67,8 +66,7 @@ export const networks = [{
     },
     blockExplorerUrls: ['https://mumbai.polygonscan.com/']
   },
-  blockExplorer: 'https://mumbai.polygonscan.com/',
-  graphUrl: 'https://api.thegraph.com/subgraphs/name/beehive-innovation/rain-protocol-mumbai-e590ce'
+  blockExplorer: 'https://mumbai.polygonscan.com/'
 },
 {
   label: "Avalanche Testnet",
@@ -83,8 +81,7 @@ export const networks = [{
     },
     blockExplorerUrls: ['https://testnet.snowtrace.io/']
   },
-  blockExplorer: 'https://testnet.snowtrace.io/',
-  graphUrl: 'https://api.thegraph.com/subgraphs/name/nanezx/rain-protocol-fuji-e590ce'
+  blockExplorer: 'https://testnet.snowtrace.io/'
 },
 {
   label: "BSC - Testnet",
@@ -99,8 +96,7 @@ export const networks = [{
     },
     blockExplorerUrls: ['https://testnet.bscscan.com']
   },
-  blockExplorer: 'https://testnet.bscscan.com',
-  graphUrl: 'https://api.thegraph.com/subgraphs/name/beehive-innovation/rain-protocol-bnb-chapel-e590ce'
+  blockExplorer: 'https://testnet.bscscan.com'
 },
 {
   label: "BSC - Mainnet",
@@ -115,8 +111,7 @@ export const networks = [{
     },
     blockExplorerUrls: ['https://bscscan.com/']
   },
-  blockExplorer: 'https://bscscan.com/',
-  graphUrl: 'https://api.thegraph.com/subgraphs/name/beehive-innovation/rain-protocol-bnb-e590ce'
+  blockExplorer: 'https://bscscan.com/'
 },
 // {
 //   label: "Fantom - Testnet",
@@ -145,8 +140,7 @@ export const networks = [{
     },
     blockExplorerUrls: ['https://etherscan.io/']
   },
-  blockExplorer: 'https://etherscan.io/',
-  graphUrl: 'https://api.thegraph.com/subgraphs/name/beehive-innovation/rain-protocol-mainnet-e590ce'
+  blockExplorer: 'https://etherscan.io/'
 },
 // {
 //   label: "Ropsten",
@@ -189,8 +183,7 @@ export const networks = [{
     },
     blockExplorerUrls: ['https://goerli.etherscan.io']
   },
-  blockExplorer: 'https://goerli.etherscan.io',
-  graphUrl: 'https://api.thegraph.com/subgraphs/name/beehive-innovation/rain-protocol-goerli-e590ce'
+  blockExplorer: 'https://goerli.etherscan.io'
 },
 // {
 //   label: " Kovan",

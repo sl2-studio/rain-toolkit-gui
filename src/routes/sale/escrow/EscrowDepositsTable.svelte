@@ -12,16 +12,18 @@
 
   const { open } = getContext("simple-modal");
   export let salesContract, saleData, token;
-  
+
   let checked = true;
   let signerBalance, decimals, symbol, temp;
 
-  let saleAddress = salesContract ? salesContract.address.toLowerCase() : undefined;
+  let saleAddress = salesContract
+    ? salesContract.address.toLowerCase()
+    : undefined;
   let depositor = $signerAddress.toLowerCase();
 
   $: allDepositQuery = queryStore({
-      client: $client,
-      query: `
+    client: $client,
+    query: `
         query ($saleAddress: Bytes!) {
           redeemableEscrowSupplyTokenWithdrawers (where: {iSaleAddress: $saleAddress}, orderBy: redeemableBalance, orderDirection: asc) {
             id
@@ -42,15 +44,14 @@
             }
           }
         }`,
-      variables: { saleAddress },
-      requestPolicy: "network-only",
-      pause: checked ? false : true 
-    }
-  );
+    variables: { saleAddress },
+    requestPolicy: "network-only",
+    pause: checked ? false : true,
+  });
 
   $: myDepositQuery = queryStore({
-      client: $client,
-      query: `
+    client: $client,
+    query: `
         query ($saleAddress: Bytes!, $depositor: Bytes!) {
           redeemableEscrowSupplyTokenWithdrawers (where: {iSaleAddress: $saleAddress, withdrawerAddress: $depositor}, orderBy: redeemableBalance, orderDirection: asc) {
             id
@@ -71,20 +72,20 @@
             }
           }
         }`,
-      variables: { saleAddress, depositor },
-      requestPolicy: "network-only",
-      pause: !checked ? false : true 
-    }
-  );
+    variables: { saleAddress, depositor },
+    requestPolicy: "network-only",
+    pause: !checked ? false : true,
+  });
 
   $: txQuery = checked ? allDepositQuery : myDepositQuery;
 
   // handling table refresh
-  const refresh = async() => {
+  const refresh = async () => {
     temp = saleAddress;
     saleAddress = undefined;
     if (await !$txQuery.fetching) {
       saleAddress = temp;
+
       tokenDetails();
     }
   };
@@ -167,19 +168,21 @@
             {data.deposit.token.symbol}
           </td>
           <td class="py-2 text-right">
-            {#if formatUnits(signerBalance, decimals) !== "0.0" && data.deposit.totalRemaining !== "0" && data.withdrawerAddress === $signerAddress.toLowerCase()}
-              <span
-                class="underline cursor-pointer text-gray-400 mr-4"
-                on:click={() => {
-                  open(EscrowWithdrawModal, {
-                    data,
-                    salesContract,
-                    saleData,
-                  });
-                }}
-              >
-                Withdraw
-              </span>
+            {#if signerBalance && decimals}
+              {#if formatUnits(signerBalance, decimals) !== "0.0" && data.deposit.totalRemaining !== "0" && data.withdrawerAddress === $signerAddress.toLowerCase()}
+                <span
+                  class="underline cursor-pointer text-gray-400 mr-4"
+                  on:click={() => {
+                    open(EscrowWithdrawModal, {
+                      data,
+                      salesContract,
+                      saleData,
+                    });
+                  }}
+                >
+                  Withdraw
+                </span>
+              {/if}
             {/if}
           </td>
         </tr>

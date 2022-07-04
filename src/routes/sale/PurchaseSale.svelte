@@ -30,8 +30,8 @@
   let startPromise, endPromise, temp;
 
   $: saleQuery = queryStore({
-      client: $client,
-      query:`
+    client: $client,
+    query: `
         query ($saleAddress: Bytes!) {
           sale (id: $saleAddress) {
             id
@@ -59,15 +59,19 @@
             saleStatus
           }
         }`,
-      variables: { saleAddress },
-      requestPolicy: "cache-and-network"
-    }
-  );
+    variables: { saleAddress },
+    requestPolicy: "cache-and-network",
+  });
 
-  $: saleData = !$saleQuery?.fetching && $saleQuery?.data?.sale ? $saleQuery.data.sale : undefined;
-  $: saleStatus = $saleQuery?.data?.sale?.saleStatus ? saleStatuses[$saleQuery.data.sale.saleStatus] : undefined;
+  $: saleData =
+    !$saleQuery?.fetching && $saleQuery?.data?.sale
+      ? $saleQuery.data.sale
+      : undefined;
+  $: saleStatus = $saleQuery?.data?.sale?.saleStatus
+    ? saleStatuses[$saleQuery.data.sale.saleStatus]
+    : undefined;
 
-  const initContracts = async() => {
+  const initContracts = async () => {
     sale = new Sale($saleQuery?.data?.sale.id, $signer);
     reserve = new ERC20($saleQuery?.data?.sale.reserve?.id, $signer);
     token = new ERC20($saleQuery?.data?.sale.token?.id, $signer);
@@ -81,10 +85,10 @@
   }
 
   $: if (saleData || $signer) {
-      if (!$saleQuery.fetching && saleData) {
-        initContracts();
-      }
+    if (!$saleQuery.fetching && saleData) {
+      initContracts();
     }
+  }
 
   const startSale = async () => {
     try {

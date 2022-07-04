@@ -17,12 +17,14 @@
   let checked = true;
   let temp;
 
-  let saleContractAddress = saleContract ? saleContract.address.toLowerCase() : undefined;
+  let saleContractAddress = saleContract
+    ? saleContract.address.toLowerCase()
+    : undefined;
   let sender = $signerAddress.toLowerCase();
 
   $: allTxQuery = queryStore({
-      client: $client,
-      query: `
+    client: $client,
+    query: `
         query ($saleContractAddress: Bytes!) {
           saleTransactions (where: {saleContractAddress: $saleContractAddress}, orderBy: timestamp, orderDirection: asc) {
             id
@@ -63,15 +65,14 @@
             }
           }
         }`,
-      variables: { saleContractAddress },
-      requestPolicy: "network-only",
-      pause: checked ? false : true
-    }
-  );
+    variables: { saleContractAddress },
+    requestPolicy: "network-only",
+    pause: checked ? false : true,
+  });
 
   $: myTxQuery = queryStore({
-      client: $client,
-      query: `
+    client: $client,
+    query: `
         query ($saleContractAddress: Bytes!, $sender: Bytes!) {
           saleTransactions (where: {saleContractAddress: $saleContractAddress, sender: $sender}, orderBy: timestamp, orderDirection: asc) {
             id
@@ -112,16 +113,15 @@
             }
           }
         }`,
-      variables: { saleContractAddress, sender },
-      requestPolicy: "network-only",
-      pause: !checked ? false : true
-    }
-  );
+    variables: { saleContractAddress, sender },
+    requestPolicy: "network-only",
+    pause: !checked ? false : true,
+  });
 
   $: txQuery = checked ? allTxQuery : myTxQuery;
 
   // handling table refresh
-  const refresh = async() => {
+  const refresh = async () => {
     temp = saleContractAddress;
     saleContractAddress = undefined;
     if (await !$txQuery.fetching) {

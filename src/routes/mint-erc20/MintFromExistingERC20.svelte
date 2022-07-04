@@ -17,9 +17,10 @@
   let erc20Contract, token;
   let errorMsg, erc20Address;
   let showMint;
-  let initPromise, calcMintPromise, mintPromise;
+  let initPromise, calcMintPromise, mintPromise, flag;
 
-  $: if (params.wild) {
+  $: if (params.wild || $signer) {
+    flag = false;
     initPromise = initContract();
   }
 
@@ -27,6 +28,7 @@
     if (ethers.utils.isAddress(params.wild || "")) {
       erc20Contract = new EmissionsERC20(params.wild, $signer);
       token = await getERC20(params.wild, $signer, $signerAddress);
+      flag = true;
     } else if (params.wild) {
       errorMsg = "Not a valid contract address";
     }
@@ -80,62 +82,64 @@
     {#await initPromise}
       Loading...
     {:then}
-      <FormPanel heading="ERC20 Token Details">
-        <TokenInfo
-          tokenData={{
-            name: token.erc20name,
-            symbol: token.erc20symbol,
-            decimals: token.erc20decimals,
-            id: erc20Contract.address,
-            totalSupply: token.erc20totalSupply,
-          }}
-        />
-      </FormPanel>
+      {#if token}
+        <FormPanel heading="ERC20 Token Details">
+          <TokenInfo
+            tokenData={{
+              name: token.erc20name,
+              symbol: token.erc20symbol,
+              decimals: token.erc20decimals,
+              id: erc20Contract.address,
+              totalSupply: token.erc20totalSupply,
+            }}
+          />
+        </FormPanel>
 
-      <FormPanel heading="Mint">
-        {#if !showMint}
-          <div class="flex flex-col gap-y-4">
-            <span class="text-gray-400"
-              >Show mintable amount for {$signerAddress}</span
-            >
-            <Button
-              on:click={() => {
-                calcMintPromise = calculateClaim();
-              }}
-            >
-              Show
-            </Button>
-          </div>
-        {/if}
-        {#if calcMintPromise}
-          <div>
-            {#await calcMintPromise}
-              Getting eligible mint...
-            {:then claim}
-              Mintable amount will be {formatUnits(claim, token.erc20decimals)}
-              {token.erc20symbol}
-            {:catch err}
-              <span class="text-lg text-red-400">{err.error.message}</span>
-            {/await}
-          </div>
-        {/if}
-
-        {#if showMint}
-          <Button
-            shrink
-            on:click={() => {
-              mintPromise = claim();
-            }}>Mint</Button
-          >
-          {#if mintPromise}
-            {#await mintPromise}
-              Minting...
-            {:then}
-              Mint complete! Refresh to see your new balance.
-            {/await}
+        <FormPanel heading="Mint">
+          {#if !showMint}
+            <div class="flex flex-col gap-y-4">
+              <span class="text-gray-400"
+                >Show mintable amount for {$signerAddress}</span
+              >
+              <Button
+                on:click={() => {
+                  calcMintPromise = calculateClaim();
+                }}
+              >
+                Show
+              </Button>
+            </div>
           {/if}
-        {/if}
-      </FormPanel>
+          {#if calcMintPromise}
+            <div>
+              {#await calcMintPromise}
+                Getting eligible mint...
+              {:then claim}
+                Mintable amount will be {formatUnits(claim, token.erc20decimals)}
+                {token.erc20symbol}
+              {:catch err}
+                <span class="text-lg text-red-400">{err.error.message}</span>
+              {/await}
+            </div>
+          {/if}
+
+          {#if showMint}
+            <Button
+              shrink
+              on:click={() => {
+                mintPromise = claim();
+              }}>Mint</Button
+            >
+            {#if mintPromise}
+              {#await mintPromise}
+                Minting...
+              {:then}
+                Mint complete! Refresh to see your new balance.
+              {/await}
+            {/if}
+          {/if}
+        </FormPanel>
+      {/if}
     {/await}
   {/if}
 </div>

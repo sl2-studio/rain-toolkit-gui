@@ -82,7 +82,7 @@
           <div class="flex flex-col gap-y-2 font-light text-gray-300">
             <span>Token name: {erc20name}</span>
             <span>Token symbol: {erc20symbol}</span>
-            <span>Your balance: {formatUnits(erc20balance, erc20decimals.toString())}</span>
+            <span>Your balance: {formatUnits(erc20balance, erc20decimals)}</span>
           </div>
         {/if}
       </span>

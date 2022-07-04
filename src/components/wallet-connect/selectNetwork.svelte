@@ -2,14 +2,10 @@
   import { networks } from "../../constants";
   import { selectedNetwork } from "../../stores";
   import { getContext } from "svelte";
-  import {
-    defaultEvmStores,
-    chainId,
-    signerAddress,
-  } from "svelte-ethers-store";
+  import { defaultEvmStores } from "svelte-ethers-store";
   import Select from "../../components/Select.svelte";
-  import { signer } from "svelte-ethers-store"
 
+  
   export let onNetworkChange = () => {};
   export let library;
   let name;

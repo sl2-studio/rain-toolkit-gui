@@ -17,10 +17,9 @@
   let erc20Contract, token;
   let errorMsg, erc20Address;
   let showMint;
-  let initPromise, calcMintPromise, mintPromise, flag;
+  let initPromise, calcMintPromise, mintPromise;
 
   $: if (params.wild || $signer) {
-    flag = false;
     initPromise = initContract();
   }
 
@@ -28,7 +27,6 @@
     if (ethers.utils.isAddress(params.wild || "")) {
       erc20Contract = new EmissionsERC20(params.wild, $signer);
       token = await getERC20(params.wild, $signer, $signerAddress);
-      flag = true;
     } else if (params.wild) {
       errorMsg = "Not a valid contract address";
     }

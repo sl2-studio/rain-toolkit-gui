@@ -8,6 +8,7 @@
   import { addressValidate } from "../../validation";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
   import HumanReadable from "../../components/FriendlySource/HumanReadable.svelte";
+  import EmissionSmallSimulationChart from "./EmissionSmallSimulationChart.svelte";
   import {
     EmissionsERC20,
     ERC20Config,
@@ -17,8 +18,7 @@
     LinearEmissions,
     SequentialEmissions,
   } from "rain-sdk";
-  import EmissionSmallSimulationChart from "./EmissionSmallSimulationChart.svelte";
-
+  
   let deployPromise;
 
   let fields: any = {};
@@ -36,11 +36,15 @@
   let erc20symbol = "eTKN";
 
   let tierAddress = "0x1b044f69674c47ab19475cbb57d4d7673f6ccd6c";
-  let blockTime = 2.3;
+  let blockTime = 2;
   let period = 60 * 60 * 24 * 30; // one month in seconds
-  let numberOfIncrements = 12;
+  let numberOfIncrements = 6;
   let ownerAddress = $signerAddress;
   let initSupply = 0;
+  let FriendlySource;
+  let NumberOfIc;
+  let BlockTime;
+  let Period;
 
   let tier1 = 100,
     tier2 = 200,
@@ -65,30 +69,35 @@
     return true;
   };
 
-  $: FriendlySource = {
-    tierAddress,
-    blockTime,
-    period,
-    numberOfIncrements,
-    ownerAddress,
-    initSupply,
-    tier1,
-    tier2,
-    tier3,
-    tier4,
-    tier5,
-    tier6,
-    tier7,
-    tier8,
-    maxTier1,
-    maxTier2,
-    maxTier3,
-    maxTier4,
-    maxTier5,
-    maxTier6,
-    maxTier7,
-    maxTier8,
-    emissionsType,
+  $:{ 
+    NumberOfIc = numberOfIncrements && numberOfIncrements > 2 ? numberOfIncrements : 3;
+    BlockTime = blockTime ? blockTime : 2;
+    Period = period >= BlockTime ? period : BlockTime;
+    FriendlySource = {
+      tierAddress,
+      blockTime: BlockTime,
+      period: Period,
+      numberOfIncrements: NumberOfIc,
+      ownerAddress,
+      initSupply,
+      tier1,
+      tier2,
+      tier3,
+      tier4,
+      tier5,
+      tier6,
+      tier7,
+      tier8,
+      maxTier1,
+      maxTier2,
+      maxTier3,
+      maxTier4,
+      maxTier5,
+      maxTier6,
+      maxTier7,
+      maxTier8,
+      emissionsType,
+    }
   };
 
   const deployEmissions = async () => {
@@ -262,7 +271,7 @@
           >
             <span slot="label">Periods Length</span>
             <span slot="description"
-              >Number of periods it takes to reach max reward per period</span
+              >Number of periods it takes to reach max reward per period, must be equal or greater than 3</span
             >
           </Input>
         </div>

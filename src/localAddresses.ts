@@ -50,7 +50,118 @@ const addressesDefault: LocalLibrary = new Map([
                     ]])
             ]
         ])
-    ]])
+    ],
+    ['BSC - Testnet',
+        new Map([
+            ['Tokens',
+                new Map([
+                    ['DBUSD',
+                        { address: "0x4bfe13fd065db627425068d203ba5237d6f185b1", type: "Token" }
+                    ]])
+            ],
+            ['Tiers',
+                new Map([
+                    ['DBUSD BalanceTier',
+                        { address: "0x37cb1b89bbf7769dd2dfbc631753f54c383b9798", type: "BalanceTier" }
+                    ]])
+            ],
+            ['Utility',
+                new Map([
+                    ['Zero Address',
+                        { address: "0x0000000000000000000000000000000000000000", type: "Address" }
+                    ]])
+            ]
+        ])
+    ],
+    ['Goerli',
+        new Map([
+            ['Tokens',
+                new Map([
+                    ['USDT',
+                        { address: "0xd4e71c4bb48850f5971ce40aa428b09f242d3e8a", type: "Token" }
+                    ]])
+            ],
+            // ['Tiers',
+            //     new Map([
+            //         ['USDT BalanceTier',
+            //             { address: "0x37cb1b89bbf7769dd2dfbc631753f54c383b9798", type: "BalanceTier" }
+            //         ]])
+            // ],
+            ['Utility',
+                new Map([
+                    ['Zero Address',
+                        { address: "0x0000000000000000000000000000000000000000", type: "Address" }
+                    ]])
+            ]
+        ])
+    ],
+    ['Ethereum',
+        new Map([
+            // ['Tokens',
+            //     new Map([
+            //         ['DBUSD',
+            //             { address: "0x4bfe13fd065db627425068d203ba5237d6f185b1", type: "Token" }
+            //         ]])
+            // ],
+            // ['Tiers',
+            //     new Map([
+            //         ['DBUSD BalanceTier',
+            //             { address: "0x37cb1b89bbf7769dd2dfbc631753f54c383b9798", type: "BalanceTier" }
+            //         ]])
+            // ],
+            ['Utility',
+                new Map([
+                    ['Zero Address',
+                        { address: "0x0000000000000000000000000000000000000000", type: "Address" }
+                    ]])
+            ]
+        ])
+    ],
+    ['BSC - Mainnet',
+        new Map([
+            // ['Tokens',
+            //     new Map([
+            //         ['DBUSD',
+            //             { address: "0x4bfe13fd065db627425068d203ba5237d6f185b1", type: "Token" }
+            //         ]])
+            // ],
+            // ['Tiers',
+            //     new Map([
+            //         ['DBUSD BalanceTier',
+            //             { address: "0x37cb1b89bbf7769dd2dfbc631753f54c383b9798", type: "BalanceTier" }
+            //         ]])
+            // ],
+            ['Utility',
+                new Map([
+                    ['Zero Address',
+                        { address: "0x0000000000000000000000000000000000000000", type: "Address" }
+                    ]])
+            ]
+        ])
+    ],
+    ['Avalanche - Mainnet',
+        new Map([
+            ['Tokens',
+                new Map([
+                    ['USDT',
+                        { address: "0xd4e71c4bb48850f5971ce40aa428b09f242d3e8a", type: "Token" }
+                    ]])
+            ],
+            // ['Tiers',
+            //     new Map([
+            //         ['DBUSD BalanceTier',
+            //             { address: "0x37cb1b89bbf7769dd2dfbc631753f54c383b9798", type: "BalanceTier" }
+            //         ]])
+            // ],
+            ['Utility',
+                new Map([
+                    ['Zero Address',
+                        { address: "0x0000000000000000000000000000000000000000", type: "Address" }
+                    ]])
+            ]
+        ])
+    ],
+])
 
 const createLocalLibrary = (selectedNetworkStore: typeof selectedNetwork) => {
 
@@ -139,3 +250,4 @@ function reviver(key, value) {
     }
     return value;
 }
+

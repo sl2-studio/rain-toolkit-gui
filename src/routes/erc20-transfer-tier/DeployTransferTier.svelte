@@ -7,7 +7,6 @@
   import ContractDeploy from "src/components/ContractDeploy.svelte";
   import { ERC20TransferTier, ERC20 } from "rain-sdk";
   import { formatUnits } from "ethers/lib/utils";
-  
 
   let erc20Address,
     erc20AddressError,
@@ -47,7 +46,6 @@
     const parsedTiers = tiers.map((value) =>
       ethers.utils.parseUnits(value.toString(), erc20decimals)
     );
-    console.log("parse", parsedTiers);
 
     let newBalanceTier = await ERC20TransferTier.deploy($signer, {
       erc20: erc20Contract.address,
@@ -66,8 +64,8 @@
   <div class="mb-2 flex flex-col gap-y-2">
     <span class="text-2xl"> Deploy a new TransferTier. </span>
     <span class="text-gray-400">
-      Create Tier statuses corresponding to locking up at least a certain amount of
-      an ERC20 in the contract.
+      Create Tier statuses corresponding to locking up at least a certain amount
+      of an ERC20 in the contract.
     </span>
   </div>
   <FormPanel heading="TransferTier settings">
@@ -82,13 +80,18 @@
           <div class="flex flex-col gap-y-2 font-light text-gray-300">
             <span>Token name: {erc20name}</span>
             <span>Token symbol: {erc20symbol}</span>
-            <span>Your balance: {formatUnits(erc20balance, erc20decimals)}</span>
+            <span>Your balance: {formatUnits(erc20balance, erc20decimals)}</span
+            >
           </div>
         {/if}
       </span>
     </Input>
     <div class="flex w-full flex-col gap-y-3">
-      <Input type="text" placeholder="Tier 1 value is reserved as ZERO for canceling tier membership" disabled>
+      <Input
+        type="text"
+        placeholder="Tier 1 value is reserved as ZERO for canceling tier membership"
+        disabled
+      >
         <span slot="label"
           >Set the amount of token that must be locked up for each tier</span
         >

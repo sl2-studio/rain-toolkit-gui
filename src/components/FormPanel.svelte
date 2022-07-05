@@ -2,7 +2,6 @@
   export let heading = null as null | string;
   export let classes = null as null | string;
   let type = typeof classes;
-  // console.log("type", typeof heading);
 </script>
 
 <div

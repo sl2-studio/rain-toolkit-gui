@@ -18,6 +18,13 @@
   class="inline-flex flex-row items-center gap-x-2 self-start rounded-3xl bg-gray-700 px-4 py-2 text-gray-200"
 >
   <div>{formatAddress(address)}</div>
-  <span on:click={handleSave}><IconLibrary inline icon="add" width={15} /></span
+  <span class="pointer" on:click={handleSave}
+    ><IconLibrary inline icon="add" width={15} /></span
   >
 </div>
+
+<style>
+  .pointer {
+    cursor: pointer;
+  }
+</style>

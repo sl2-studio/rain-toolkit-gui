@@ -64,7 +64,7 @@ import Switch from "src/components/Switch.svelte";
         name: fieldValues.erc20name,
         symbol: fieldValues.erc20symbol,
         distributor: fieldValues.ownerAddress,
-        initialSupply: fieldValues.initSupply,
+        initialSupply: parseUnits(fieldValues.initSupply.toString()),
       };
 
       let emissionsDeployArg: EmissionsERC20DeployArgs;
@@ -99,7 +99,7 @@ import Switch from "src/components/Switch.svelte";
       </span>
     </div>
 
-      <FormPanel heading="ERC20 Config">
+      <FormPanel heading="ERC20 config">
         <Input
           type="text"
           placeholder="Name"
@@ -144,33 +144,38 @@ import Switch from "src/components/Switch.svelte";
         bind:value={initSupply}
         validator={defaultValidator}
       >
-        <span slot="label">Fixed Supply</span>
+        <span slot="label">Total Supply (Fixed)</span>
       </Input>
       {/if}
       </FormPanel>
-
-      <FormPanel heading="Supply Control">
-        <Switch bind:checked={fixedSupply}/>
-        <span class="text-gray-400"
-          >ERC20 token will have fixed supply if switched off</span
-        >
-        {#if fixedSupply}
-          <Input
-          type="number"
-          bind:this={fields.amount}
-          bind:value={amount}
-          validator={defaultValidator}
-        >
-          <span slot="label">Amount of tokens to mint each time in future</span>
-        </Input>
-        {/if}
+    
+      <FormPanel>
+        <div>
+          <span class="font-bold">Supply Control</span>
+          <Switch bind:checked={fixedSupply}/>
+          <br />
+          <span class="text-gray-400"
+            >ERC20 token will have fixed supply if switched off</span
+          >
+          {#if fixedSupply}
+          <br /><br/>
+            <Input
+              type="number"
+              bind:this={fields.amount}
+              bind:value={amount}
+              validator={defaultValidator}
+              >
+              <span slot="label">Amount of tokens to mint each time in future</span>
+            </Input>
+          {/if}
+        </div>
       </FormPanel>
 
       <FormPanel>
         {#if !deployPromise}
           <Button shrink on:click={handleClick}>Deploy ERC20 Token</Button>
         {:else}
-          <ContractDeploy {deployPromise} type="ERC20" />
+          <ContractDeploy {deployPromise} type="ERC20 Token" />
         {/if}
       </FormPanel>
   </div>

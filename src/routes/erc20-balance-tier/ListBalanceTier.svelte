@@ -4,28 +4,32 @@
   import { push } from "svelte-spa-router";
   import Button from "../../components/Button.svelte";
   import FormPanel from "../../components/FormPanel.svelte";
-  import { operationStore, query } from "@urql/svelte";
+  import { queryStore } from "@urql/svelte";
+  import { client } from "../../stores"
 
-  const balanceTiers = operationStore(`
-query {
-  erc20BalanceTiers {
-    id
-    address
-    deployBlock
-    deployTimestamp
-    deployer
-    token {
-      id
-      name
-      symbol
-      decimals
+  $: balanceTiers = queryStore({
+    client: $client,
+    query: `
+      query {
+        erc20BalanceTiers {
+          id
+          address
+          deployBlock
+          deployTimestamp
+          deployer
+          token {
+            id
+            name
+            symbol
+            decimals
+          }
+          tierValues
+        }
+      }`
     }
-    tierValues
-  }
-}
-`);
+  );
 
-  query(balanceTiers);
+  // query(balanceTiers);
 </script>
 
 {#if $balanceTiers.fetching}

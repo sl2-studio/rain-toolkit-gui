@@ -37,7 +37,12 @@
 
   const calculatePrice = async (amount) => {
     priceConfirmed = PriceConfirmed.Pending;
-    if (units <= data.totalRemaining) {
+    const _amountUnits = parseUnits(
+      amount.toString(),
+      data.token.decimals.toString()
+    );
+
+    if (_amountUnits <= data.totalRemaining) {
       const one = parseUnits("1", data.token.decimals.toString());
       const _units = parseUnits(
         amount.toString(),

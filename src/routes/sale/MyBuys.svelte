@@ -1,70 +1,64 @@
 <script lang="ts">
   import RefundModal from "./RefundModal.svelte";
-  import { operationStore, query } from "@urql/svelte";
+  import { queryStore } from "@urql/svelte";
   import { formatUnits } from "ethers/lib/utils";
   import { signerAddress } from "svelte-ethers-store";
   import { getContext } from "svelte";
   import IconLibrary from "../../components/IconLibrary.svelte";
   import dayjs from "dayjs";
-  import { selectedNetwork } from "src/stores";
+  import { selectedNetwork, client } from "src/stores";
 
   const { open } = getContext("simple-modal");
+  
   export let saleContract;
 
-  let saleContractAddress, sender;
+  let saleContractAddress = saleContract ? saleContract.address.toLowerCase() : undefined;
+  let sender = $signerAddress.toLowerCase();
 
-  const buysQuery = operationStore(
-    `
-query ($saleContractAddress: Bytes!, $sender: Bytes!) {
-  saleBuys (where: {saleContractAddress: $saleContractAddress, sender: $sender}, orderBy: timestamp, orderDirection: asc) {
-      timestamp
-      refunded
-      transactionHash
-      sender
-      saleContractAddress
-      saleContract {
-          token {
+  $: buysQuery = queryStore({
+      client: $client,
+      query: `
+        query ($saleContractAddress: Bytes!, $sender: Bytes!) {
+          saleBuys (where: {saleContractAddress: $saleContractAddress, sender: $sender}, orderBy: timestamp, orderDirection: asc) {
+            timestamp
+            refunded
+            transactionHash
+            sender
+            saleContractAddress
+            saleContract {
+              token {
+                id
+                name
+                symbol
+                decimals
+              }
+              reserve {
+                id
+                name
+                symbol
+                decimals
+              }
+              cooldownDuration
+            }
+            minimumUnits
+            desiredUnits
+            maximumPrice
+            totalIn
+            fee
+            receipt {
               id
-              name
-              symbol
-              decimals
+              receiptId
+              feeRecipient
+              fee
+              units
+              price
+            }
           }
-          reserve {
-              id
-              name
-              symbol
-              decimals
-          }
-          cooldownDuration
-      }
-      minimumUnits
-      desiredUnits
-      maximumPrice
-      totalIn
-      fee
-      receipt {
-        id
-        receiptId
-        feeRecipient
-        fee
-        units
-        price
-      }
-    }
-}
-`,
-    {
-      saleContractAddress,
-      sender,
-    },
-    {
-      requestPolicy: "network-only",
+        }`,
+      variables: { saleContractAddress, sender },
+      requestPolicy: "network-only"
     }
   );
-
-  $buysQuery.variables.saleContractAddress = saleContract.address.toLowerCase();
-  $buysQuery.variables.sender = $signerAddress.toLowerCase();
-  query(buysQuery);
 
   $: reserve = $buysQuery.data?.saleBuys[0]?.saleContract.reserve;
   $: token = $buysQuery.data?.saleBuys[0]?.saleContract.token;

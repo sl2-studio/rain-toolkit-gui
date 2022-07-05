@@ -1,63 +1,58 @@
 <script lang="ts">
-  import { formatAddress } from "src/utils";
-  import { formatUnits } from "ethers/lib/utils";
-  import { signerAddress } from "svelte-ethers-store";
   import { getContext } from "svelte";
   import IconLibrary from "../../components/IconLibrary.svelte";
   import dayjs from "dayjs";
   import { selectedNetwork } from "src/stores";
-  import { operationStore, query } from "@urql/svelte";
+  import { queryStore } from "@urql/svelte";
+  import { client } from "src/stores";
+
 
   const { open } = getContext("simple-modal");
   export let tierAddress;
-  let transferTierAddress;
-  let signer;
-  const transferTierQuery = operationStore(
-    `
-query ($transferTierAddress: Bytes!, $signer: Bytes!) {
-  erc20TransferTiers(where: {id: $transferTierAddress}) {
-    id
-    address
-    deployBlock
-    deployTimestamp
-    tierChanges(where:{account: $signer}, orderBy:changetimestamp, orderDirection: desc){
-        transactionHash
-        id
-        startTier
-        endTier
-        changeblock
-        changetimestamp
-        sender
-        account
-    }
-  }
-}
-`,
-  { 
-    transferTierAddress,
-    signer 
-  },
-    {
-      requestPolicy: "network-only",
+  export let reportingAddress
+  let temp;
+
+  $: transferTierAddress = tierAddress;
+  $: signer = tierAddress ? reportingAddress.toLowerCase() : undefined;
+
+  $: transferTierQuery = queryStore({
+    client: $client,
+    query: `
+      query ($transferTierAddress: Bytes!, $signer: Bytes!) {
+        erc20TransferTiers(where: {id: $transferTierAddress}) {
+          id
+          address
+          deployBlock
+          deployTimestamp
+          tierChanges(where:{account: $signer}, orderBy:changetimestamp, orderDirection: desc){
+              transactionHash
+              id
+              startTier
+              endTier
+              changeblock
+              changetimestamp
+              sender
+              account
+          }
+        }
+      }`,
+    variables: { transferTierAddress, signer },
+    requestPolicy: "network-only",
     }
   );
 
-  query(transferTierQuery);
-
-  // setting the query variables
-  $: if (tierAddress) {
-    runQuery();
-  }
-  const runQuery = () => {
-    $transferTierQuery.variables.transferTierAddress = tierAddress;
-    $transferTierQuery.variables.signer = $signerAddress.toLowerCase();
-  };
   // handling table refresh
-  const refresh = () => {
-    $transferTierQuery.reexecute();
+  const refresh = async() => {
+    temp = tierAddress;
+    tierAddress = undefined;
+    if (await !$transferTierQuery.fetching){
+      tierAddress = temp;
+    }
   };
 
-  //   $: tierQuery = $transferTierQuery?.data?.erc20TransferTier[0];
+  $: _transferTier = $transferTierQuery?.data?.erc20TransferTiers[0];
+
+  // $: tierQuery = $transferTierQuery?.data?.erc20TransferTier[0];
 </script>
 
 <div class="flex w-full flex-col gap-y-4">
@@ -75,7 +70,7 @@ query ($transferTierAddress: Bytes!, $signer: Bytes!) {
     Loading transactions...
   {:else if $transferTierQuery.error}
     Something went wrong.
-  {:else if $transferTierQuery?.data?.erc20TransferTiers[0].tierChanges.length}
+  {:else if _transferTier != undefined && _transferTier.tierChanges != undefined && _transferTier.tierChanges.length != undefined}
     <table class="table-auto w-full space-y-2 text-sm">
       <tr class="border-b border-gray-600 uppercase text-sm">
         <th class="text-gray-400 text-left pb-2 font-light ">Current Tier</th>
@@ -90,7 +85,8 @@ query ($transferTierAddress: Bytes!, $signer: Bytes!) {
         <th class="text-gray-400 text-left pb-2 font-light">Total</th> -->
         <th />
       </tr>
-      {#each $transferTierQuery?.data?.erc20TransferTiers[0].tierChanges as transaction}
+      
+      {#each _transferTier.tierChanges as transaction}
         <tr class="border-b border-gray-700">
           <!-- <td> Tier {transaction.startTier} </td> -->
           <td class="w-1/4">
@@ -113,6 +109,7 @@ query ($transferTierAddress: Bytes!, $signer: Bytes!) {
           </td>
         </tr>
       {/each}
+
     </table>
   {:else}
     You haven't made any transactions.

@@ -14,18 +14,18 @@
     wild: string;
   };
 
-  let emissionsContract, token;
-  let errorMsg, emissionsAddress;
-  let showClaim;
-  let initPromise, calcClaimPromise, claimPromise;
+  let erc20Contract, token;
+  let errorMsg, erc20Address;
+  let showMint;
+  let initPromise, calcMintPromise, mintPromise;
 
-  $: if (params.wild) {
+  $: if (params.wild || $signer) {
     initPromise = initContract();
   }
 
   const initContract = async () => {
     if (ethers.utils.isAddress(params.wild || "")) {
-      emissionsContract = new EmissionsERC20(params.wild, $signer);
+      erc20Contract = new EmissionsERC20(params.wild, $signer);
       token = await getERC20(params.wild, $signer, $signerAddress);
     } else if (params.wild) {
       errorMsg = "Not a valid contract address";
@@ -33,13 +33,13 @@
   };
 
   const calculateClaim = async () => {
-    const claim = await emissionsContract.calculateClaim($signerAddress);
-    showClaim = !showClaim;
+    const claim = await erc20Contract.calculateClaim($signerAddress);
+    showMint = !showMint;
     return claim;
   };
 
   const claim = async () => {
-    const tx = await emissionsContract.claim(
+    const tx = await erc20Contract.claim(
       $signerAddress,
       ethers.constants.AddressZero
     );
@@ -49,22 +49,24 @@
 
 <div class="flex w-full max-w-prose flex-col gap-y-4">
   <div class="mb-2 flex flex-col gap-y-2">
-    <span class="text-2xl">Claim emissions from a deployed EmissionsERC20</span>
+    <span class="text-2xl">Mint from an already deployed ERC20 token</span>
   </div>
 
   {#if !params.wild}
     <FormPanel>
       <span class="text-gray-400"
-        >Enter an EmissionsERC20 contract address below.</span
+        >Enter the ERC20 address below</span
       >
       <Input
-        bind:value={emissionsAddress}
+        bind:value={erc20Address}
         type="address"
         placeholder="Contract address"
-      />
+        >
+        <span slot="description">Only the owner of the token can mint</span>
+      </Input>
       <Button
         on:click={() => {
-          push(`/emissions/claim/${emissionsAddress}`);
+          push(`/erc20/mint/${erc20Address}`);
         }}
       >
         Load
@@ -79,39 +81,39 @@
       Loading...
     {:then}
       {#if token}
-        <FormPanel heading="Emissions Token">
+        <FormPanel heading="ERC20 Token Details">
           <TokenInfo
             tokenData={{
               name: token.erc20name,
               symbol: token.erc20symbol,
               decimals: token.erc20decimals,
-              id: emissionsContract.address,
+              id: erc20Contract.address,
               totalSupply: token.erc20totalSupply,
             }}
           />
         </FormPanel>
 
-        <FormPanel heading="Claim">
-          {#if !showClaim}
+        <FormPanel heading="Mint">
+          {#if !showMint}
             <div class="flex flex-col gap-y-4">
               <span class="text-gray-400"
-                >Calculate claim for {$signerAddress}</span
+                >Show mintable amount for {$signerAddress}</span
               >
               <Button
                 on:click={() => {
-                  calcClaimPromise = calculateClaim();
+                  calcMintPromise = calculateClaim();
                 }}
               >
-                Calculate
+                Show
               </Button>
             </div>
           {/if}
-          {#if calcClaimPromise}
+          {#if calcMintPromise}
             <div>
-              {#await calcClaimPromise}
-                Getting eligible claim...
+              {#await calcMintPromise}
+                Getting eligible mint...
               {:then claim}
-                Your claim will be {formatUnits(claim, token.erc20decimals)}
+                Mintable amount will be {formatUnits(claim, token.erc20decimals)}
                 {token.erc20symbol}
               {:catch err}
                 <span class="text-lg text-red-400">{err.error.message}</span>
@@ -119,18 +121,18 @@
             </div>
           {/if}
 
-          {#if showClaim}
+          {#if showMint}
             <Button
               shrink
               on:click={() => {
-                claimPromise = claim();
-              }}>Claim</Button
+                mintPromise = claim();
+              }}>Mint</Button
             >
-            {#if claimPromise}
-              {#await claimPromise}
-                Claiming...
+            {#if mintPromise}
+              {#await mintPromise}
+                Minting...
               {:then}
-                Claim complete! Refresh to see your new balance.
+                Mint complete! Refresh to see your new balance.
               {/await}
             {/if}
           {/if}

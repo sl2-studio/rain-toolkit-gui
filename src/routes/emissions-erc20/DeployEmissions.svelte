@@ -504,7 +504,4 @@
     top: 90px;
     padding: 5px;
   }
-  .text {
-    white-space: break-spaces;
-  }
 </style>

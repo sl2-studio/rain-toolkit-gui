@@ -22,7 +22,6 @@
   import Modal from "svelte-simple-modal";
   import DeployVerify from "./routes/verify/DeployVerify.svelte";
   import AdministerVerify from "./routes/verify/AdministerVerify.svelte";
-  import Client from "./Client.svelte";
   import AddressLibrary from "./routes/address-library/AddressLibrary.svelte";
   import ListCombineTier from "./routes/combine-tier/ListCombineTier.svelte";
   import ListSale from "./routes/sale/ListSale.svelte";
@@ -31,6 +30,8 @@
   import TransferTierReport from "./routes/erc20-transfer-tier/TransferTierReport.svelte";
   import ListTransferTier from "./routes/erc20-transfer-tier/ListTransferTier.svelte";
   import DeployERC20 from "./routes/mint-erc20/DeployERC20.svelte";
+  import MintFromExistingERC20 from "./routes/mint-erc20/MintFromExistingERC20.svelte";
+
 
   let routes = {};
 
@@ -66,7 +67,8 @@
     "/verify/deploy": DeployVerify,
     "/verify/administer/*": AdministerVerify,
 
-    "/mint-erc20/deploy": DeployERC20,
+    "/erc20/deploy": DeployERC20,
+    "/erc20/mint/*": MintFromExistingERC20,
 
     "/address-library": AddressLibrary,
 
@@ -91,9 +93,7 @@
     <Sidebar />
     <div class="w-full py-5 px-8">
       {#if $signer}
-        <Client>
-          <Router {routes} />
-        </Client>
+        <Router {routes} />
       {:else}
         Connect your wallet to get started.
       {/if}

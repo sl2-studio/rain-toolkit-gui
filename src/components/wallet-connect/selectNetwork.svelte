@@ -2,13 +2,10 @@
   import { networks } from "../../constants";
   import { selectedNetwork } from "../../stores";
   import { getContext } from "svelte";
-  import {
-    defaultEvmStores,
-    chainId,
-    signerAddress,
-  } from "svelte-ethers-store";
+  import { defaultEvmStores } from "svelte-ethers-store";
   import Select from "../../components/Select.svelte";
 
+  
   export let onNetworkChange = () => {};
   export let library;
   let name;
@@ -52,10 +49,10 @@
 
 <div class="flex flex-col gap-y-4">
   <span>Choose network:</span>
-  <Select bind:value={$selectedNetwork} items={networks} />
+  <Select bind:value={$selectedNetwork} items={networks} on:change={handleClick} />
 
-  <button
+  <!-- <button
     class="rounded-md border-none bg-gray-700 px-4 py-2 text-gray-200"
     on:click={handleClick}>Connect</button
-  >
+  > -->
 </div>

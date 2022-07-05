@@ -139,7 +139,7 @@ const addressesDefault: LocalLibrary = new Map([
             ]
         ])
     ],
-    ['Avalanche - Mainnet',
+    ['Avalanche - Testnet',
         new Map([
             ['Tokens',
                 new Map([

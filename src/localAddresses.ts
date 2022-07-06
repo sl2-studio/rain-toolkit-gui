@@ -166,7 +166,17 @@ const addressesDefault: LocalLibrary = new Map([
 const createLocalLibrary = (selectedNetworkStore: typeof selectedNetwork) => {
 
     const stored = localStorage.getItem('rainAddresses')
-    const parsed = stored ? JSON.parse(stored, reviver) : addressesDefault
+    let parsedTemp1 = addressesDefault
+    let parsedTemp2 = JSON.parse(stored, reviver);
+    for (let i = 0; i < Object.keys(addressesDefault).length; i++) {
+        for (let j = 0; j < Object.keys(parsedTemp2).length; j++) {
+            if (Object.keys(parsedTemp1)[i] === Object.keys(parsedTemp2)[j]) {
+                parsedTemp1[i] = parsedTemp2[j];
+            }
+        }
+    }
+    const parsed = parsedTemp1;
+    //const parsed = stored ? JSON.parse(stored, reviver) : addressesDefault
 
     const { subscribe, update } = writable(parsed)
 

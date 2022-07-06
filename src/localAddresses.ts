@@ -144,7 +144,7 @@ const addressesDefault: LocalLibrary = new Map([
             ['Tokens',
                 new Map([
                     ['USDT',
-                        { address: "0xd4e71c4bb48850f5971ce40aa428b09f242d3e8a", type: "Token" }
+                        { address: "0x35085aCEc0E09eF7Dc78073822A8908D52Db9D83", type: "Token" }
                     ]])
             ],
             // ['Tiers',

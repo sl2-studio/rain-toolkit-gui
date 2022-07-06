@@ -71,7 +71,7 @@
 
     {#if activeStep == ApproveSteps.Approve}
       <span
-        >Approve the sale contract to spend your {saleData.token.symbol}</span
+        >Approve the sale contract to spend your {saleData.reserve.symbol}</span
       >
       <Button on:click={approve}>Approve</Button>
     {/if}

@@ -72,7 +72,7 @@ export function canEndConfig(config: SaleParams, deployerAddress: string) {
     _saleTime_.applyExtraTime(
       config.inputValues.extraTime,
       config.inputValues.extraTimeAmount,
-      config.inputValues.reserveErc20.erc20decimals
+      config.inputValues.reserveErc20?.erc20decimals
     )
     if (config.creatorControlMode) {
       _saleTime_.applyOwnership(deployerAddress)
@@ -81,7 +81,7 @@ export function canEndConfig(config: SaleParams, deployerAddress: string) {
   else if (config.afterMinimumRaiseMode) {
     _saleTime_.afterMinimumRaise(
       config.inputValues.minimumRaise,
-      config.inputValues.reserveErc20.erc20decimals
+      config.inputValues.reserveErc20?.erc20decimals
     )
     if (config.creatorControlMode) {
       _saleTime_.applyOwnership(deployerAddress)
@@ -92,7 +92,7 @@ export function canEndConfig(config: SaleParams, deployerAddress: string) {
       _saleTime_.applyExtraTime(
         config.inputValues.extraTime,
         config.inputValues.extraTimeAmount,
-        config.inputValues.reserveErc20.erc20decimals
+        config.inputValues.reserveErc20?.erc20decimals
       )
         .applyOwnership(deployerAddress)
     }
@@ -100,7 +100,7 @@ export function canEndConfig(config: SaleParams, deployerAddress: string) {
       _saleTime_.applyExtraTime(
         config.inputValues.extraTime,
         config.inputValues.extraTimeAmount,
-        config.inputValues.reserveErc20.erc20decimals
+        config.inputValues.reserveErc20?.erc20decimals
       )
     }
     if (config.creatorControlMode && !config.canEndMode) {
@@ -119,7 +119,7 @@ export function calculatePriceConfig(config: SaleParams) {
     if (config.saleType == selectSale.fixedPrice) {
       return new FixedPrice(
         config.inputValues.startPrice,
-        config.inputValues.reserveErc20.erc20decimals
+        config.inputValues.reserveErc20?.erc20decimals
       )
     }
 
@@ -131,7 +131,7 @@ export function calculatePriceConfig(config: SaleParams) {
         config.inputValues.endTimestamp,
         config.inputValues.minimumRaise,
         config.inputValues.initialSupply,
-        config.inputValues.reserveErc20.erc20decimals
+        config.inputValues.reserveErc20?.erc20decimals
       )
     }
 
@@ -142,7 +142,7 @@ export function calculatePriceConfig(config: SaleParams) {
         config.inputValues.endPrice,
         config.inputValues.startTimestamp,
         config.inputValues.endTimestamp,
-        config.inputValues.reserveErc20.erc20decimals
+        config.inputValues.reserveErc20?.erc20decimals
       )
     }
   }
@@ -371,7 +371,7 @@ export const saleDeploy = async (
       cooldownDuration: parseInt(config.inputValues.cooldownDuration),
       minimumRaise: parseUnits(
         config.inputValues.minimumRaise.toString(),
-        config.inputValues.reserveErc20.erc20decimals
+        config.inputValues.reserveErc20?.erc20decimals
       ),
       dustSize: 0,
     },

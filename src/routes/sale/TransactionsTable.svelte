@@ -15,7 +15,7 @@
   export let saleContract;
 
   let checked = true;
-  let temp, spinner;
+  let temp;
 
   let saleContractAddress = saleContract
     ? saleContract.address.toLowerCase()
@@ -122,12 +122,10 @@
 
   // handling table refresh
   const refresh = async () => {
-    spinner = true;
     temp = saleContractAddress;
     saleContractAddress = undefined;
     if (await !$txQuery.fetching) {
       saleContractAddress = temp;
-      spinner = false;
     }
     
   };
@@ -153,7 +151,7 @@
       >
       <Switch bind:checked />
       <span
-        class:animate-spin={$txQuery.fetching || spinner}
+        class:animate-spin={$txQuery.fetching}
         class="flex flex-col justify-center"
         on:click={refresh}><IconLibrary icon="reload" /></span
       >

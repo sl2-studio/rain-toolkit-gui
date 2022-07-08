@@ -127,8 +127,9 @@
     saleContractAddress = undefined;
     if (await !$txQuery.fetching) {
       saleContractAddress = temp;
+      spinner = false;
     }
-    spinner = false;
+    
   };
 
   // aliases for convenience

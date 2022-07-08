@@ -128,7 +128,7 @@
     if (await !$txQuery.fetching) {
       saleContractAddress = temp;
     }
-    spiner = false;
+    spinner = false;
   };
 
   // aliases for convenience

@@ -8,7 +8,6 @@ import {
   IncreasingPrice,
   SaleDurationInTimestamp
 } from 'rain-sdk'
-import { HumanFriendlySource } from 'rain-sdk'
 
 
 export enum selectSale {

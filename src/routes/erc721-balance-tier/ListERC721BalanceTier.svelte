@@ -27,7 +27,6 @@
     }
   );
 
-  //query(balanceTiers);
 </script>
 
 {#if $balanceTiers.fetching}

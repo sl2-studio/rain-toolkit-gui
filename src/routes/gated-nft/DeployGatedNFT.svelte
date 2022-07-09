@@ -4,6 +4,14 @@
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
   import Button from "../../components/Button.svelte";
+  import Select from "../../components/Select.svelte";
+  import { addressValidate } from "../../validation";
+  import ContractDeploy from "src/components/ContractDeploy.svelte";
+  import {
+    GatedNFT,
+    GatedConfig,
+    GatedNFTDeployArguments,
+  } from "rain-sdk";
   import {
     imageUrlValidate,
     minimumStatusValidate,
@@ -15,14 +23,7 @@
     symbolValidate,
     defaultValidator,
   } from "./minter-validation";
-  import Select from "../../components/Select.svelte";
-  import { addressValidate } from "../../validation";
-  import ContractDeploy from "src/components/ContractDeploy.svelte";
-  import {
-    GatedNFT,
-    GatedConfig,
-    GatedNFTDeployArguments,
-  } from "rain-sdk";
+
 
   const transferrableOptions = [
     {

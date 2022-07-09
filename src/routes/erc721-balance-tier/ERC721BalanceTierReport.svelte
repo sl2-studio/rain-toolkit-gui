@@ -48,17 +48,6 @@
     }
   );
 
-  //query(balanceTier);
-
-  // $: if (params.wild) {
-  //   runQuery();
-  // }
-  // const runQuery = () => {
-  //   $balanceTier.variables.balanceTierAddress = params.wild.toLowerCase();
-  //   $balanceTier.context.pause = false;
-  //   $balanceTier.reexecute();
-  // };
-
   $: _balanceTier = $balanceTier.data?.erc721BalanceTiers[0];
 
   $: if (_balanceTier || $signer) {

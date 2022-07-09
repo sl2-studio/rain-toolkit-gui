@@ -43,16 +43,17 @@
 
   // handling table refresh
   const refresh = async() => {
-    temp = tierAddress;
-    tierAddress = undefined;
-    if (await !$transferTierQuery.fetching){
-      tierAddress = temp;
+    if (!$transferTierQuery.fetching) {
+      temp = tierAddress;
+      tierAddress = undefined;
+      if (await !$transferTierQuery.fetching){
+        tierAddress = temp;
+      }
     }
   };
 
   $: _transferTier = $transferTierQuery?.data?.erc20TransferTiers[0];
 
-  // $: tierQuery = $transferTierQuery?.data?.erc20TransferTier[0];
 </script>
 
 <div class="flex w-full flex-col gap-y-4">
@@ -70,19 +71,15 @@
     Loading transactions...
   {:else if $transferTierQuery.error}
     Something went wrong.
-  {:else if _transferTier != undefined && _transferTier.tierChanges != undefined && _transferTier.tierChanges.length != undefined}
+  {:else if _transferTier && _transferTier.tierChanges && _transferTier.tierChanges.length != undefined}
     <table class="table-auto w-full space-y-2 text-sm">
       <tr class="border-b border-gray-600 uppercase text-sm">
         <th class="text-gray-400 text-left pb-2 font-light ">Current Tier</th>
-        <!-- <th class="text-gray-400 text-left pb-2 font-light">Changed Tier</th> -->
         <th class="text-gray-400 text-left pb-2 font-light text-center">Time</th
         >
         <th class="text-gray-400 text-left pb-2 font-light text-right pr-2"
           >View</th
         >
-        <!-- <th class="text-gray-400 text-left pb-2 font-light">Price/rTKN</th>
-        <th class="text-gray-400 text-left pb-2 font-light">Fee</th>
-        <th class="text-gray-400 text-left pb-2 font-light">Total</th> -->
         <th />
       </tr>
       

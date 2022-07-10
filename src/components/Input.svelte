@@ -1,6 +1,5 @@
 <script lang="ts">
   import AddressLibrary from "src/routes/address-library/AddressLibrary.svelte";
-
   import { createEventDispatcher, getContext } from "svelte";
   import IconLibrary from "./IconLibrary.svelte";
   import { writable } from "svelte/store";
@@ -16,15 +15,17 @@
   export let validator = (value: any): any => null;
   export let debounce: boolean = false;
   export let debounceTime: number = 750;
-  let error: string;
-  let timer;
-  //--------- newly added --------
   export let min = "";
   export let max = "";
   export let disabled = false;
-  //------------------------------
+  export let errorMsg = "";
+
+  let error: string;
+  let timer;
 
   $: _type = type == "address" ? "text" : type;
+
+  $: borderColor = errorMsg && errorMsg !== "" ? "border-red-500" : "border-gray-500"
 
   const dispatch = createEventDispatcher();
   const { open } = getContext("simple-modal");
@@ -93,7 +94,7 @@
       {disabled}
       {min}
       {max}
-      class="w-full rounded-md border border-gray-500 bg-transparent p-2 font-light text-gray-200"
+      class="w-full rounded-md border bg-transparent p-2 font-light text-gray-200 {borderColor}"
     />
     {#if type == "address"}
       {#if from == "depositModal"}
@@ -118,6 +119,9 @@
     {/if}
   </div>
   {#if error}
-    <span class="text-red-400">{error}</span>
+    <span class="text-red-500">{error}</span>
+  {/if}
+  {#if errorMsg && errorMsg !== ""}
+    <span class="text-red-500">{errorMsg}</span>
   {/if}
 </div>

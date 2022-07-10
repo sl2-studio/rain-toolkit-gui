@@ -8,7 +8,7 @@
   import FormPanel from "../../components/FormPanel.svelte";
   import Input from "../../components/Input.svelte";
   import Switch from "src/components/Switch.svelte";
-  import { getERC20, validateFields } from "../../utils";
+  import { getERC20, isTier, validateFields } from "../../utils";
   import { saleDeploy, SaleParams, selectSale } from "./sale";
   import { DatePicker, CalendarStyle } from "@beyonk/svelte-datepicker";
   import SaleSmallSimulationChart from "./SaleSmallSimulationChart.svelte";
@@ -16,9 +16,12 @@
 
   let fields: any = {};
   let deployPromise;
-  let sale, token;
   let reserveErc20;
   let saleParams: SaleParams;
+
+  let tierError,
+    tierDiscountError,
+    tierCapMulError;
 
   // some default values for testing
   let recipient = "0xf6CF014a3e92f214a3332F0d379aD32bf0Fae929";
@@ -29,8 +32,6 @@
   let minimumRaise = 1000;
   let startPrice = 10;
   let endPrice = 20;
-  let startTimestamp;
-  let endTimestamp;
   let name = "Raise token";
   let symbol = "rTKN";
   let initialSupply = 1000;
@@ -124,7 +125,7 @@
       afterMinimumRaiseMode: afterMinimumRaiseCheck,
     };
 
-    return saleParams;
+    return {validationResult, saleParams};
   };
 
   $: saleVals = {
@@ -208,11 +209,7 @@
     capMulActTier7,
     capMulActTier8,
 
-    saleParam: getSaleParams(),
-  };
-
-  const getSaleParams2 = (e) => {
-    // console.log(getSaleParams());
+    saleParam: getSaleParams().saleParams,
   };
 
   // @TODO write validators
@@ -224,16 +221,34 @@
     deployPromise = deploy();
   };
 
-  const deploy = async () => {
-    const { validationResult, fieldValues } = validateFields(fields);
-    saleParams = getSaleParams();
+  $: if (tier) {
+    const check = async() => {  
+      tierError = await isTier(tier, $signer, $signerAddress) 
+    }
+    check()
+  }
 
+  $: if (tierDiscountCheck && tierDiscountAddress) {
+    const check = async() => {
+      tierDiscountError = await isTier(tierDiscountAddress, $signer, $signerAddress)
+    }  
+    check()
+  }
+
+  $: if (tierCapMulCheck && tierCapMulAddress) {
+    const check = async() => {
+      tierCapMulError = await isTier(tierCapMulAddress, $signer, $signerAddress)
+    }  
+    check()
+  }
+
+  const deploy = async () => {
+    const { validationResult, saleParams } = getSaleParams();
     if (validationResult) {
       return await saleDeploy(
         $signer,
         $signerAddress,
-        saleParams,
-        reserveErc20.erc20decimals
+        saleParams
       );
     }
   };
@@ -285,7 +300,6 @@
           type="address"
           bind:this={fields.recipient}
           bind:value={recipient}
-          on:input={getSaleParams2}
           validator={defaultValidator}
         >
           <span slot="label"> Recipient: </span>
@@ -533,6 +547,7 @@
             bind:this={fields.tierDiscountAddress}
             bind:value={tierDiscountAddress}
             validator={defaultValidator}
+            errorMsg = {tierDiscountError?.errorMsg}
           >
             <span slot="label">Tier Contract Address: </span>
             <span slot="description">
@@ -887,6 +902,7 @@
             bind:this={fields.tierCapMulAddress}
             bind:value={tierCapMulAddress}
             validator={defaultValidator}
+            errorMsg = {tierCapMulError?.errorMsg}
           >
             <span slot="label">Tier Contract Address: </span>
             <span slot="description">
@@ -1153,13 +1169,14 @@
           bind:this={fields.tier}
           bind:value={tier}
           validator={defaultValidator}
+          errorMsg = {tierError.errorMsg}
         >
           <span slot="label"> Tier: </span>
           <span slot="description">
             The address of a Tier contract to gate with.
           </span>
         </Input>
-
+        
         <Input
           type="number"
           bind:this={fields.minimumStatus}
@@ -1171,10 +1188,14 @@
       </FormPanel>
 
       <FormPanel>
-        {#if !deployPromise}
+        {#if !deployPromise && !tierError?.errorMsg && !tierDiscountError?.errorMsg && !tierDiscountError?.errorMsg && raiseRange}
           <Button shrink on:click={handleClick}>Deploy Sale</Button>
-        {:else}
+        {:else if deployPromise}
           <ContractDeploy {deployPromise} type="Sale" />
+        {:else if !tierError?.errorMsg && !tierDiscountError?.errorMsg && !tierDiscountError?.errorMsg && !raiseRange}
+          <span>Please Select Date/Time For The Sale</span>
+        {:else}
+          <span>Please Fill The Fields With Valid Data To Deploy The Sale</span>
         {/if}
       </FormPanel>
     {/if}

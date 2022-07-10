@@ -35,17 +35,28 @@
             (e) =>
               e.topics[0] ==
                 "0x7da70c4e5387d7038610b79ca7d304caaef815826e51e67cf247135387a79bce" &&
-              (e.address === addresses.saleFactory ||
-                e.address === addresses.combineTierFactory ||
-                e.address === addresses.emissionsERC20Factory ||
-                e.address === addresses.erc20BalanceTierFactory ||
-                e.address === addresses.erc20TransferTierFactory ||
-                e.address === addresses.erc721BalanceTierFactory ||
-                e.address === addresses.gatedNFTFactory ||
-                e.address === addresses.noticeBoard ||
-                e.address === addresses.redeemableERC20Factory ||
-                e.address === addresses.verifyFactory ||
-                e.address === addresses.verifyTierFactory)
+              (e.address.toLowerCase() ===
+                addresses.saleFactory.toLowerCase() ||
+                e.address.toLowerCase() ===
+                  addresses.combineTierFactory.toLowerCase() ||
+                e.address.toLowerCase() ===
+                  addresses.emissionsERC20Factory.toLowerCase() ||
+                e.address.toLowerCase() ===
+                  addresses.erc20BalanceTierFactory.toLowerCase() ||
+                e.address.toLowerCase() ===
+                  addresses.erc20TransferTierFactory.toLowerCase() ||
+                e.address.toLowerCase() ===
+                  addresses.erc721BalanceTierFactory.toLowerCase() ||
+                e.address.toLowerCase() ===
+                  addresses.gatedNFTFactory.toLowerCase() ||
+                e.address.toLowerCase() ===
+                  addresses.noticeBoard.toLowerCase() ||
+                e.address.toLowerCase() ===
+                  addresses.redeemableERC20Factory.toLowerCase() ||
+                e.address.toLowerCase() ===
+                  addresses.verifyFactory.toLowerCase() ||
+                e.address.toLowerCase() ===
+                  addresses.verifyTierFactory.toLowerCase())
           );
 
           contractAddress =

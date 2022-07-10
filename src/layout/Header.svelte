@@ -8,7 +8,7 @@
   const { open } = getContext("simple-modal");
 
   const handleConnect = () => {
-    // open(Connect);
+    open(Connect);
   };
 </script>
 

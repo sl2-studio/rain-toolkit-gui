@@ -222,24 +222,21 @@
   };
 
   $: if (tier) {
-    const check = async() => {  
+    (async() => {  
       tierError = await isTier(tier, $signer, $signerAddress) 
-    }
-    check()
+    })()
   }
 
   $: if (tierDiscountCheck && tierDiscountAddress) {
-    const check = async() => {
+    (async() => {
       tierDiscountError = await isTier(tierDiscountAddress, $signer, $signerAddress)
-    }  
-    check()
+    })()  
   }
 
   $: if (tierCapMulCheck && tierCapMulAddress) {
-    const check = async() => {
+    (async() => {
       tierCapMulError = await isTier(tierCapMulAddress, $signer, $signerAddress)
-    }  
-    check()
+    })()  
   }
 
   const deploy = async () => {

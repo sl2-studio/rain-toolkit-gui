@@ -67,10 +67,12 @@
     })
 
   const refresh = async() => {
-    temp1 = verifyAddress;
-    verifyAddress = undefined;
-    if (await !$verifyAddresses.fetching) {
-      verifyAddress = temp1;
+    if (!$verifyAddresses.fetching) {
+      temp1 = verifyAddress;
+      verifyAddress = undefined;
+      if (await !$verifyAddresses.fetching) {
+        verifyAddress = temp1;
+      }
     }
   };
 

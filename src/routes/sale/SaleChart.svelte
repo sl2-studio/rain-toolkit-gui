@@ -2,7 +2,6 @@
   import { setContext } from "svelte";
   import { queryStore } from "@urql/svelte";
   import { BigNumber, Contract } from "ethers";
-  // import { saleBuysQuery } from "./sale-queries";
   import { LayerCake, Svg, Html } from "layercake";
   import { formatUnits } from "ethers/src.ts/utils";
   import AxisX from "src/components/charts/AxisX.svelte";
@@ -63,10 +62,12 @@
   );
 
   const refresh = async() => {
-    temp = saleContractAddress;
-    saleContractAddress = undefined;
-    if (await !$saleBuysQuery.fetching) {
-      saleContractAddress = temp;
+    if (!$saleBuysQuery.fetching) {
+      temp = saleContractAddress;
+      saleContractAddress = undefined;
+      if (await !$saleBuysQuery.fetching) {
+        saleContractAddress = temp;
+      }
     }
   };
 

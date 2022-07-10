@@ -16,7 +16,6 @@
 
   let fields: any = {};
   let deployPromise;
-  let sale, token;
   let reserveErc20;
   let saleParams: SaleParams;
 
@@ -29,8 +28,6 @@
   let minimumRaise = 1000;
   let startPrice = 10;
   let endPrice = 20;
-  let startTimestamp;
-  let endTimestamp;
   let name = "Raise token";
   let symbol = "rTKN";
   let initialSupply = 1000;

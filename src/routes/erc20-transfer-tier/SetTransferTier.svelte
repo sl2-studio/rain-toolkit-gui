@@ -37,17 +37,6 @@
     Complete,
   }
 
-  enum TransferTierUnSetSteps {
-    Approve,
-    Confirm,
-    Complete,
-  }
-
-  enum PriceConfirmed {
-    Pending,
-    Confirmed,
-  }
-
   let errorMsg,
     activeStep = TransferTierSetSteps.Approve,
     txStatus = TxStatus.None,
@@ -238,18 +227,6 @@
         {close()}
       {/if}
     </div>
-    <!-- <div
-      id="tierUnSet"
-      style="display:none"
-      class="flex w-full flex-col gap-y-4"
-    >
-      <span>
-        Please confirm the Unsetting of Tier by clicking on below button
-      </span>
-      <div class="flex flex-row gap-x-2">
-        <Button shrink on:click={exitTier}>UnSet the Tier</Button>
-      </div>
-    </div> -->
   </div>
 {/if}
 

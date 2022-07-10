@@ -30,7 +30,6 @@
     }
   );
 
-  //query(transferTiers);
 </script>
 
 {#if $transferTiers.fetching}

@@ -5,6 +5,8 @@
   import Input from "../../components/Input.svelte";
   import { op, validateFields } from "../../utils";
   import { addressValidate } from "../../validation";
+  import { concat, parseUnits } from "ethers/lib/utils";
+  import Switch from "src/components/Switch.svelte";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
   import {
     EmissionsERC20,
@@ -12,10 +14,8 @@
     StateConfig,
     EmissionsERC20DeployArgs,
   } from "rain-sdk";
-import { concat, parseUnits } from "ethers/lib/utils";
-import Switch from "src/components/Switch.svelte";
-  
 
+  
   let deployPromise;
 
   let fields: any = {};

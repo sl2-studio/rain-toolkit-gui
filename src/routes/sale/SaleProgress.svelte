@@ -4,13 +4,14 @@
   import { onDestroy } from "svelte";
   import ProgressBar from "components/ProgressBar.svelte";
   import { timeString } from "src/utils";
+  import dayjs from "dayjs";
+  import { client } from "src/stores";
   import {
     getAfterTimestamp,
     getAfterTimestampDate,
     saleStatuses,
   } from "./sale";
-  import dayjs from "dayjs";
-  import { client } from "src/stores";
+
 
   export let saleContract;
 

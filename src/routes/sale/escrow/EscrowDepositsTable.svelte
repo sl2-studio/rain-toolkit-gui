@@ -81,12 +81,14 @@
 
   // handling table refresh
   const refresh = async () => {
-    temp = saleAddress;
-    saleAddress = undefined;
-    if (await !$txQuery.fetching) {
-      saleAddress = temp;
+    if (!$txQuery.fetching) {
+      temp = saleAddress;
+      saleAddress = undefined;
+      if (await !$txQuery.fetching) {
+        saleAddress = temp;
 
-      tokenDetails();
+        tokenDetails();
+      }
     }
   };
 

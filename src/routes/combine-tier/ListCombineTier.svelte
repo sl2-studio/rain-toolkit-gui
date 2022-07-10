@@ -21,7 +21,6 @@
     }
   );
 
-  //query(combineTiers);
 </script>
 
 {#if $combineTiers.fetching}

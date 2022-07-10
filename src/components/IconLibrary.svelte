@@ -191,7 +191,7 @@
     class:inline
     {width}
     {height}
-    class={color}
+    class="animate-spin:{false} {color}"
     viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg"
   >
@@ -312,15 +312,5 @@
 <style>
   .inline {
     @apply inline-block;
-  }
-  .animate-spin {
-    @spin {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
-    };
   }
 </style>

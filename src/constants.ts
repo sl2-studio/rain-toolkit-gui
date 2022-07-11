@@ -69,6 +69,21 @@ export const networks = [{
   blockExplorer: 'https://mumbai.polygonscan.com/'
 },
 {
+  label: "Avalanche Mainnet",
+  config: {
+    chainId: '0xa86a',
+    chainName: 'Avalanche Mainnet C-Chain',
+    rpcUrls: ['https://api.avax.network/ext/bc/C/rpc'],
+    nativeCurrency: {
+      name: 'Avalanche',
+      symbol: 'AVAX',
+      decimals: 18
+    },
+    blockExplorerUrls: ['https://snowtrace.io/']
+  },
+  blockExplorer: 'https://snowtrace.io/'
+},
+{
   label: "Avalanche Testnet",
   config: {
     chainId: '0xA869',
@@ -82,6 +97,21 @@ export const networks = [{
     blockExplorerUrls: ['https://testnet.snowtrace.io/']
   },
   blockExplorer: 'https://testnet.snowtrace.io/'
+},
+{
+  label: "BSC - Mainnet",
+  config: {
+    chainId: "0x38",
+    chainName: 'BSC',
+    rpcUrls: ['https://bsc-dataseed.binance.org/'],
+    nativeCurrency: {
+      name: 'Binance Coin',
+      symbol: 'BNB',
+      decimals: 18
+    },
+    blockExplorerUrls: ['https://bscscan.com/']
+  },
+  blockExplorer: 'https://bscscan.com/'
 },
 {
   label: "BSC - Testnet",
@@ -99,34 +129,125 @@ export const networks = [{
   blockExplorer: 'https://testnet.bscscan.com'
 },
 {
-  label: "BSC - Mainnet",
+  label: "Fantom - Mainnet",
   config: {
-    chainId: "0x38",
-    chainName: 'BSC',
-    rpcUrls: ['https://bsc-dataseed.binance.org/'],
+    chainId: "0xfa",
+    chainName: 'Fantom - Mainnet',
+    rpcUrls: ['https://rpcapi.fantom.network'],
     nativeCurrency: {
-      name: 'Binance Coin',
-      symbol: 'BNB',
+      name: 'Fantom',
+      symbol: 'FTM',
       decimals: 18
     },
-    blockExplorerUrls: ['https://bscscan.com/']
+    blockExplorerUrls: ['https://ftmscan.com']
   },
-  blockExplorer: 'https://bscscan.com/'
+  blockExplorer: 'https://ftmscan.com'
 },
-// {
-//   label: "Fantom - Testnet",
-//   config: {
-//     chainId: "0xfa2",
-//     chainName: 'Fantom - Testnet',
-//     rpcUrls: ['https://rpc.testnet.fantom.network'],
-//     nativeCurrency: {
-//       name: 'Fantom',
-//       symbol: 'FTM',
-//       decimals: 18
-//     },
-//     blockExplorerUrls: ['https://testnet.ftmscan.com']
-//   }
-// },
+{
+  label: "Fantom - Testnet",
+  config: {
+    chainId: "0xfa2",
+    chainName: 'Fantom - Testnet',
+    rpcUrls: ['https://rpc.testnet.fantom.network'],
+    nativeCurrency: {
+      name: 'Fantom',
+      symbol: 'FTM',
+      decimals: 18
+    },
+    blockExplorerUrls: ['https://testnet.ftmscan.com']
+  },
+  blockExplorer: 'https://testnet.ftmscan.com'
+},
+{
+  label: "Arbitrum - Mainnet",
+  config: {
+    chainId: "0xa4b1",
+    chainName: 'Arbitrum - Mainnet',
+    rpcUrls: ['https://arb1.arbitrum.io/rpc'],
+    nativeCurrency: {
+      name: 'Arbitrum',
+      symbol: 'ETH',
+      decimals: 18
+    },
+    blockExplorerUrls: ['https://arbiscan.io/']
+  },
+  blockExplorer: 'https://arbiscan.io/'
+},
+{
+  label: "Arbitrum Rinkeby- Testnet",
+  config: {
+    chainId: "0x66eeb",
+    chainName: 'Arbitrum Rinkeby - Testnet',
+    rpcUrls: ['https://rinkeby.arbitrum.io/rpc'],
+    nativeCurrency: {
+      name: 'Arbitrum',
+      symbol: 'ETH',
+      decimals: 18
+    },
+    blockExplorerUrls: ['https://testnet.arbiscan.io/']
+  },
+  blockExplorer: 'https://testnet.arbiscan.io/'
+},
+{
+  label: "Celo - Mainnet",
+  config: {
+    chainId: "0xa4ec",
+    chainName: 'Celo - Mainnet',
+    rpcUrls: ['https://rpc.ankr.com/celo'],
+    nativeCurrency: {
+      name: 'Celo',
+      symbol: 'CELO',
+      decimals: 18
+    },
+    blockExplorerUrls: ['https://celoscan.io/']
+  },
+  blockExplorer: 'https://celoscan.io/'
+},
+{
+  label: "Celo Alfajores - Testnet",
+  config: {
+    chainId: "0xaef3",
+    chainName: 'Celo Alfajores - Testnet',
+    rpcUrls: ['https://alfajores-forno.celo-testnet.org'],
+    nativeCurrency: {
+      name: 'Celo',
+      symbol: 'CELO',
+      decimals: 18
+    },
+    blockExplorerUrls: ['https://alfajores.celoscan.io/']
+  },
+  blockExplorer: 'https://alfajores.celoscan.io/'
+},
+{
+  label: "Aurora - Mainnet",
+  config: {
+    chainId: "0x4e454152",
+    chainName: 'Aurora - Mainnet',
+    rpcUrls: ['https://mainnet.aurora.dev'],
+    nativeCurrency: {
+      name: 'Aurora',
+      symbol: 'ETH',
+      decimals: 18
+    },
+    blockExplorerUrls: ['https://aurorascan.dev/']
+  },
+  blockExplorer: 'https://aurorascan.dev/'
+},
+{
+  label: "Aurora - Testnet",
+  config: {
+    chainId: "0x4e454153",
+    chainName: 'Aurora - Testnet',
+    rpcUrls: ['https://testnet.aurora.dev/'],
+    nativeCurrency: {
+      name: 'Aurora',
+      symbol: 'ETH',
+      decimals: 18
+    },
+    blockExplorerUrls: ['https://testnet.aurorascan.dev/']
+  },
+  blockExplorer: 'https://testnet.aurorascan.dev/'
+},
 {
   label: "Ethereum",
   config: {
@@ -142,34 +263,6 @@ export const networks = [{
   },
   blockExplorer: 'https://etherscan.io/'
 },
-// {
-//   label: "Ropsten",
-//   config: {
-//     chainId: "0x3",
-//     chainName: 'Ropsten',
-//     rpcUrls: ['https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
-//     nativeCurrency: {
-//       name: 'Ropsten',
-//       symbol: 'ETH',
-//       decimals: 18
-//     },
-//     blockExplorerUrls: ['https://ropsten.etherscan.io/']
-//   }
-// },
-// {
-//   label: "Rinkeby",
-//   config: {
-//     chainId: "0x4",
-//     chainName: 'Rinkeby',
-//     rpcUrls: ['https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
-//     nativeCurrency: {
-//       name: 'Rinkeby',
-//       symbol: 'ETH',
-//       decimals: 18
-//     },
-//     blockExplorerUrls: ['https://rinkeby.etherscan.io']
-//   }
-// },
 {
   label: "Goerli",
   config: {
@@ -185,18 +278,4 @@ export const networks = [{
   },
   blockExplorer: 'https://goerli.etherscan.io'
 },
-  // {
-  //   label: " Kovan",
-  //   config: {
-  //     chainId: "0x2a",
-  //     chainName: ' Kovan',
-  //     rpcUrls: ['https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
-  //     nativeCurrency: {
-  //       name: ' Kovan',
-  //       symbol: 'ETH',
-  //       decimals: 18
-  //     },
-  //     blockExplorerUrls: ['https://kovan.etherscan.io']
-  //   }
-  // }
 ]

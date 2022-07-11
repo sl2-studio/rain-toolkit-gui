@@ -129,6 +129,7 @@
         saleContractAddress = temp;
       }
     }
+    
   };
 
   // aliases for convenience

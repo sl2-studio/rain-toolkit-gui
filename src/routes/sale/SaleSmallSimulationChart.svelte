@@ -163,7 +163,7 @@
       padding={{ right: 30, bottom: 20, left: 25 }}
       x={xKey}
       y={yKey}
-      yDomain={[0, null]}
+      yDomain={saleType == 1 ? [0, null] : [0, max]}
       {data}
     >
       <Svg>

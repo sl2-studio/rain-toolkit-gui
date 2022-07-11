@@ -46,23 +46,23 @@
   let BlockTime;
   let Period;
 
-  let tier1 = 100,
-    tier2 = 200,
-    tier3 = 500,
-    tier4 = 1000,
-    tier5 = 2000,
-    tier6 = 4000,
-    tier7 = 8000,
-    tier8 = 16000;
+  let tier1 = 10,
+    tier2 = 20,
+    tier3 = 50,
+    tier4 = 100,
+    tier5 = 200,
+    tier6 = 400,
+    tier7 = 800,
+    tier8 = 1600;
 
-  let maxTier1 = 200,
-    maxTier2 = 400,
-    maxTier3 = 1000,
-    maxTier4 = 2000,
-    maxTier5 = 4000,
-    maxTier6 = 8000,
-    maxTier7 = 16000,
-    maxTier8 = 32000;
+  let maxTier1 = 20,
+    maxTier2 = 40,
+    maxTier3 = 100,
+    maxTier4 = 200,
+    maxTier5 = 400,
+    maxTier6 = 800,
+    maxTier7 = 1600,
+    maxTier8 = 3200;
 
   // @TODO write validators
   const defaultValidator = () => {

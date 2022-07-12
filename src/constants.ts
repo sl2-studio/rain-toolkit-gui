@@ -189,7 +189,7 @@ export const networks = [{
   blockExplorer: 'https://testnet.ftmscan.com'
 },
 {
-  label: "Arbitrum - Mainnet",
+  label: "Arbitrum",
   config: {
     chainId: "0xa4b1",
     chainName: 'Arbitrum - Mainnet',

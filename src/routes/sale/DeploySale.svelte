@@ -19,9 +19,7 @@
   let reserveErc20;
   let saleParams: SaleParams;
 
-  let tierError,
-    tierDiscountError,
-    tierCapMulError;
+  let tierError, tierDiscountError, tierCapMulError;
 
   // some default values for testing
   let recipient = "0xf6CF014a3e92f214a3332F0d379aD32bf0Fae929";
@@ -125,7 +123,7 @@
       afterMinimumRaiseMode: afterMinimumRaiseCheck,
     };
 
-    return {validationResult, saleParams};
+    return { validationResult, saleParams };
   };
 
   $: saleVals = {
@@ -151,7 +149,6 @@
     tierCapMulActMode: tierCapMulActCheck,
     creatorControlMode: creatorControlCheck,
     afterMinimumRaiseMode: afterMinimumRaiseCheck,
-
 
     recipient,
     reserve,
@@ -222,31 +219,35 @@
   };
 
   $: if (tier) {
-    (async() => {  
-      tierError = await isTier(tier, $signer, $signerAddress) 
-    })()
+    (async () => {
+      tierError = await isTier(tier, $signer, $signerAddress);
+    })();
   }
 
   $: if (tierDiscountCheck && tierDiscountAddress) {
-    (async() => {
-      tierDiscountError = await isTier(tierDiscountAddress, $signer, $signerAddress)
-    })()  
+    (async () => {
+      tierDiscountError = await isTier(
+        tierDiscountAddress,
+        $signer,
+        $signerAddress
+      );
+    })();
   }
 
   $: if (tierCapMulCheck && tierCapMulAddress) {
-    (async() => {
-      tierCapMulError = await isTier(tierCapMulAddress, $signer, $signerAddress)
-    })()  
+    (async () => {
+      tierCapMulError = await isTier(
+        tierCapMulAddress,
+        $signer,
+        $signerAddress
+      );
+    })();
   }
 
   const deploy = async () => {
     const { validationResult, saleParams } = getSaleParams();
     if (validationResult) {
-      return await saleDeploy(
-        $signer,
-        $signerAddress,
-        saleParams
-      );
+      return await saleDeploy($signer, $signerAddress, saleParams);
     }
   };
 
@@ -544,7 +545,7 @@
             bind:this={fields.tierDiscountAddress}
             bind:value={tierDiscountAddress}
             validator={defaultValidator}
-            errorMsg = {tierDiscountError?.errorMsg}
+            errorMsg={tierDiscountError?.errorMsg}
           >
             <span slot="label">Tier Contract Address: </span>
             <span slot="description">
@@ -899,7 +900,7 @@
             bind:this={fields.tierCapMulAddress}
             bind:value={tierCapMulAddress}
             validator={defaultValidator}
-            errorMsg = {tierCapMulError?.errorMsg}
+            errorMsg={tierCapMulError?.errorMsg}
           >
             <span slot="label">Tier Contract Address: </span>
             <span slot="description">
@@ -1166,14 +1167,14 @@
           bind:this={fields.tier}
           bind:value={tier}
           validator={defaultValidator}
-          errorMsg = {tierError.errorMsg}
+          errorMsg={tierError.errorMsg}
         >
           <span slot="label"> Tier: </span>
           <span slot="description">
             The address of a Tier contract to gate with.
           </span>
         </Input>
-        
+
         <Input
           type="number"
           bind:this={fields.minimumStatus}
@@ -1185,14 +1186,26 @@
       </FormPanel>
 
       <FormPanel>
-        {#if !deployPromise && !tierError?.errorMsg && !tierDiscountError?.errorMsg && !tierDiscountError?.errorMsg && raiseRange}
-          <Button shrink on:click={handleClick}>Deploy Sale</Button>
-        {:else if deployPromise}
-          <ContractDeploy {deployPromise} type="Sale" />
-        {:else if !tierError?.errorMsg && !tierDiscountError?.errorMsg && !tierDiscountError?.errorMsg && !raiseRange}
-          <span>Please Select Date/Time For The Sale</span>
+        {#if !deployPromise}
+          <Button
+            disabled={tierError?.errorMsg ||
+              tierDiscountError?.errorMsg ||
+              tierCapMulError?.errorMsg ||
+              !raiseRange}
+            shrink
+            on:click={handleClick}>Deploy Sale</Button
+          >
+          {#if !tierError?.errorMsg && !tierDiscountError?.errorMsg && !tierCapMulError?.errorMsg && !raiseRange}
+            <span class="text-red-400"
+              >Please Select Date/Time For The Sale</span
+            >
+          {:else if tierError?.errorMsg || tierDiscountError?.errorMsg || tierCapMulError?.errorMsg}
+            <span class="text-red-400"
+              >Please Fill The Fields With Valid Data To Deploy The Sale</span
+            >
+          {/if}
         {:else}
-          <span>Please Fill The Fields With Valid Data To Deploy The Sale</span>
+          <ContractDeploy {deployPromise} type="Sale" />
         {/if}
       </FormPanel>
     {/if}

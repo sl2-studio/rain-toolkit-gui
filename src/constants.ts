@@ -69,7 +69,37 @@ export const networks = [{
   blockExplorer: 'https://mumbai.polygonscan.com/'
 },
 {
-  label: "Avalanche Mainnet",
+  label: "Ethereum",
+  config: {
+    chainId: "0x1",
+    chainName: 'Ethereum',
+    rpcUrls: ['https://eth-mainnet.public.blastapi.io'],
+    nativeCurrency: {
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18
+    },
+    blockExplorerUrls: ['https://etherscan.io/']
+  },
+  blockExplorer: 'https://etherscan.io/'
+},
+{
+  label: "Goerli",
+  config: {
+    chainId: "0x5",
+    chainName: 'Goerli',
+    rpcUrls: ['https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
+    nativeCurrency: {
+      name: 'Goerli',
+      symbol: 'ETH',
+      decimals: 18
+    },
+    blockExplorerUrls: ['https://goerli.etherscan.io']
+  },
+  blockExplorer: 'https://goerli.etherscan.io'
+},
+{
+  label: "Avalanche - Mainnet",
   config: {
     chainId: '0xa86a',
     chainName: 'Avalanche Mainnet C-Chain',
@@ -84,7 +114,7 @@ export const networks = [{
   blockExplorer: 'https://snowtrace.io/'
 },
 {
-  label: "Avalanche Testnet",
+  label: "Avalanche - Testnet",
   config: {
     chainId: '0xA869',
     chainName: 'Avalanche Testnet C-Chain',
@@ -174,7 +204,7 @@ export const networks = [{
   blockExplorer: 'https://arbiscan.io/'
 },
 {
-  label: "Arbitrum Rinkeby- Testnet",
+  label: "Arbitrum - Rinkeby",
   config: {
     chainId: "0x66eeb",
     chainName: 'Arbitrum Rinkeby - Testnet',
@@ -204,7 +234,7 @@ export const networks = [{
   blockExplorer: 'https://celoscan.io/'
 },
 {
-  label: "Celo Alfajores - Testnet",
+  label: "Celo - Alfajores",
   config: {
     chainId: "0xaef3",
     chainName: 'Celo Alfajores - Testnet',
@@ -247,35 +277,5 @@ export const networks = [{
     blockExplorerUrls: ['https://testnet.aurorascan.dev/']
   },
   blockExplorer: 'https://testnet.aurorascan.dev/'
-},
-{
-  label: "Ethereum",
-  config: {
-    chainId: "0x1",
-    chainName: 'Ethereum',
-    rpcUrls: ['https://eth-mainnet.public.blastapi.io'],
-    nativeCurrency: {
-      name: 'Ethereum',
-      symbol: 'ETH',
-      decimals: 18
-    },
-    blockExplorerUrls: ['https://etherscan.io/']
-  },
-  blockExplorer: 'https://etherscan.io/'
-},
-{
-  label: "Goerli",
-  config: {
-    chainId: "0x5",
-    chainName: 'Goerli',
-    rpcUrls: ['https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
-    nativeCurrency: {
-      name: 'Goerli',
-      symbol: 'ETH',
-      decimals: 18
-    },
-    blockExplorerUrls: ['https://goerli.etherscan.io']
-  },
-  blockExplorer: 'https://goerli.etherscan.io'
-},
+}
 ]

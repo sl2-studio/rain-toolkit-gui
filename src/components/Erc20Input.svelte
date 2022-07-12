@@ -7,15 +7,36 @@
 
   let input;
 
-  export let value, signer, contract, gotERC20;
-  let name, symbol, decimals, balance;
+  export let value, signer, contract;
+  let name, symbol, decimals, balance, gotERC20;
 
+  // use this object so you don't have to get this information again in a parent component
+  export let erc20Info = {
+    ready: false,
+    name: null,
+    symbol: null,
+    decimals: null,
+    balance: null,
+  };
+
+  // pass thru the validate function from the Input component
   export const validate = () => {
     input?.validate();
   };
 
+  // if the signer changes when we've already validated, we have to re-validate
+  $: if (signer) {
+    revalidate();
+  }
+
+  const revalidate = () => {
+    if (gotERC20) input.validate();
+  };
+
   const erc20validate = async (value) => {
     gotERC20 = null;
+    erc20Info.ready = false;
+
     if (value == "") {
       return { error: "Can't be blank" };
     }
@@ -29,6 +50,7 @@
 
     contract = new ERC20(value, signer);
 
+    // run all these calls in parallel
     [name, symbol, decimals, balance] = await Promise.all([
       contract.name(),
       contract.symbol(),
@@ -37,6 +59,14 @@
     ]);
 
     balance = (+formatUnits(balance, decimals)).toFixed(4);
+
+    erc20Info = {
+      ready: true,
+      name,
+      symbol,
+      decimals,
+      balance,
+    };
 
     gotERC20 = true;
 

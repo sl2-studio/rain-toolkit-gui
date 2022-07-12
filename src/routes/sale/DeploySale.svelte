@@ -1190,15 +1190,16 @@
           <Button
             disabled={tierError?.errorMsg ||
               tierDiscountError?.errorMsg ||
+              tierCapMulError?.errorMsg ||
               !raiseRange}
             shrink
             on:click={handleClick}>Deploy Sale</Button
           >
-          {#if !tierError?.errorMsg && !tierDiscountError?.errorMsg && !raiseRange}
+          {#if !tierError?.errorMsg && !tierDiscountError?.errorMsg && !tierCapMulError?.errorMsg && !raiseRange}
             <span class="text-red-400"
               >Please Select Date/Time For The Sale</span
             >
-          {:else if tierError?.errorMsg || tierDiscountError?.errorMsg}
+          {:else if tierError?.errorMsg || tierDiscountError?.errorMsg || tierCapMulError?.errorMsg}
             <span class="text-red-400"
               >Please Fill The Fields With Valid Data To Deploy The Sale</span
             >

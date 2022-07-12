@@ -1,4 +1,5 @@
 <script lang="ts" type="module">
+  import { transactionModal } from "./stores.ts";
   import ListERC721BalanceTier from "./routes/erc721-balance-tier/ListERC721BalanceTier.svelte";
   // import ListGatedNFTs from "./routes/gated-nft/ListGatedNFTs.svelte";
   import ERC721BalanceTierReport from "./routes/erc721-balance-tier/ERC721BalanceTierReport.svelte";
@@ -103,6 +104,16 @@
   </main>
   <Footer />
 </Modal>
+
+<Modal
+  show={$transactionModal}
+  unstyled={true}
+  closeButton={false}
+  classWindow="relative max-w-full max-h-full my-2 mx-auto text-white rounded-xl shadow-md bg-gray-800"
+  classBg="fixed top-0 left-0 w-screen h-screen flex flex-col justify-center bg-gray-900 bg-opacity-75 z-50 backdrop-blur"
+  classWindowWrap="relative m-2 max-h-full flex flex-col"
+  classContent="p-6"
+/>
 
 <style global lang="postcss">
   @tailwind base;

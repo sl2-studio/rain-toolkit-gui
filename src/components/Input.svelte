@@ -5,6 +5,7 @@
   import IconLibrary from "./IconLibrary.svelte";
   import { writable } from "svelte/store";
   import Modal, { bind } from "svelte-simple-modal/src/Modal.svelte";
+  import Ring from "src/components/Ring.svelte";
 
   const modal2 = writable(null);
   const showModal = () => modal2.set(bind(AddressLibrary, { onSelectAddress }));
@@ -18,6 +19,8 @@
   export let debounceTime: number = 750;
   let error: string;
   let timer;
+  let validating: boolean = false;
+
   //--------- newly added --------
   export let min = "";
   export let max = "";
@@ -47,9 +50,12 @@
     }, debounceTime);
   };
 
-  export const validate = () => {
-    const validation = validator(value);
-    if (validator(value)?.error) {
+  export const validate = async () => {
+    validating = true;
+    const validation = await validator(value);
+    validating = false;
+
+    if (validation?.error) {
       ({ error } = validation);
       return {
         ok: false,
@@ -69,6 +75,7 @@
 
   const onSelectAddress = (address) => {
     value = address;
+    validate();
   };
 </script>
 
@@ -83,18 +90,27 @@
       <slot name="description" />
     </span>
   {/if}
-  <div class="flex w-full flex-row items-center gap-x-2 self-stretch">
-    <input
-      type={_type}
-      {value}
-      {placeholder}
-      on:input={handleInput}
-      on:blur={validate}
-      {disabled}
-      {min}
-      {max}
-      class="w-full rounded-md border border-gray-500 bg-transparent p-2 font-light text-gray-200"
-    />
+  <div class="flex w-full flex-row items-center gap-x-2 self-stretch relative">
+    <div class="w-full relative">
+      <input
+        type={_type}
+        {value}
+        {placeholder}
+        on:input={handleInput}
+        on:blur={validate}
+        disabled={disabled || validating}
+        {min}
+        {max}
+        class="w-full rounded-md border border-gray-500 bg-transparent p-2 font-light text-gray-200"
+      />
+      {#if validating}
+        <div
+          class="absolute right-1 top-0 bottom-0 flex flex-col justify-center"
+        >
+          <Ring size="30px" color="#FFF" />
+        </div>
+      {/if}
+    </div>
     {#if type == "address"}
       {#if from == "depositModal"}
         <Modal

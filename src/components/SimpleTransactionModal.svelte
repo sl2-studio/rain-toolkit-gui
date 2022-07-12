@@ -10,14 +10,15 @@
     AwaitingSignature,
     AwaitingConfirmation,
     Error,
-    Confirmed
+    Confirmed,
   }
-  
+
   const { close } = getContext("simple-modal");
 
   export let method: Function;
   export let args: any[];
   export let confirmationMsg: string;
+  export let confirmedCallback: Function = () => {};
   let errorMsg: string, receipt: ContractReceipt, txStatus: TxStatus;
 
   onMount(async () => {
@@ -36,6 +37,8 @@
     txStatus = TxStatus.AwaitingConfirmation;
 
     receipt = await tx.wait();
+
+    confirmedCallback();
 
     txStatus = TxStatus.Confirmed;
   });

@@ -12,9 +12,10 @@
   import SimpleTransactionModal from "src/components/SimpleTransactionModal.svelte";
 
   const { open } = getContext("simple-modal");
-  const orderbook = getContext("orderbook") as Writable<OrderBook>;
 
   const { concat, op } = utils;
+
+  export let orderbook;
 
   let inputToken,
     inputTokenContract,

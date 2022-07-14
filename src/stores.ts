@@ -8,7 +8,8 @@ export const selectedNetwork = writable(networks[1]);
 export const client = derived(
   selectedNetwork,
   $selectedNetwork => createClient({
-    url: AddressBook.getSubgraphEndpoint(Number($selectedNetwork.config.chainId))
+    // url: AddressBook.getSubgraphEndpoint(Number($selectedNetwork.config.chainId))
+    url: "https://api.thegraph.com/subgraphs/name/beehive-innovation/rain-protocol-mumbai-v3"
   })
 )
 export const transactionModal = writable(null)

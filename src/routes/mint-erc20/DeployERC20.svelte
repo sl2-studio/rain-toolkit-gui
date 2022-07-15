@@ -13,14 +13,17 @@
     ERC20Config,
     StateConfig,
     EmissionsERC20DeployArgs,
+    CreateERC20,
   } from "rain-sdk";
 
-  
   let deployPromise;
 
   let fields: any = {};
 
-  let fixedSupply = false;
+  let fixedSupply = false,
+    faucets = false;
+  let blocks = 100,
+    units = 0;
 
   let erc20name = "MyToken";
   let erc20symbol = "MyTKN";
@@ -39,24 +42,18 @@
 
     // GET THE SOURCE
 
-    let newEmissionsERC20;
+    let newEmissionsERC20, vmStateConfig: StateConfig;
 
     if (validationResult) {
-      const Amount = fixedSupply ? parseUnits(amount.toString()) : 0;
-      let vmStateConfig: StateConfig = {
-        constants: [ownerAddress, Amount, 0],
-        sources: [
-          concat([
-            op(EmissionsERC20.Opcodes.VAL, 0),
-            op(EmissionsERC20.Opcodes.CLAIMANT_ACCOUNT),
-            op(EmissionsERC20.Opcodes.EQUAL_TO),
-            op(EmissionsERC20.Opcodes.VAL, 1),
-            op(EmissionsERC20.Opcodes.VAL, 2),
-            op(EmissionsERC20.Opcodes.EAGER_IF)
-          ])
-        ],
-        stackLength: 6,
-        argumentsLength: 0
+      const Amount = fixedSupply ? amount : 0;
+
+      if (faucets) {
+        vmStateConfig = new CreateERC20(ownerAddress, Amount, {
+          blocks: blocks,
+          units: units,
+        });
+      } else {
+        vmStateConfig = new CreateERC20(ownerAddress, Amount);
       }
 
       let erc20Config: ERC20Config;
@@ -94,41 +91,39 @@
   <div class="flex w-3/5 flex-col gap-y-4">
     <div class="mb-2 flex flex-col gap-y-2 w-full">
       <span class="text-2xl">Deploy a new ERC20 Token.</span>
-      <span class="text-gray-400">
-        Mint a new ERC20 Token
-      </span>
+      <span class="text-gray-400"> Mint a new ERC20 Token </span>
     </div>
 
-      <FormPanel heading="ERC20 config">
-        <Input
-          type="text"
-          placeholder="Name"
-          bind:this={fields.erc20name}
-          bind:value={erc20name}
-          validator={defaultValidator}
-        >
-          <span slot="label">Name</span>
-        </Input>
+    <FormPanel heading="ERC20 config">
+      <Input
+        type="text"
+        placeholder="Name"
+        bind:this={fields.erc20name}
+        bind:value={erc20name}
+        validator={defaultValidator}
+      >
+        <span slot="label">Name</span>
+      </Input>
 
-        <Input
-          type="text"
-          placeholder="Symbol"
-          bind:this={fields.erc20symbol}
-          bind:value={erc20symbol}
-          validator={defaultValidator}
-        >
-          <span slot="label">Symbol</span>
-        </Input>
-        <Input
-          type="address"
-          placeholder="Name"
-          bind:this={fields.ownerAddress}
-          bind:value={ownerAddress}
-          validator={addressValidate}
-        >
-          <span slot="label">Owner Address</span>
-        </Input>
-        {#if fixedSupply}
+      <Input
+        type="text"
+        placeholder="Symbol"
+        bind:this={fields.erc20symbol}
+        bind:value={erc20symbol}
+        validator={defaultValidator}
+      >
+        <span slot="label">Symbol</span>
+      </Input>
+      <Input
+        type="address"
+        placeholder="Name"
+        bind:this={fields.ownerAddress}
+        bind:value={ownerAddress}
+        validator={addressValidate}
+      >
+        <span slot="label">Owner Address</span>
+      </Input>
+      {#if fixedSupply}
         <Input
           type="number"
           bind:this={fields.initSupply}
@@ -137,46 +132,86 @@
         >
           <span slot="label">Initial Supply</span>
         </Input>
-        {:else}
+      {:else}
         <Input
-        type="number"
-        bind:this={fields.initSupply}
-        bind:value={initSupply}
-        validator={defaultValidator}
-      >
-        <span slot="label">Total Supply (Fixed)</span>
-      </Input>
+          type="number"
+          bind:this={fields.initSupply}
+          bind:value={initSupply}
+          validator={defaultValidator}
+        >
+          <span slot="label">Total Supply (Fixed)</span>
+        </Input>
       {/if}
-      </FormPanel>
-    
-      <FormPanel>
-        <div>
-          <span class="font-bold">Supply Control</span>
-          <Switch bind:checked={fixedSupply}/>
-          <br />
-          <span class="text-gray-400"
-            >ERC20 token will have fixed supply if switched off</span
-          >
-          {#if fixedSupply}
-          <br /><br/>
-            <Input
-              type="number"
-              bind:this={fields.amount}
-              bind:value={amount}
-              validator={defaultValidator}
-              >
-              <span slot="label">Amount of tokens to mint each time in future</span>
-            </Input>
-          {/if}
-        </div>
-      </FormPanel>
+    </FormPanel>
 
-      <FormPanel>
-        {#if !deployPromise}
-          <Button shrink on:click={handleClick}>Deploy ERC20 Token</Button>
-        {:else}
-          <ContractDeploy {deployPromise} type="ERC20 Token" />
+    <FormPanel>
+      <div>
+        <span class="font-bold">Supply Control</span>
+        <Switch bind:checked={fixedSupply} />
+        <br />
+        <span class="text-gray-400"
+          >ERC20 token will have fixed supply if switched off</span
+        >
+        {#if fixedSupply}
+          <br /><br />
+          <Input
+            type="number"
+            bind:this={fields.amount}
+            bind:value={amount}
+            validator={defaultValidator}
+          >
+            <span slot="label"
+              >Amount of tokens to mint each time in future</span
+            >
+          </Input>
         {/if}
-      </FormPanel>
+      </div>
+    </FormPanel>
+
+    <FormPanel>
+      <div>
+        <span class="font-bold">Faucets</span>
+        <Switch bind:checked={faucets} />
+        <br />
+        <span class="text-gray-400"
+          >ERC20 token will be worked as faucets with ability to mint x number
+          of tokens each x number of blocks passed</span
+        >
+      </div>
+      {#if faucets}
+        <Input
+          type="number"
+          bind:this={fields.blocks}
+          bind:value={blocks}
+          validator={defaultValidator}
+        >
+          <span slot="label"> Number of blocks </span>
+          <span slot="description">
+            Number of blocks needs to pass before being able to do another
+            faucet claim
+          </span>
+        </Input>
+        <Input
+          type="text"
+          bind:this={fields.units}
+          bind:value={units}
+          validator={defaultValidator}
+        >
+          <span slot="label"> Number of token(units) </span>
+          <span slot="description">
+            Number of token to be transfered by the fuacet each time it is
+            triggered (at each claim)
+          </span>
+        </Input>
+      {/if}
+    </FormPanel>
+
+    <FormPanel>
+      {#if !deployPromise}
+        <Button shrink on:click={handleClick}>Deploy ERC20 Token</Button>
+      {:else}
+        <ContractDeploy {deployPromise} type="ERC20 Token" />
+      {/if}
+    </FormPanel>
   </div>
 </div>

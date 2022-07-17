@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import { setContext } from "svelte";
   import { BigNumber, ethers } from "ethers";
   import { LayerCake, Svg, Html } from "layercake";
@@ -15,10 +15,12 @@
   import {
     ApplyOpFn,
     FixedPrice,
-    IncreasingPrice,
+    IncDecPrice,
     SaleJS,
+    SaleStorage,
     StateJS,
     vLBP,
+    VM,
   } from "rain-sdk";
 
   export let saleType: selectSale;
@@ -47,7 +49,7 @@
   // setting the simulation variables
   // setting up the custom timestamp function for js-vm BLOCK_TIMESTAMP opcode
   let opcodeFn: ApplyOpFn = {
-    [SaleJS.Opcodes.BLOCK_TIMESTAMP]: (
+    [VM.Opcodes.BLOCK_TIMESTAMP]: (
       state: StateJS,
       operand: number,
       data: any
@@ -55,6 +57,8 @@
       state.stack.push(BigNumber.from(data.timestamp));
     },
   };
+
+  let storageOpFn: ApplyOpFn = {};
 
   const now = Math.floor(Date.now() / 1000);
 
@@ -79,14 +83,15 @@
         saleVals.initialSupply,
         reserveErc20?.erc20decimals
       );
-      opcodeFn[SaleJS.Opcodes.REMAINING_UNITS] = (
+
+      storageOpFn[SaleStorage.RemainingUnits] = (
         state: StateJS,
         operand: number,
         data: any
       ) => {
         state.stack.push(parseUnits(saleVals.initialSupply.toString()));
       };
-      opcodeFn[SaleJS.Opcodes.TOTAL_RESERVE_IN] = (
+      storageOpFn[SaleStorage.TotalReserveIn] = (
         state: StateJS,
         operand: number,
         data: any
@@ -96,7 +101,7 @@
     }
 
     if (saleType == 2) {
-      script = new IncreasingPrice(
+      script = new IncDecPrice(
         saleVals.startPrice,
         saleVals.endPrice,
         startTime,
@@ -106,7 +111,10 @@
     }
 
     // instantiating the SaleJS (ie.e Sale JS-VM)
-    simulSale = new SaleJS(script, { applyOpFn: opcodeFn });
+    simulSale =
+      saleType == 1
+        ? new SaleJS(script, { applyOpFn: opcodeFn, storageOpFn: storageOpFn })
+        : new SaleJS(script, { applyOpFn: opcodeFn });
 
     // executing the simulation
     initSimul();
@@ -125,13 +133,14 @@
     points = [];
 
     for (let i = startTime; i < endTime; i += length) {
-      points.push({
-        timestamp: i * 1000,
-        price: (+formatUnits(
-          await simulSale.run({ timestamp: i }),
-          reserveErc20?.erc20decimals
-        )).toFixed(4),
-      });
+      console.log(await simulSale.run(0, i));
+      // points.push({
+      //   timestamp: i * 1000,
+      //   price: (+formatUnits(
+      //     ,
+      //     reserveErc20?.erc20decimals
+      //   )).toFixed(4),
+      // });
     }
 
     data = points;
@@ -163,7 +172,7 @@
       padding={{ right: 30, bottom: 20, left: 25 }}
       x={xKey}
       y={yKey}
-      yDomain={[0, null]}
+      yDomain={saleType == 1 ? [0, null] : [0, max]}
       {data}
     >
       <Svg>
@@ -199,4 +208,4 @@
     width: 100%;
     height: 300px;
   }
-</style>
+</style> -->

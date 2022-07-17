@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import { signer, signerAddress } from "svelte-ethers-store";
   import Input from "../../components/Input.svelte";
   import { BigNumber, ethers } from "ethers";
@@ -114,4 +114,4 @@
       {/if}
     </div>
   </FormPanel>
-</div>
+</div> -->

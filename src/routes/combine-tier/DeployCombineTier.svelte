@@ -39,7 +39,10 @@
     const combineTierConfig = new CombineTierGenerator(
       tierContractOne
     ).combineWith(tierContractTwo, logicValue.value, modeValue.value);
-    const newCombineTier = await CombineTier.deploy($signer, combineTierConfig);
+    const newCombineTier = await CombineTier.deploy($signer, {
+      combinedTiersLength: 2,
+      sourceConfig: combineTierConfig,
+    });
 
     return newCombineTier;
   };

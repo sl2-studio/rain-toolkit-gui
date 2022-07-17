@@ -59,13 +59,13 @@
       </SidebarLink>
     </SidebarLinkGroup>
 
-    <SidebarLinkGroup label="GatedNFT" url="/gatednft/*">
+    <!-- <SidebarLinkGroup label="GatedNFT" url="/gatednft/*">
       <SidebarLink url="/gatednft/deploy/">Deploy a Gated NFT</SidebarLink>
 
       <SidebarLink url="/gatednft/mint/">Mint a Gated NFT</SidebarLink>
 
       <SidebarLink url="/gatednft/list">List deployed GatedNFTs</SidebarLink>
-    </SidebarLinkGroup>
+    </SidebarLinkGroup> -->
 
     <SidebarLinkGroup label="Sale" url="/sale/*">
       <SidebarLink url="/sale/deploy">Deploy a Sale</SidebarLink>
@@ -92,9 +92,7 @@
     </SidebarLinkGroup>
 
     <SidebarLinkGroup label="Deploy ERC20" url="/erc20/*">
-      <SidebarLink url="/erc20/deploy">
-        Deploy an ERC20 Token
-      </SidebarLink>
+      <SidebarLink url="/erc20/deploy">Deploy an ERC20 Token</SidebarLink>
 
       <SidebarLink url="/erc20/mint/">Mint From An Existing ERC20</SidebarLink>
     </SidebarLinkGroup>

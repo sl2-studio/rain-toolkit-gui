@@ -5,7 +5,7 @@
   import FormPanel from "../../components/FormPanel.svelte";
   import Button from "../../components/Button.svelte";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
-  import { ERC20BalanceTier, ERC20 } from "rain-sdk";
+  import { CombineTier, ERC20, ERC20BalanceTier } from "rain-sdk";
   import { formatUnits } from "ethers/lib/utils";
 
   let erc20Address,
@@ -42,15 +42,16 @@
   };
 
   const deployBalanceTier = async () => {
-    const parsedTiers = tiers.map((value) =>
-      value
-        ? ethers.utils.parseUnits(value.toString(), erc20decimals)
-        : ethers.constants.MaxInt256
-    );
+    // const parsedTiers = tiers.map((value) =>
+    //   value
+    //     ? ethers.utils.parseUnits(value.toString(), erc20decimals)
+    //     : ethers.constants.MaxInt256
+    // );
+    let stateConfig = new ERC20BalanceTier(tiers, erc20Contract.address);
 
-    let newBalanceTier = await ERC20BalanceTier.deploy($signer, {
-      erc20: erc20Contract.address,
-      tierValues: parsedTiers,
+    let newBalanceTier = await CombineTier.deploy($signer, {
+      combinedTiersLength: 1,
+      sourceConfig: stateConfig,
     });
 
     return newBalanceTier;
@@ -81,7 +82,8 @@
           <div class="flex flex-col gap-y-2 font-light text-gray-300">
             <span>Token name: {erc20name}</span>
             <span>Token symbol: {erc20symbol}</span>
-            <span>Your balance: {formatUnits(erc20balance, erc20decimals)}</span>
+            <span>Your balance: {formatUnits(erc20balance, erc20decimals)}</span
+            >
           </div>
         {/if}
       </span>

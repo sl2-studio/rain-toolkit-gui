@@ -8,8 +8,7 @@
   import { push } from "svelte-spa-router";
   import { queryStore } from "@urql/svelte";
   import { client } from "src/stores";
-  import { ERC20BalanceTier, ERC20 } from "rain-sdk";
-
+  import { ERC20BalanceTier, ERC20, CombineTier } from "rain-sdk";
 
   export let params;
 
@@ -20,12 +19,11 @@
     parsedReport,
     addressBalance;
 
-  let  balanceTierAddress = params.wild ? params.wild.toLowerCase() : undefined;
+  let balanceTierAddress = params.wild ? params.wild.toLowerCase() : undefined;
 
   $: balanceTier = queryStore({
-      client: $client,
-      query:
-        `query ($balanceTierAddress: Bytes!) {
+    client: $client,
+    query: `query ($balanceTierAddress: Bytes!) {
           erc20BalanceTiers (where: {id: $balanceTierAddress}) {
             id
             address
@@ -41,26 +39,26 @@
             tierValues
           }
         }`,
-      variables: {balanceTierAddress},
-      requestPolicy: "network-only",
-      pause: params.wild ? false : true
-    }
-  );
+    variables: { balanceTierAddress },
+    requestPolicy: "network-only",
+    pause: params.wild ? false : true,
+  });
 
   $: _balanceTier = $balanceTier.data?.erc20BalanceTiers[0];
-  
+
   $: if (_balanceTier || $signer) {
-    if (!$balanceTier.fetching && _balanceTier != undefined){
+    if (!$balanceTier.fetching && _balanceTier != undefined) {
       initContracts();
     }
   }
 
   const initContracts = async () => {
-    balanceTierContract = new ERC20BalanceTier(
-      _balanceTier?.address,
-      $signer,
-      _balanceTier?.token.id
-    );
+    balanceTierContract = new CombineTier(_balanceTier?.address, $signer);
+    // balanceTierContract = new ERC20BalanceTier(
+    //   _balanceTier?.address,
+    //   $signer,
+    //   _balanceTier?.token.id
+    // );
 
     erc20Contract = new ERC20(_balanceTier?.token.id, $signer);
   };

@@ -5,7 +5,7 @@
   import FormPanel from "../../components/FormPanel.svelte";
   import Button from "../../components/Button.svelte";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
-  import { ERC721BalanceTier, ERC721 } from "rain-sdk";
+  import { ERC721BalanceTier, ERC721, CombineTier } from "rain-sdk";
 
   let deployPromise;
   let erc721Address: string | undefined,
@@ -45,9 +45,11 @@
         value ? BigNumber.from(value) : ethers.constants.MaxInt256
       );
 
-      let newERC721BalanceTier = await ERC721BalanceTier.deploy($signer, {
-        erc721: erc721Contract.address,
-        tierValues: parsedTiers,
+      let stateConfig = new ERC721BalanceTier(tiers, erc721Contract.address);
+
+      let newERC721BalanceTier = await CombineTier.deploy($signer, {
+        combinedTiersLength: 1,
+        sourceConfig: stateConfig,
       });
 
       return newERC721BalanceTier;

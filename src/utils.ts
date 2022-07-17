@@ -1,7 +1,7 @@
 import { BigNumber, ethers } from "ethers";
 import type { BytesLike } from "ethers";
 import { concat, Hexable, hexlify, zeroPad } from "ethers/lib/utils";
-import { ERC20 } from "rain-sdk";
+import { ERC20, ITierV2 } from "rain-sdk";
 
 export const getNewChildFromReceipt = (receipt, parentContract) => {
   return ethers.utils.defaultAbiCoder.decode(
@@ -249,4 +249,21 @@ export function timeString(timestamp, options?) {
 
 export const copyToClipboard = async (text) => {
   await navigator.clipboard.writeText(text)
+}
+
+export const isTier = async (tierAddress, signer, signerAddress) => {
+  let errorMsg = null;
+  if (ethers.utils.isAddress(tierAddress)) {
+    try {
+      const iTier = new ITierV2(tierAddress, signer)
+      await iTier.report(signerAddress, []);
+    }
+    catch (err) {
+      errorMsg = "Not a valid Tier Contract Address";
+    }
+  }
+  else {
+    errorMsg = "Not a valid Address";
+  }
+  return { errorMsg };
 }

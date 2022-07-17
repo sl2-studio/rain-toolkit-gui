@@ -5,7 +5,7 @@
   import FormPanel from "src/components/FormPanel.svelte";
   import Input from "src/components/Input.svelte";
   import { validateFields } from "src/utils";
-  import { defaultValidator } from "../gated-nft/minter-validation";
+  // import { defaultValidator } from "../gated-nft/minter-validation";
   import { ethers } from "ethers";
   import ContractDeploy from "src/components/ContractDeploy.svelte";
   import { Verify, VerifyTier } from "rain-sdk";
@@ -46,7 +46,9 @@
   const deployVerify = async () => {
     const { validationResult, fieldValues } = validateFields(verifyFields);
 
-    const newVerify = await Verify.deploy($signer, {admin: fieldValues.adminAddress});
+    const newVerify = await Verify.deploy($signer, {
+      admin: fieldValues.adminAddress,
+    });
     verifyChild = newVerify.address;
 
     return newVerify;
@@ -81,10 +83,10 @@
     </span>
   </div>
   <FormPanel heading="Deploy a Verify">
+    <!-- validator={defaultValidator} -->
     <Input
       type="text"
       bind:this={verifyFields.adminAddress}
-      validator={defaultValidator}
       value={$signerAddress}
     >
       <span slot="label">Admin address: </span>
@@ -108,10 +110,10 @@
   </FormPanel>
 
   <FormPanel heading="Deploy a VerifyTier">
+    <!-- validator={defaultValidator} -->
     <Input
       type="text"
       bind:this={verifyTierFields.verifyAddress}
-      validator={defaultValidator}
       value={verifyChild}
     >
       <span slot="label">Verify address: </span>

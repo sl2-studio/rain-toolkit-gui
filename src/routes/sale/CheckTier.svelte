@@ -2,7 +2,7 @@
   import { Signer } from "ethers";
   import { Writable } from "svelte/store";
   import { tierReport } from "src/utils";
-  import { ITier } from "rain-sdk";
+  import { ITierV2 } from "rain-sdk";
 
   interface TierData {
     __typename: string;
@@ -41,7 +41,7 @@
   };
 
   $: if ($signer && minimumStatus !== undefined && tierData?.id) {
-    const tier = new ITier(tierData.id, $signer);
+    const tier = new ITierV2(tierData.id, $signer);
 
     checkTier(tier, minimumStatus);
   }

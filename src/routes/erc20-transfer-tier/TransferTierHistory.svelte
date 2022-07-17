@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import { getContext } from "svelte";
   import IconLibrary from "../../components/IconLibrary.svelte";
   import dayjs from "dayjs";
@@ -114,4 +114,4 @@
   {:else}
     You haven't made any transactions.
   {/if}
-</div>
+</div> -->

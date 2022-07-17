@@ -1,14 +1,14 @@
 <script lang="ts" type="module">
   import ListERC721BalanceTier from "./routes/erc721-balance-tier/ListERC721BalanceTier.svelte";
-  import ListGatedNFTs from "./routes/gated-nft/ListGatedNFTs.svelte";
+  // import ListGatedNFTs from "./routes/gated-nft/ListGatedNFTs.svelte";
   import ERC721BalanceTierReport from "./routes/erc721-balance-tier/ERC721BalanceTierReport.svelte";
   import { signer } from "svelte-ethers-store";
   import Router from "svelte-spa-router";
   import DeployBalanceTier from "./routes/erc20-balance-tier/DeployBalanceTier.svelte";
   import BalanceTierReport from "./routes/erc20-balance-tier/BalanceTierReport.svelte";
   import Home from "./routes/Home.svelte";
-  import DeployGatedNFT from "./routes/gated-nft/DeployGatedNFT.svelte";
-  import MintNft from "./routes/gated-nft/MintNFT.svelte";
+  // import DeployGatedNFT from "./routes/gated-nft/DeployGatedNFT.svelte";
+  // import MintNft from "./routes/gated-nft/MintNFT.svelte";
   import Header from "./layout/Header.svelte";
   import Sidebar from "./layout/Sidebar.svelte";
   import ListBalanceTier from "./routes/erc20-balance-tier/ListBalanceTier.svelte";
@@ -32,7 +32,6 @@
   import DeployERC20 from "./routes/mint-erc20/DeployERC20.svelte";
   import MintFromExistingERC20 from "./routes/mint-erc20/MintFromExistingERC20.svelte";
 
-
   let routes = {};
 
   routes = {
@@ -53,9 +52,9 @@
     "/erc20transfertier/report/*": TransferTierReport,
     "/erc20transfertier/list": ListTransferTier,
 
-    "/gatednft/deploy/*": DeployGatedNFT,
-    "/gatednft/list": ListGatedNFTs,
-    "/gatednft/mint/*": MintNft,
+    // "/gatednft/deploy/*": DeployGatedNFT,
+    // "/gatednft/list": ListGatedNFTs,
+    // "/gatednft/mint/*": MintNft,
 
     "/sale/deploy": DeploySale,
     "/sale/purchase/*": PurchaseSale,

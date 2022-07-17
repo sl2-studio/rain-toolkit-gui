@@ -1,4 +1,4 @@
-<script>
+<!-- <script>
   import { BigNumber, ethers } from "ethers";
   import { formatUnits } from "ethers/lib/utils";
   import { push } from "svelte-spa-router";
@@ -80,4 +80,4 @@
       </FormPanel>
     {/each}
   </div>
-{/if}
+{/if} -->

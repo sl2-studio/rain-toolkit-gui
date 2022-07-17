@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import Select from "src/components/Select.svelte";
   import Steps from "../../components/steps/Steps.svelte";
   import { selectedNetwork } from "src/stores";
@@ -250,7 +250,7 @@
         <Button shrink on:click={exitTier}>UnSet the Tier</Button>
       </div>
     </div> -->
-  </div>
+<!--  </div>
 {/if}
 
 {#if txStatus == TxStatus.AwaitingSignature}
@@ -270,4 +270,4 @@
     <span class="text-lg">Something went wrong.</span>
     <span class="text-lg text-red-400">{errorMsg}</span>
   </div>
-{/if}
+{/if} -->

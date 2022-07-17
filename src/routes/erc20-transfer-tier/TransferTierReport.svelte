@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import { signer, signerAddress } from "svelte-ethers-store";
   import { ethers } from "ethers";
   import FormPanel from "../../components/FormPanel.svelte";
@@ -226,4 +226,4 @@
       </Button>
     </FormPanel>
   {/if}
-</div>
+</div> -->

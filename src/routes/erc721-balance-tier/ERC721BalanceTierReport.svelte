@@ -7,8 +7,8 @@
   import { tierReport } from "../../utils";
   import { push } from "svelte-spa-router";
   import { queryStore } from "@urql/svelte";
-  import { client } from "src/stores"
-  import { ERC721BalanceTier, ERC721 } from "rain-sdk";
+  import { client } from "src/stores";
+  import { ERC721BalanceTier, ERC721, CombineTier } from "rain-sdk";
 
   export let params;
 
@@ -45,8 +45,7 @@
     variables: { balanceTierAddress },
     requestPolicy: "network-only",
     pause: params.wild ? false : true,
-    }
-  );
+  });
 
   //query(balanceTier);
 
@@ -62,18 +61,19 @@
   $: _balanceTier = $balanceTier.data?.erc721BalanceTiers[0];
 
   $: if (_balanceTier || $signer) {
-    if (!$balanceTier.fetching && _balanceTier != undefined){
+    if (!$balanceTier.fetching && _balanceTier != undefined) {
       initContract();
     }
   }
 
   const initContract = async () => {
     if (ethers.utils.isAddress(params.wild)) {
-      balanceTierContract = new ERC721BalanceTier(
-        _balanceTier?.address,
-        $signer,
-        _balanceTier?.token.id
-      );
+      balanceTierContract = new CombineTier(_balanceTier?.address, $signer);
+      // balanceTierContract = new ERC721BalanceTier(
+      //   _balanceTier?.address,
+      //   $signer,
+      //   _balanceTier?.token.id
+      // );
       try {
         tierValues = await balanceTierContract.tierValues();
       } catch (error) {

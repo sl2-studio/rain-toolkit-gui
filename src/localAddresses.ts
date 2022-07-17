@@ -15,8 +15,8 @@ const addressesDefault: LocalLibrary = new Map([
             ],
             ['Tiers',
                 new Map([
-                    ['USDCC BalanceTier',
-                        { address: "0x6BA1fADB694E806c316337143241Dd6cFebd5033", type: "BalanceTier" }
+                    ['VerifyTier',
+                        { address: "0xe30289f881ee37c51ad5678ed799677e6c3e788f", type: "BalanceTier" }
                     ]]),
 
             ],

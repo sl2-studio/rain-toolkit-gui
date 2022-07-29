@@ -19,9 +19,7 @@
   let reserveErc20;
   let saleParams: SaleParams;
 
-  let tierError,
-    tierDiscountError,
-    tierCapMulError;
+  let tierError, tierDiscountError, tierCapMulError;
 
   // some default values for testing
   let recipient = "0xf6CF014a3e92f214a3332F0d379aD32bf0Fae929";
@@ -91,16 +89,16 @@
   ];
 
   let saleType: { value: number; label: string } = null;
-  let maxCapCheck = false;
+  let maxCapCheck = true;
   let minCapCheck = false;
   let canEndCheck = false;
   let extraTimeDiscountCheck = false;
   let tierDiscountCheck = false;
-  let tierDiscountActCheck = false;
+  let tierDiscountActCheck = true;
   let tierCapMulCheck = false;
   let tierCapMulActCheck = false;
-  let creatorControlCheck = false;
-  let afterMinimumRaiseCheck = false;
+  let creatorControlCheck = true;
+  let afterMinimumRaiseCheck = true;
 
   const getSaleParams = () => {
     const { validationResult, fieldValues } = validateFields(fields);
@@ -125,7 +123,7 @@
       afterMinimumRaiseMode: afterMinimumRaiseCheck,
     };
 
-    return {validationResult, saleParams};
+    return { validationResult, saleParams };
   };
 
   $: saleVals = {
@@ -151,7 +149,6 @@
     tierCapMulActMode: tierCapMulActCheck,
     creatorControlMode: creatorControlCheck,
     afterMinimumRaiseMode: afterMinimumRaiseCheck,
-
 
     recipient,
     reserve,
@@ -222,31 +219,35 @@
   };
 
   $: if (tier) {
-    (async() => {  
-      tierError = await isTier(tier, $signer, $signerAddress) 
-    })()
+    (async () => {
+      tierError = await isTier(tier, $signer, $signerAddress);
+    })();
   }
 
   $: if (tierDiscountCheck && tierDiscountAddress) {
-    (async() => {
-      tierDiscountError = await isTier(tierDiscountAddress, $signer, $signerAddress)
-    })()  
+    (async () => {
+      tierDiscountError = await isTier(
+        tierDiscountAddress,
+        $signer,
+        $signerAddress
+      );
+    })();
   }
 
   $: if (tierCapMulCheck && tierCapMulAddress) {
-    (async() => {
-      tierCapMulError = await isTier(tierCapMulAddress, $signer, $signerAddress)
-    })()  
+    (async () => {
+      tierCapMulError = await isTier(
+        tierCapMulAddress,
+        $signer,
+        $signerAddress
+      );
+    })();
   }
 
   const deploy = async () => {
     const { validationResult, saleParams } = getSaleParams();
     if (validationResult) {
-      return await saleDeploy(
-        $signer,
-        $signerAddress,
-        saleParams
-      );
+      return await saleDeploy($signer, $signerAddress, saleParams);
     }
   };
 
@@ -258,16 +259,6 @@
 
   $: if (reserve && fields?.reserve) {
     getReserveErc20();
-  }
-
-  function MaxCapHandler() {
-    if (maxCapCheck) document.getElementById("capMax").style.display = "block";
-    else {
-      document.getElementById("capMax").style.display = "none";
-      document.getElementById("tierCapMul").style.display = "none";
-      tierCapMulCheck = false;
-      tierCapMulActCheck = false;
-    }
   }
 </script>
 
@@ -359,6 +350,7 @@
         {#if saleType.value == 0}
           <Input
             type="number"
+            disabled
             bind:this={fields.startPrice}
             bind:value={startPrice}
             validator={defaultValidator}
@@ -391,7 +383,7 @@
       <FormPanel>
         <div>
           <span>Creator Control:</span>
-          <Switch bind:checked={creatorControlCheck} />
+          <Switch disabled={true} bind:checked={creatorControlCheck} />
           <br />
           <span class="text-gray-400"
             >If switched off, everyone can start/end the sale once the
@@ -409,6 +401,7 @@
         <div>
           <span> Sale End After Hitting Minimum: </span>
           <Switch
+            disabled={true}
             bind:checked={afterMinimumRaiseCheck}
             on:change={() => {
               if (afterMinimumRaiseCheck) {
@@ -428,7 +421,8 @@
         <div>
           <span> Sale Extra Time: </span>
           <Switch
-            bind:checked={canEndCheck}
+            checked={canEndCheck}
+            disabled={true}
             on:change={() => {
               if (canEndCheck) {
                 document.getElementById("exTime").style.display = "block";
@@ -476,6 +470,7 @@
           <br /><br />
           <span> Extra Time Discount: </span>
           <Switch
+            disabled={true}
             bind:checked={extraTimeDiscountCheck}
             on:change={() => {
               if (extraTimeDiscountCheck)
@@ -523,6 +518,7 @@
           <span>Tier Discount:</span>
           <Switch
             bind:checked={tierDiscountCheck}
+            disabled={true}
             on:change={() => {
               if (tierDiscountCheck)
                 document.getElementById("tierDis").style.display = "block";
@@ -537,14 +533,14 @@
             >Discount on price for tiered wallets based on the tier they hold.</span
           >
         </div>
-        <div id="tierDis" style="display:none" class="w-full">
+        <div id="tierDis" class="w-full" style="display:none">
           <br />
           <Input
             type="address"
             bind:this={fields.tierDiscountAddress}
             bind:value={tierDiscountAddress}
             validator={defaultValidator}
-            errorMsg = {tierDiscountError?.errorMsg}
+            errorMsg={tierDiscountError?.errorMsg}
           >
             <span slot="label">Tier Contract Address: </span>
             <span slot="description">
@@ -564,7 +560,7 @@
                 </td>
                 <td>
                   <span>Perk Activation Time (Block)</span>
-                  <Switch bind:checked={tierDiscountActCheck} />
+                  <Switch disabled={true} bind:checked={tierDiscountActCheck} />
                   <br />
                   <sapn class="text-gray-400"
                     >Duration of time tier must be held for the perk to
@@ -815,14 +811,14 @@
             <tr>
               <td>
                 Max Cap Per Wallet:
-                <Switch bind:checked={maxCapCheck} on:change={MaxCapHandler} />
+                <Switch disabled={true} bind:checked={maxCapCheck} />
               </td>
             </tr><span class="text-gray-400"
               >The maximum number of raise tokens purchaseable by each eligible
               address.</span
             >
             <tr>
-              <td id="capMax" style="display:none">
+              <td id="capMax">
                 <Input
                   type="number"
                   bind:this={fields.maxWalletCap}
@@ -838,6 +834,7 @@
               <td>
                 Min Cap Per Wallet:
                 <Switch
+                  disabled={true}
                   bind:checked={minCapCheck}
                   on:change={() => {
                     if (minCapCheck) {
@@ -870,12 +867,12 @@
         <div>
           <span>Tier Max Cap Per Wallet Multiplier:</span>
           <Switch
+            disabled={true}
             bind:checked={tierCapMulCheck}
             on:change={() => {
               if (tierCapMulCheck) {
                 document.getElementById("tierCapMul").style.display = "block";
                 maxCapCheck = true;
-                MaxCapHandler();
               } else {
                 document.getElementById("tierCapMul").style.display = "none";
                 tierCapMulActCheck = false;
@@ -899,7 +896,7 @@
             bind:this={fields.tierCapMulAddress}
             bind:value={tierCapMulAddress}
             validator={defaultValidator}
-            errorMsg = {tierCapMulError?.errorMsg}
+            errorMsg={tierCapMulError?.errorMsg}
           >
             <span slot="label">Tier Contract Address: </span>
             <span slot="description">
@@ -921,7 +918,7 @@
                 </td>
                 <td>
                   <span>Perk Activation Period (Block)</span>
-                  <Switch bind:checked={tierCapMulActCheck} />
+                  <Switch disabled={true} bind:checked={tierCapMulActCheck} />
                   <br />
                   <sapn class="text-gray-400"
                     >Duration of time tier must be held for the perk to
@@ -1166,14 +1163,14 @@
           bind:this={fields.tier}
           bind:value={tier}
           validator={defaultValidator}
-          errorMsg = {tierError.errorMsg}
+          errorMsg={tierError.errorMsg}
         >
           <span slot="label"> Tier: </span>
           <span slot="description">
             The address of a Tier contract to gate with.
           </span>
         </Input>
-        
+
         <Input
           type="number"
           bind:this={fields.minimumStatus}

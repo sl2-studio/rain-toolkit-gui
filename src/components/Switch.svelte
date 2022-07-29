@@ -1,10 +1,11 @@
 <script>
   export let checked = false;
   export let color = "#2196F3";
+  export let disabled;
 </script>
 
 <label class="switch" style="--theme-color: {color}">
-  <input type="checkbox" bind:checked on:change />
+  <input type="checkbox" {disabled} bind:checked on:change />
   <span class="slider" />
 </label>
 

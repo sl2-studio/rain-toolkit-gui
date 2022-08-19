@@ -97,7 +97,7 @@
   let tierDiscountActCheck = true;
   let tierCapMulCheck = false;
   let tierCapMulActCheck = false;
-  let creatorControlCheck = true;
+  let creatorControlCheck = false;
   let afterMinimumRaiseCheck = true;
 
   const getSaleParams = () => {

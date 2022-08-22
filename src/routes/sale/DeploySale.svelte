@@ -350,7 +350,6 @@
         {#if saleType.value == 0}
           <Input
             type="number"
-            disabled
             bind:this={fields.startPrice}
             bind:value={startPrice}
             validator={defaultValidator}

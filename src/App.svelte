@@ -31,9 +31,17 @@
   import ListTransferTier from "./routes/erc20-transfer-tier/ListTransferTier.svelte";
   import DeployERC20 from "./routes/mint-erc20/DeployERC20.svelte";
   import MintFromExistingERC20 from "./routes/mint-erc20/MintFromExistingERC20.svelte";
-
+  import { onMount } from "svelte";
 
   let routes = {};
+
+  onMount(() => {
+    if (window.ethereum) {
+      window.ethereum.on("chainChanged", () => {
+        document.location.reload();
+      });
+    }
+  });
 
   routes = {
     // Using named parameters, with last being optional
